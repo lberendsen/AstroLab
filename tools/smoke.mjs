@@ -66,7 +66,7 @@ const STOPS = [
     check: `/Júpiter/.test(document.getElementById('rcText').textContent) || 'replay da Voyager não chegou a Júpiter'` },
   { name: 'milenios', run: `document.getElementById('rcStop').click(); astro.F.date = new Date(946728000000 + 50000 * 31557600000)`, wait: 3000,
     check: `/ano\\s52/.test(document.getElementById('clock').textContent) || 'data de 50 mil anos não aparece no relógio: ' + document.getElementById('clock').textContent` },
-  { name: 'planetario-sp', run: `document.getElementById('tNow').click(); astro.time.setDate(new Date('2026-10-09T23:30:00Z')); document.getElementById('btnPlan').click()`, wait: 13000,
+  { name: 'planetario-sp', run: `document.getElementById('tNow').click(); astro.time.setDate(new Date('2026-10-09T23:30:00Z')); astro.places.goPlace('O céu daqui, agora')`, wait: 13000,
     check: `astro.planetarium.PL.active && document.querySelectorAll('#plList .plRow').length > 3 || 'planetário não entrou ou lista vazia'` },
   { name: 'planetario-marte', run: `document.getElementById('plBody').value = 'Mars'; document.getElementById('plBody').dispatchEvent(new Event('change'))`, wait: 15000,
     check: `astro.planetarium.PL.active && astro.planetarium.PL.body === 'Mars' || 'não pousou em Marte'` },

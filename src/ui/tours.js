@@ -146,12 +146,14 @@ export function tick() {
   if ((performance.now() - T.arrived) / 1000 > read) runStep(T.i + 1);
 }
 
+// tecla U: lista dos tours
+export function toggleTourPanel() { $('tourPanel').hidden = !$('tourPanel').hidden; renderList(); }
+
 export function wireTours() {
   $('tcPlay').onclick = () => { if (!T.tour) return; if (T.i >= T.tour.steps.length) { runStep(0); T.playing = true; } else { T.playing = !T.playing; T.arrived = performance.now(); } $('tcPlay').textContent = T.playing ? '❚❚' : '▶'; };
   $('tcNext').onclick = () => T.tour && runStep(T.i + 1);
   $('tcPrev').onclick = () => T.tour && runStep(Math.max(0, T.i - 1));
   $('tcStop').onclick = () => stopTour();
-  $('btnTours').onclick = () => { $('tourPanel').hidden = !$('tourPanel').hidden; renderList(); };
   $('tpClose2').onclick = () => { $('tourPanel').hidden = true; };
 }
 export function renderList() {

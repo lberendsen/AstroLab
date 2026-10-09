@@ -111,9 +111,11 @@ function renderConj() {
   };
 }
 
+// tecla P: entra no planetário (no lugar salvo) ou sai dele
+export const togglePlanetarium = () => (PL.active || PL.pending ? leave() : openPlanetarium());
+
 export function wirePlanetarium() {
-  PLN.setOnChange(() => { renderPanel(); $('btnPlan').classList.toggle('on', PL.active || PL.pending); });
-  $('btnPlan').onclick = () => (PL.active || PL.pending ? leave() : openPlanetarium());
+  PLN.setOnChange(renderPanel);
   $('plExit').onclick = leave;
   $('plClose').onclick = () => { $('planPanel').hidden = true; };
   $('plBody').onchange = () => { const b = $('plBody').value, [n, la, lo] = PRESETS[b][0]; PLN.enter(b, la, lo, n); renderPanel(); };

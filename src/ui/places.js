@@ -198,7 +198,7 @@ function planetarium() {
 let ROOT = [], ALL = [];
 function buildTree() {
   ROOT = [
-    cat('🎬 Tours guiados', TOURS.map(t => node(t.title, { action: () => startTour(t), hint: t.subtitle || '' }))),
+    cat('🎬 Tours guiados', TOURS.map(t => node(t.title, { action: () => startTour(t), hint: t.sub || '' }))),
     planetarium(), solarSystem(), humanMade(), stars(), exoplanets(), constellations(), ...deepSky(),
   ].filter(n => n.kids?.length);
   ALL = [];

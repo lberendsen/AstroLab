@@ -144,7 +144,7 @@ Notas:
 
 ### Tours guiados (Fase 4)
 
-O botão **🎬 Tours** (tecla `U`), ou o primeiro ramo dos **Lugares**, abre cinco viagens narradas. A câmera, o tempo e as camadas andam sozinhos; ⏮ ❚❚ ⏭ controlam, e ✕ encerra.
+O ramo **🎬 Tours guiados** dos Lugares (ou a tecla `U`) traz cinco viagens narradas. A câmera, o tempo e as camadas andam sozinhos; ⏮ ❚❚ ⏭ controlam, e ✕ encerra.
 
 - **Do seu quarto ao universo observável** (13 paradas): do céu de São Paulo à radiação cósmica de fundo.
 - **A vida de uma estrela** (12): berçário, aglomerado, o Sol, gigante vermelha, nebulosa planetária, anã branca, supergigante, supernova, pulsar e buraco negro.
@@ -171,7 +171,7 @@ O teste de fumaça confere se todos os alvos dos tours existem na busca.
 
 ### Planetário (Fase 2)
 
-O botão **🌅 Planetário** (tecla `P`) põe você em pé num lugar da Terra, da Lua ou de Marte, na data simulada. A ficha dos robôs e pousos tem o botão "Ver o céu daqui".
+O ramo **🌅 Planetário** dos Lugares (ou a tecla `P`, que usa o último lugar escolhido) põe você em pé num lugar da Terra, da Lua ou de Marte, na data simulada. A ficha dos robôs e pousos tem o botão "Ver o céu daqui".
 
 - **Olhar em volta:** arrastar o mouse; a roda faz zoom de 110° a 1°, como um binóculo.
 - **Lugares:** capitais brasileiras, observatórios, os polos e lugares da Lua e de Marte, ou qualquer latitude e longitude. O 📍 usa a sua localização.
