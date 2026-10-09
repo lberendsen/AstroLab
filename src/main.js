@@ -12,6 +12,7 @@ import * as images from './layers/images.js';
 import * as sats from './layers/sats.js';
 import * as craft from './layers/craft.js';
 import * as deep from './layers/deep.js';
+import * as smallbodies from './layers/smallbodies.js';
 import * as linkMode from './link.js';
 import * as feeds from './feeds.js';
 import * as labels from './labels.js';
@@ -19,11 +20,11 @@ import * as search from './search.js';
 import * as time from './time.js';
 import { nav, flyTo, setOrbit, update as navUpdate, lookAtDir } from './nav.js';
 import { bodyTarget } from './targets.js';
-import { v3, fmtDist, fmtSpeed, GALACTIC_CENTER } from './astro.js';
+import { v3, AU, fmtDist, fmtSpeed, GALACTIC_CENTER } from './astro.js';
 import { ui, select, go, wireFeeds } from './ui/actions.js';
 import { refreshInfoDistances } from './ui/info.js';
 import { buildPlaces } from './ui/places.js';
-import { buildLayersMenu, buildSkyMenu } from './ui/menus.js';
+import { buildLayersMenu, buildSkyMenu, updateSbStatus } from './ui/menus.js';
 import { wireSearch } from './ui/searchbox.js';
 import { wireControls } from './ui/keys.js';
 import { perf } from './ui/perf.js';
@@ -35,13 +36,15 @@ async function init() {
   await loadAll(step);
   step('naves e satélites');
   await Promise.all([sats.load(), craft.load()]);
+  step('asteroides e cometas');
+  await smallbodies.load();
   step('quasares');
   await deep.load();
   deep.addCurated(DB.curated);
   step('montando a cena');
   solar.build(); solar.computePositions();
   stars.build(); galaxies.build(); milkyway.build(); systems.build();
-  sats.build(); craft.addNotableSats(); craft.build(); deep.build();
+  sats.build(); craft.addNotableSats(); craft.build(); deep.build(); smallbodies.build();
   search.buildIndex();
   buildPlaces(); buildLayersMenu(); buildSkyMenu();
   wireSearch(); wireFeeds(); wireControls(hud);
@@ -115,6 +118,7 @@ function loop(now) {
   T('fotos', () => images.update());
   T('satélites', () => { sats.update(); sats.updateOrbitLine(local, place); });
   T('naves', () => craft.update());
+  T('asteroides/cometas', () => smallbodies.update());
   T('quasares/CMB', () => deep.update());
   T('linhas', () => { linkMode.update(); if (linkMode.link.target && frameNo % 30 === 0) linkMode.render(); feeds.update(); });
   T('rótulos', () => labels.update());
@@ -134,6 +138,18 @@ function hud() {
   $('tPause').textContent = time.clock.paused ? '▶' : '❚❚';
   $('btnMode').textContent = nav.mode === 'orbit' ? '⟲ Orbitar' : '✈ Voar livre';
   if (frameNo % 30 === 0) refreshInfoDistances();
+  maybeLoadMoreAsteroids();
+}
+
+// O resto dos asteroides (1,5 milhão; ~34 MB) só é baixado quando o usuário está no Sistema Solar, após o início
+let sbAsked = false;
+function maybeLoadMoreAsteroids() {
+  const SB = smallbodies.SB;
+  if (sbAsked || !SB.meta || performance.now() < 8000) return;
+  if (v3.len(F.cam) > 200 * AU || !smallbodies.showSB.asteroids || F.layers.solar === false) return;
+  sbAsked = true;
+  updateSbStatus();
+  smallbodies.loadMore(() => updateSbStatus()).then(() => updateSbStatus());
 }
 
 init().catch(err => {
@@ -142,4 +158,4 @@ init().catch(err => {
 });
 
 // para depuração no console e para o teste de fumaça
-window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui };
+window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies };

@@ -2,6 +2,7 @@
 import * as search from '../search.js';
 import { v3, gal2eq, GALACTIC_CENTER } from '../astro.js';
 import { go } from './actions.js';
+import { openNeo } from './neo.js';
 import { $ } from './dom.js';
 
 const PLACES = [
@@ -10,6 +11,10 @@ const PLACES = [
     ['Voyager 1', 'o mais distante'], ['Voyager 2'], ['New Horizons'], ['Parker Solar Probe', 'o mais rápido'], ['Juno'],
     ['Apollo 11 (Base da Tranquilidade)'], ['Lunokhod 1'], ["Chang'e 4 e jipe Yutu-2 (lado oculto)"], ['Chandrayaan-3 (Vikram e Pragyan)'],
     ['Perseverance'], ['Curiosity'], ['Zhurong'], ['Venera 13'], ['Tesla Roadster de Elon Musk']]],
+  ['Asteroides e cometas', [['@neo', 'passando perto da Terra agora'], ['Ceres', 'planeta anão'], ['Vesta'], ['Bennu', 'amostras trazidas à Terra'], ['Ryugu'], ['Apófis', 'passa raspando em 2029'],
+    ['Dídimo', 'desviado pela DART'], ['Psique', 'metálico'], ['Arrokoth', 'o mais distante visitado'], ['Éris'], ['Sedna'],
+    ['Cometa Halley'], ['Cometa 67P/Churyumov–Gerasimenko'], ['Cometa Hale–Bopp'], ["1I/ʻOumuamua", 'veio de outra estrela'], ['3I/ATLAS', 'visitante interestelar de 2025']]],
+  ['Chuvas de meteoros', [['Perseidas'], ['Geminídeas', 'a mais forte'], ['Leônidas'], ['Orionídeas', 'poeira do Halley'], ['Eta Aquarídeas'], ['Quadrântidas'], ['Líridas']]],
   ['Estrelas', [['Próxima Centauri', 'a mais próxima'], ['Alfa Centauri'], ['Sírius', 'a mais brilhante'], ['Betelgeuse', 'supergigante vermelha'], ['Rigel'], ['Estrela Polar'], ['Vega'], ['Antares']]],
   ['Mundos alienígenas', [['TRAPPIST-1 e', 'zona habitável'], ['Proxima Cen b'], ['Kepler-452 b', '"primo" da Terra'], ['TOI-700 d'], ['51 Peg b', 'primeiro em estrela tipo Sol'], ['HD 189733 b', 'chove vidro'], ['55 Cnc e', 'oceano de lava'], ['WASP-12 b', 'sendo devorado']]],
   ['Nebulosas', [['M 42'], ['M 16'], ['NGC 3372'], ['IC 434'], ['M 57'], ['NGC 7293'], ['NGC 3132'], ['M 1'], ['NGC 2070']]],
@@ -23,6 +28,7 @@ const PLACES = [
 
 // Vistas especiais (não são objetos do catálogo)
 export function resolvePlace(q) {
+  if (q === '@neo') return { name: '☄️ Próximas aproximações', action: openNeo };
   if (q === '@milkyway') {
     // chega por cima do disco, inclinado, com o lado do Sol à frente
     const arriveDir = v3.norm(v3.add(v3.scale(gal2eq([0, 0, 1]), 0.8), v3.scale(gal2eq([-1, 0, 0]), 0.6)));
@@ -44,7 +50,7 @@ export function buildPlaces() {
       if (!t) continue;
       const b = document.createElement('button');
       b.innerHTML = `${t.name}${hint ? `<small>${hint}</small>` : ''}`;
-      b.onclick = () => { go(t); };
+      b.onclick = () => (t.action ? t.action() : go(t));
       box.appendChild(b);
     }
   }

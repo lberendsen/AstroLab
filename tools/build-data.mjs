@@ -7,6 +7,7 @@ import { CURATED } from './curated.mjs';
 import { buildSatellites } from './satellites.mjs';
 import { buildSpacecraft } from './spacecraft-build.mjs';
 import { comovingDistance } from '../src/astro.js';
+import { buildSmallBodies } from './smallbodies-build.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DATA = path.join(ROOT, 'data');
@@ -210,7 +211,9 @@ async function cmb() {
 async function satellites() { await buildSatellites(DATA, RAW); }
 async function spacecraft() { await buildSpacecraft(DATA); }
 
-const steps = { stars, galaxies, exoplanets, curated, textures, quasars, cmb, satellites, spacecraft };
+async function smallbodies() { await buildSmallBodies(DATA, RAW); }
+
+const steps = { stars, galaxies, exoplanets, curated, textures, quasars, cmb, smallbodies, satellites, spacecraft };
 const only = process.argv.slice(2).filter(a => !a.startsWith('--'));
 for (const [k, f] of Object.entries(steps)) if (!only.length || only.includes(k)) await f();
 console.log('pronto.');

@@ -16,15 +16,17 @@ Legenda: ⬜ a fazer · 🟨 em andamento · ✅ pronto
   - Levar isso para a Fase 1: carregar e desenhar só o necessário (nível de detalhe).
 - [x] **Teste de fumaça (`npm run smoke`):** 16 paradas, capturas em `tools/smoke-out/`. Fontes externas fora do ar dão aviso, não reprovação.
 
-## Fase 1: Asteroides e cometas ⭐ ⬜
+## Fase 1: Asteroides e cometas ⭐ ✅ (2026-10-09)
 
-- [ ] **Dados:** elementos orbitais do JPL (SBDB, ~1,4 milhão de corpos), em binário compacto: a, e, i, Ω, ω, M, época, magnitude H e classe. Com ~40 MB, o download é dividido: os 100 mil mais brilhantes primeiro e o resto sob demanda.
-- [ ] **Desenho:** propagação de Kepler na GPU, como nos satélites. As cores indicam a família: cinturão principal, troianos, Kuiper, próximos da Terra e cometas.
-- [ ] **Nomes e busca:** Ceres, Vesta, Bennu, Apophis, Arrokoth, Halley…
-- [ ] **Próximos da Terra:** lista das próximas aproximações (JPL CAD API), com a distância em "distâncias da Lua".
-- [ ] **Cometas:** cauda apontando para o lado oposto ao Sol, que cresce perto dele.
-- [ ] **Ligação com as naves:** Lucy até os troianos, Psyche, Hera até Dimorphos, Hayabusa2, Dawn em Ceres.
-- [ ] **Chuvas de meteoros:** o radiante no céu e o cometa de origem.
+- [x] **Dados:** 1.571.226 asteroides do JPL SBDB em 3 blocos por tamanho (2,5 + 10 + 26,5 MB). O primeiro carrega com o app, o resto sob demanda. Mais 4.080 cometas e 50 objetos famosos com dados físicos.
+- [x] **Desenho:** Kepler na GPU, com cores por família (cinturão, próximos da Terra, cruzadores de Marte, troianos, centauros, Kuiper) e nível de detalhe por distância. Filtros por família no menu Camadas.
+- [x] **Nomes e busca:** 77 mil nomes e designações. Clicar num ponto da nuvem consulta o JPL na hora.
+- [x] **Próximos da Terra:** painel "Passando perto da Terra" (JPL CAD, 60 dias), em distâncias da Lua; clicar carrega a órbita e viaja até o objeto.
+- [x] **Cometas:** cauda de íons e de poeira, coma, brilho previsto visto da Terra e órbitas abertas (incluindo os visitantes interestelares 1I, 2I e 3I).
+- [x] **Ligação com as naves:** a ficha do asteroide tem "ir até a nave que foi para lá" (Dawn, Lucy, Psyche, Hera, Hayabusa2, New Horizons, Tianwen-2).
+- [x] **Chuvas de meteoros:** 10 chuvas. Ao escolher uma, a data vai para o pico, aparecem a corrente de poeira e a órbita do corpo de origem, e o telescópio mostra o radiante.
+
+Observações de desempenho: com o processador livre, 60–77 fps. As vistas com o cinturão inteiro e a vista Terra–Marte ficam em 35–45 fps neste computador (Intel Iris Xe). Fica para a Fase 6, junto com o restante da renderização, um sistema de nível de detalhe mais fino.
 
 ## Fase 2: Planetário ⭐ ⬜
 

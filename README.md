@@ -83,6 +83,31 @@ O painel da esquerda mostra:
 - a distância ao Sol no céu, para objetos do Sistema Solar;
 - a posição agora para quem está em São Paulo (ou na sua localização, pelo botão 📍): se está acima do horizonte, em que direção e a altura máxima que alcança.
 
+### Asteroides e cometas (Fase 1)
+
+| O quê | Fonte | Arquivos |
+|---|---|---|
+| 1,57 milhão de asteroides, ordenados por tamanho em 3 blocos | JPL SBDB Query API | `data/ast-0..2.bin` (elementos), `.meta` (classe e magnitude H) |
+| 77 mil nomes e designações (com nome, próximos da Terra, Kuiper, centauros) | JPL SBDB | `data/ast-names.json` |
+| 4.080 cometas | JPL SBDB | `data/comets.json` |
+| 50 famosos, com tamanho medido, rotação, descoberta e a nave que visitou | JPL SBDB API + `tools/smallbodies.mjs` | `data/smallbodies-famous.json` |
+| Próximas aproximações da Terra (60 dias) | JPL CAD API, ao vivo | — |
+| 10 chuvas de meteoros, com radiante e corpo de origem | IMO (valores de referência) | `tools/smallbodies.mjs` |
+
+Como funciona:
+
+- **Movimento:** os asteroides andam na GPU (Kepler resolvido por vértice, na data simulada).
+- **Carregamento:** os 100 mil maiores carregam com o app (2,5 MB); o resto (34 MB) baixa sozinho quando você entra no Sistema Solar.
+- **Nível de detalhe:** os blocos de asteroides menores só aparecem com a câmera perto do Sol, e somem quando você está colado num planeta ou numa nave.
+- **Cometas:** a cauda de íons (azul) aponta para longe do Sol; a de poeira (amarelada) se curva para trás da órbita. O comprimento é estimado pela atividade do cometa (M1) e pela distância ao Sol.
+- **Asteroide clicado na nuvem:** a ficha busca no JPL, na hora, o nome completo, o tamanho medido e a descoberta.
+
+O que é ilustrativo:
+
+- A forma 3D dos asteroides e cometas (o tamanho é real).
+- O espalhamento da poeira das chuvas de meteoros.
+- As datas de periélio extrapoladas para órbitas longas, porque os planetas perturbam a órbita.
+
 ### Universo distante
 
 - **Cosmologia:** ΛCDM plano, com H₀ = 70, Ωm = 0,3 e radiação, em `src/astro.js`. Idade do universo: 13,46 bilhões de anos.

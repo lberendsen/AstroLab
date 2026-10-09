@@ -11,8 +11,9 @@ import * as scope from '../telescope.js';
 import * as linkMode from '../link.js';
 import * as feeds from '../feeds.js';
 import { nav, flyTo, setOrbit, setMode, cancelFlight, lookAtDir } from '../nav.js';
-import { bodyTarget, craftTarget, satTarget } from '../targets.js';
-import { v3, KM, DEG, xyz2radec } from '../astro.js';
+import { bodyTarget, craftTarget, satTarget, nextPeak } from '../targets.js';
+import * as smallbodies from '../layers/smallbodies.js';
+import { v3, KM, AU, DEG, xyz2radec } from '../astro.js';
 import { renderInfo } from './info.js';
 import { $, toast } from './dom.js';
 
@@ -24,13 +25,31 @@ export function select(t) {
   images.setExtra(t);
   sats.setSelected(t?.sat || t?.craft?.sat);
   craft.setSelected(t);
+  // asteroide ou cometa: malha e órbita; chuva de meteoros: órbita do corpo de origem e a corrente de poeira
+  const parent = t?.shower ? showerParent(t.shower) : null;
+  smallbodies.setSelected(t?.sb || parent);
+  smallbodies.showStream(parent);
   if (!t) { $('info').hidden = true; return; }
   renderInfo(t);
   $('info').hidden = false;
 }
 
+export const showerParent = s => smallbodies.SB.famous.find(f => f.sstr === s.parent) || null;
+
 export function go(t) {
   if (!t) return;
+  if (t.kind === 'shower') {
+    // vai para o dia do pico e mostra a Terra atravessando a poeira deixada pelo corpo de origem
+    const peak = nextPeak(t.shower);
+    F.date = peak;
+    solar.computePositions();
+    select(t);
+    setMode('orbit');
+    // de cima do plano da Terra, longe o bastante para ver a corrente de poeira cruzando a órbita
+    flyTo({ ...t, viewDist: 2.2 * AU, arriveDir: () => v3.norm(v3.add(v3.scale(v3.norm(solar.BODY.Earth.pos), 0.3), [0, -0.38, 0.88])) });
+    toast(`Data ajustada para o pico das ${t.name}: ${peak.toLocaleDateString('pt-BR')}. Use "agora" na barra para voltar.`, 7000);
+    return;
+  }
   if (t.kind === 'sky') { pointAt(t); toast('Sem distância medida para este objeto: abrindo no telescópio.'); openScope(t); return; }
   select(t);
   setMode('orbit');
@@ -81,13 +100,14 @@ export function openScope(t) {
     scope.open({ body: bodyKey, lon, lat, fovDeg: fov, name: t.name, markers: surfaceMarkers(bodyKey), sky });
     return;
   }
+  if (t?.shower) { scope.open({ ra: t.shower.ra, dec: t.shower.dec, fovDeg: 40, name: `Radiante das ${t.shower.name}` }); return; }
   let ra, dec, fov = 1, name;
   if (t?.body) {
     if (t.body.key === 'Earth') { const d = xyz2radec(lookDir()); ra = d.ra; dec = d.dec; fov = 60; name = 'direção da nave'; }
     else ({ ra, dec } = solar.geocentricRaDec(t.body));
     name ??= t.name; fov = t.body.key === 'Earth' ? 60 : 0.5;
-  } else if (t && (t.kind === 'craft' || t.kind === 'sat')) {
-    // como seria vista da Terra (só faz sentido para naves longe da Terra)
+  } else if (t && (t.kind === 'craft' || t.kind === 'sat' || t.kind === 'sb')) {
+    // direção vista da Terra (naves, asteroides e cometas estão perto o bastante para a posição da Terra importar)
     ({ ra, dec } = xyz2radec(v3.sub(t.pos(), solar.BODY.Earth.pos)));
     name = t.name; fov = 0.3;
   } else if (t) {

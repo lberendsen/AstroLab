@@ -68,6 +68,11 @@ h3 { margin: 14px 0 6px; font-size: 13px; color: var(--muted); font-weight: 600;
 #feeds .skin button { font-size: 11px; padding: 2px 6px; margin-left: 4px; }
 #feeds a { color: var(--accent); }
 #dsnPanel { position: fixed; right: 12px; top: 64px; width: 360px; max-height: calc(100% - 140px); overflow: auto; padding: 14px; z-index: 5; }
+#neoPanel { position: fixed; left: 12px; top: 64px; bottom: 70px; width: 380px; overflow: auto; padding: 14px; z-index: 5; }
+.neoRow { padding: 5px 6px; border-radius: 6px; font-size: 13px; cursor: pointer; }
+.neoRow small { display: block; color: var(--muted); font-size: 11.5px; }
+.neoRow:hover { background: rgba(127,180,255,0.14); }
+.neoRow.inside b { color: #ff8a7a; }
 #dsnPanel h3 { margin-top: 10px; }
 .dsnRow { padding: 5px 6px; border-radius: 6px; font-size: 13px; }
 .dsnRow small { display: block; color: var(--muted); font-size: 11.5px; }
@@ -121,6 +126,7 @@ h3 { margin: 14px 0 6px; font-size: 13px; color: var(--muted); font-weight: 600;
 .menu input[type=range] { width: 100%; }
 #layers { max-height: calc(100vh - 100px); overflow: auto; width: 320px; }
 #layers small { margin-left: auto; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
 .chip { font-size: 11px; padding: 3px 8px; border-radius: 12px; opacity: .45; border-color: var(--c); }
 .chip::before { content: ''; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--c); margin-right: 5px; }
@@ -136,6 +142,7 @@ h3 { margin: 14px 0 6px; font-size: 13px; color: var(--muted); font-weight: 600;
 .lbl.exo { color: #9ff0c4; }
 .lbl.deep { color: #f5b3ff; }
 .lbl.gal { color: #b8c8ff; font-size: 11px; }
+.lbl.sb { color: #ffd59a; font-size: 11px; }
 .lbl.craft { color: #8fdcff; font-size: 11px; }
 .lbl.sel { color: #fff; font-weight: 600; }
 .lbl::before { content: ''; position: absolute; left: -4px; top: 50%; width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .7; }

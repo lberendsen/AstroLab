@@ -5,6 +5,7 @@ import * as stars from '../layers/stars.js';
 import * as galaxies from '../layers/galaxies.js';
 import * as sats from '../layers/sats.js';
 import * as craft from '../layers/craft.js';
+import * as smallbodies from '../layers/smallbodies.js';
 import { BANDS } from '../surveys.js';
 import { fmtNum } from '../astro.js';
 import { $, toast } from './dom.js';
@@ -48,12 +49,32 @@ function buildHumanMenu(m) {
     h += `<div class="row"><button id="satAll">Mostrar tudo</button><button id="satNone">Só o essencial</button></div>`;
     h += `<p class="muted small">${fmtNum(sats.SAT.n, 0)} objetos com órbita pública (CelesTrak, ${new Date(meta.updated).toLocaleDateString('pt-BR')}). O catálogo militar rastreia ${fmtNum(meta.onOrbitTracked, 0)} objetos em órbita; a maior parte dos detritos só sai para quem tem conta no Space-Track.</p>`;
   }
+  // asteroides e cometas, por grupo
+  if (smallbodies.SB.meta) {
+    h += `<h3>Asteroides e cometas</h3><div id="sbStatus" class="muted small"></div>` +
+      smallbodies.GROUPS.map(g => `<label><input type="checkbox" data-sbgroup="${g.key}" ${smallbodies.showSB.groups[g.key] ? 'checked' : ''}> <span class="dot" style="--c:${g.color}"></span> ${g.name}</label>`).join('') +
+      `<label><input type="checkbox" data-sb="comets" checked> Cometas (${fmtNum(smallbodies.SB.comets.length, 0)})</label>` +
+      `<label><input type="checkbox" data-sb="tails" checked> Caudas dos cometas</label>` +
+      `<label><input type="checkbox" data-sb="asteroids" checked> Todos os asteroides</label>`;
+  }
   m.insertAdjacentHTML('beforeend', h);
+  for (const cb of m.querySelectorAll('[data-sbgroup]')) cb.onchange = () => { smallbodies.showSB.groups[cb.dataset.sbgroup] = cb.checked; smallbodies.setFilter(); };
+  for (const cb of m.querySelectorAll('[data-sb]')) cb.onchange = () => { smallbodies.showSB[cb.dataset.sb] = cb.checked; };
+  updateSbStatus();
   for (const cb of m.querySelectorAll('[data-craft]')) cb.onchange = () => { craft.showCraft[cb.dataset.craft] = cb.checked; };
   for (const cb of m.querySelectorAll('[data-satcat]')) cb.onchange = () => { sats.show.cats[+cb.dataset.satcat] = cb.checked; syncSatMenu(); };
   for (const b of m.querySelectorAll('[data-country]')) b.onclick = () => { const i = +b.dataset.country; sats.show.countries[i] = !sats.show.countries[i]; syncSatMenu(); };
   $('satAll') && ($('satAll').onclick = () => { sats.show.cats.fill(true); sats.show.countries.fill(true); syncSatMenu(); });
   $('satNone') && ($('satNone').onclick = () => { sats.show.cats.fill(false); sats.show.cats[0] = true; sats.show.countries.fill(true); syncSatMenu(); });
+}
+
+export function updateSbStatus() {
+  const el = $('sbStatus'), SB = smallbodies.SB;
+  if (!el || !SB.meta) return;
+  const n = smallbodies.loadedCount();
+  el.textContent = n < SB.meta.total
+    ? `${fmtNum(n, 0)} de ${fmtNum(SB.meta.total, 0)} asteroides carregados${SB.loadingMore ? ' (carregando o resto…)' : ' (o resto carrega quando você estiver no Sistema Solar)'}`
+    : `${fmtNum(n, 0)} asteroides com órbita conhecida (JPL)`;
 }
 
 export function syncSatMenu() {

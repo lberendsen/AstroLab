@@ -42,7 +42,14 @@ const STOPS = [
   { name: 'visto-da-terra', run: `astro.select(astro.search.searchLocal('Marte',1)[0].make()); document.getElementById('aLink').click()`, wait: 9000,
     check: `!document.getElementById('linkPanel').hidden || 'painel "visto da Terra" não abriu'` },
   { name: 'massaroca', run: `document.getElementById('lkClose').click(); ${go('Terra')}; setTimeout(() => dispatchEvent(new KeyboardEvent('keydown', { key: 'm', code: 'KeyM' })), 7000)`, wait: 9000 },
-  { name: 'busca-simbad', external: true, run: `(async () => { const i = document.getElementById('search'); i.value = 'cartwheel galaxy'; i.dispatchEvent(new Event('input')); document.querySelector('#suggest li:last-child').dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); })()`, wait: 16000,
+  { name: 'cinturao', run: `(() => { const AU = 1 / 206264.806; astro.select(null); astro.flyTo({ id: 'v', name: 'Sistema Solar interno', kind: 'view', pos: () => [0, 0, 0], radius: 0, viewDist: 9 * AU, arriveDir: [0, -0.398, 0.917] }); })()`, wait: 9000,
+    check: `astro.smallbodies.loadedCount() >= 100000 || 'asteroides não carregaram'` },
+  { name: 'ceres', run: go('Ceres'), wait: 11000, check: `/Ceres/.test(document.querySelector('#info h2')?.textContent) || 'ficha de Ceres não abriu'` },
+  { name: 'halley', run: go('Cometa Halley'), wait: 11000 },
+  { name: 'geminideas', run: go('Geminídeas'), wait: 11000, check: `/Faetonte/.test(document.getElementById('infoBody').textContent) || 'chuva de meteoros sem origem'` },
+  { name: 'aproximacoes', external: true, run: `document.getElementById('tNow').click(); [...document.querySelectorAll('#placeList button')].find(b => b.textContent.includes('aproximações')).click()`, wait: 6000,
+    check: `document.querySelectorAll('.neoRow').length > 0 || 'lista de aproximações vazia: ' + document.getElementById('neoBody').textContent.slice(0, 80)` },
+  { name: 'busca-simbad', run0: `document.getElementById('neoPanel').hidden = true`, external: true, run: `(async () => { const i = document.getElementById('search'); i.value = 'cartwheel galaxy'; i.dispatchEvent(new Event('input')); document.querySelector('#suggest li:last-child').dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); })()`, wait: 16000,
     check: `/MCG|Cartwheel|Roda/i.test(document.querySelector('#info h2')?.textContent || '') || 'busca no SIMBAD não encontrou a galáxia da Roda de Carro'` },
   { name: 'telescopio-lua', external: true, run: `astro.select(astro.search.searchLocal('Lua',1)[0].make()); dispatchEvent(new KeyboardEvent('keydown', { key: 't' }))`, wait: 10000,
     check: `!document.getElementById('scope').hidden || 'telescópio não abriu'` },
@@ -77,6 +84,7 @@ try {
     const t0 = Date.now();
     let msg = 'ok';
     try {
+      if (s.run0) await page.evaluate(s.run0);
       if (s.run) await page.evaluate(s.run);
       await sleep(s.wait || 1500);
       if (s.check) { const r = await page.evaluate(s.check); if (r !== true) msg = String(r); }

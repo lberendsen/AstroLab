@@ -8,7 +8,9 @@ import { bodyTarget, starTarget, curatedTarget, galTarget, exoTarget, craftTarge
 import { CRAFT, isVisible } from './layers/craft.js';
 import * as sats from './layers/sats.js';
 import * as deep from './layers/deep.js';
-import { qsoTarget } from './targets.js';
+import { qsoTarget, sbTarget, cometTarget, astTarget } from './targets.js';
+import * as smallbodies from './layers/smallbodies.js';
+import { SB, showSB, bodyPos } from './layers/smallbodies.js';
 import { labelCandidates as linkLabels } from './link.js';
 import { AU, DEG, v3 } from './astro.js';
 
@@ -97,7 +99,22 @@ function buildSlow() {
     for (const [, h, p] of hs.slice(0, 8)) out.push({ id: 's:' + h.star, pos: p, name: h.name, cls: 'exo', prio: 30, make: () => starTarget(h.star) });
   }
   slow = out;
+  // asteroides e cometas famosos, e cometas brilhantes agora (mudam devagar: recalculados junto com os lentos)
+  sbCands = [];
+  if (v3.len(F.cam) < 3000 * AU && F.layers.solar !== false) {
+    if (showSB.asteroids) for (const f of SB.famous) {
+      if (f.isComet && !showSB.comets) continue;
+      const p = bodyPos(f), d = v3.dist(F.cam, p);
+      if (d > 60 * AU) continue;
+      sbCands.push({ id: 'sb:' + f.full, pos: p, name: f.name, cls: 'sb', prio: 62 - Math.log10(d / AU + 1) * 5, make: () => sbTarget(f) });
+    }
+    if (showSB.comets) for (const c of SB.comets) {
+      if (!(c.mag < 11) || !c.now) continue;
+      sbCands.push({ id: 'sb:' + c.full, pos: c.now, name: c.full.replace(/\s*\(.*\)$/, ''), cls: 'sb', prio: 66 - c.mag, make: () => cometTarget(c) });
+    }
+  }
 }
+let sbCands = [];
 
 function fastCandidates() {
   const out = [];
@@ -112,6 +129,7 @@ function fastCandidates() {
       out.push({ id: 'b:' + b.key, pos: b.pos, name: b.name, cls: b.kind === 'moon' ? 'moon' : 'planet', prio: b.kind === 'moon' ? 70 : 90, radius: b.radius, make: () => bodyTarget(b.key) });
     }
   }
+  if (nearSun) out.push(...sbCands);
   for (const c of CRAFT) {
     // rótulo só quando a nave está relativamente perto (o marcador aparece de mais longe)
     if (!isVisible(c, c.now) || v3.dist(F.cam, c.now) > (c.kind === 'surface' ? 25 : 40) * c.sep()) continue;
@@ -180,6 +198,10 @@ export function pickAt(x, y) {
   if (best) return best.make();
   const sat = sats.pick(project, x, y);
   if (sat) return satTarget(sat);
+  const com = smallbodies.pickComet(project, x, y);
+  if (com) return cometTarget(com);
+  const ast = smallbodies.pickAsteroid(project, x, y);
+  if (ast >= 0) return astTarget(ast);
   // estrelas: o ponto mais brilhante perto do cursor
   const S = DB.stars, [cx, cy, cz] = F.cam;
   let bi = -1, bscore = -Infinity;

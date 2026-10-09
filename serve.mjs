@@ -12,7 +12,7 @@ const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; ch
 // Repassa imagens e dados de fontes que não liberam o navegador (CORS). Só para domínios conhecidos,
 // com cache de alguns minutos para não sobrecarregar as agências.
 const PROXY_HOSTS = new Set(['soho.nascom.nasa.gov', 'sdo.gsfc.nasa.gov', 'himawari8.nict.go.jp', 'img.nsmc.org.cn', 'mast.stsci.edu', 'epic.gsfc.nasa.gov',
-  'cdn.star.nesdis.noaa.gov', 'services.swpc.noaa.gov', 'mars.nasa.gov', 'gibs.earthdata.nasa.gov', 'view.eumetsat.int', 'eyes.nasa.gov']);
+  'cdn.star.nesdis.noaa.gov', 'services.swpc.noaa.gov', 'mars.nasa.gov', 'gibs.earthdata.nasa.gov', 'view.eumetsat.int', 'eyes.nasa.gov', 'ssd-api.jpl.nasa.gov']);
 const proxyCache = new Map();
 async function proxy(req, res) {
   let target;

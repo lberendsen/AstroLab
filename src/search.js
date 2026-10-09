@@ -5,6 +5,9 @@ import { BODIES } from './layers/solar.js';
 import { bodyTarget, starTarget, exoTarget, curatedTarget, galTarget, simbadTarget, craftTarget, satTarget } from './targets.js';
 import { CRAFT } from './layers/craft.js';
 import { SAT } from './layers/sats.js';
+import { SB } from './layers/smallbodies.js';
+import { SHOWERS } from '../tools/smallbodies.mjs';
+import { sbTarget, astTarget, cometTarget, showerTarget } from './targets.js';
 import { normName, radec2xyz, comovingDistance, R_SUN } from './astro.js';
 
 // Nomes populares em português para estrelas (o HYG usa os nomes oficiais da IAU)
@@ -44,6 +47,11 @@ export function buildIndex() {
     const sub = c.kind === 'surface' ? `Na superfície · ${BODY_PT[c.body]} · ${c.country}` : c.kind === 'sat' ? 'Satélite da Terra' : `Nave · ${c.country} · ${c.launch}`;
     add(c.name, sub, () => craftTarget(c), 95, [c.id, c.sat?.name]);
   }
+  // asteroides e cometas: os famosos (com ficha completa), todos os cometas e os asteroides com nome ou designação
+  for (const f of SB.famous) add(f.name, `${f.isComet ? 'Cometa' : 'Asteroide'} · ${f.full.trim()}`, () => sbTarget(f), 92, [f.full, f.sstr]);
+  for (const c of SB.comets) add(c.full.replace(/\s*\(.*\)$/, ''), 'Cometa', () => cometTarget(c), c.name ? 55 : 25, [c.name, c.pdes]);
+  for (const sh of SHOWERS) add(sh.name, `Chuva de meteoros · pico em ${sh.peak[1]}/${sh.peak[0]}`, () => showerTarget(sh), 90);
+  for (const [k, pdes, name] of SB.meta?.names || []) add(name || pdes, `Asteroide${name ? ' · ' + pdes : ''}`, () => astTarget(k), name ? 35 : 8, name ? [pdes] : []);
   for (const s of SAT.list) if (!s.craft) add(s.name, `Satélite · ${SAT.meta.countries[s.country]} · NORAD ${s.norad}`, () => satTarget(s), s.cat === 0 ? 50 : 15, [String(s.norad)]);
 }
 

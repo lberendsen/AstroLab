@@ -5,6 +5,7 @@ import { BODY } from './layers/solar.js';
 import { satPos } from './layers/sats.js';
 import { F } from './engine.js';
 import { QSO, qsoPos, sdssName } from './layers/deep.js';
+import { SB, bodyPos, astElements, diameterKm } from './layers/smallbodies.js';
 import * as systems from './layers/systems.js';
 import { AU, R_SUN, R_EARTH, KM, LY, DEG, v3, xyz2radec, fmtNum } from './astro.js';
 
@@ -97,6 +98,55 @@ export function qsoTarget(i) {
   return {
     id: 'q:' + i, qso: i, name: sdssName(ra, dec), kind: 'qso', z: QSO.z[i], ra, dec,
     pos: () => p, radius: 15000, viewDist: 2e5, kindLabel: 'Quasar (SDSS DR16Q)',
+  };
+}
+
+// ---------------------------------------------------------------- asteroides, cometas e chuvas de meteoros
+export const SB_CLASS_PT = {
+  MBA: 'Asteroide do cinturão principal', IMB: 'Asteroide do cinturão principal (interno)', OMB: 'Asteroide do cinturão principal (externo)',
+  APO: 'Asteroide próximo da Terra (tipo Apolo)', ATE: 'Asteroide próximo da Terra (tipo Aten)', AMO: 'Asteroide próximo da Terra (tipo Amor)', IEO: 'Asteroide dentro da órbita da Terra (tipo Atira)',
+  MCA: 'Asteroide que cruza a órbita de Marte', TJN: 'Troiano de Júpiter', CEN: 'Centauro', TNO: 'Objeto além de Netuno', AST: 'Asteroide',
+  JFc: 'Cometa da família de Júpiter', HTC: 'Cometa tipo Halley', ETc: 'Cometa tipo Encke', CTc: 'Cometa tipo Quíron', JFC: 'Cometa da família de Júpiter',
+  COM: 'Cometa', PAR: 'Cometa de órbita parabólica', HYP: 'Objeto em órbita aberta (hiperbólica)', HYA: 'Asteroide em órbita aberta', PAA: 'Asteroide em órbita parabólica',
+};
+export function sbTarget(o) {
+  const dKm = o.isComet ? (o.diameter || 5) : diameterKm(o);
+  const r = dKm / 2 * KM;
+  const label = o.e > 1 && /^\dI/.test(o.name || o.full || '') ? 'Visitante interestelar' : SB_CLASS_PT[o.cls] || (o.isComet ? 'Cometa' : 'Asteroide');
+  return {
+    id: 'sb:' + (o.full || o.name), name: o.display || o.name || o.full, aka: o.full && o.full.trim() !== o.name ? [o.full.trim()] : [], kind: 'sb', sb: o,
+    pos: () => bodyPos(o), radius: r, viewDist: Math.max(r * 5, 2 * KM), kindLabel: o.pha ? `${label} · potencialmente perigoso` : label,
+  };
+}
+export function astTarget(idx) {
+  const o = astElements(idx);
+  const nm = astName(idx);
+  o.name = nm?.[2] || nm?.[1] || `asteroide nº ${idx + 1} do catálogo`;
+  o.full = nm ? (nm[2] ? `${nm[1]} ${nm[2]}` : nm[1]) : o.name;
+  o.pdes = nm?.[1];
+  o.fromCloud = true;
+  return sbTarget(o);
+}
+let nameByIdx = null;
+export function astName(idx) {
+  if (!nameByIdx) { nameByIdx = new Map(); for (const e of SB.meta?.names || []) nameByIdx.set(e[0], e); }
+  return nameByIdx.get(idx);
+}
+export function cometTarget(c) {
+  c.isComet = true;
+  c.display = c.full.replace(/\s*\(.*\)$/, '');
+  return sbTarget(c);
+}
+// Chuva de meteoros: o "lugar" é a Terra no dia do pico, atravessando a poeira do corpo de origem
+export function nextPeak(s, from = new Date()) {
+  let d = new Date(Date.UTC(from.getUTCFullYear(), s.peak[0] - 1, s.peak[1], 0));
+  if (d < from - 864e5) d = new Date(Date.UTC(from.getUTCFullYear() + 1, s.peak[0] - 1, s.peak[1], 0));
+  return d;
+}
+export function showerTarget(s) {
+  return {
+    id: 'shower:' + s.name, name: s.name, kind: 'shower', shower: s, kindLabel: 'Chuva de meteoros',
+    pos: () => BODY.Earth.pos, radius: BODY.Earth.radius, viewDist: 0.25 * AU,
   };
 }
 

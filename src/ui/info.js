@@ -8,9 +8,10 @@ import * as deep from '../layers/deep.js';
 import * as scope from '../telescope.js';
 import * as feeds from '../feeds.js';
 import { setOrbit } from '../nav.js';
-import { exoTarget } from '../targets.js';
-import { v3, fmtDist, fmtLightTime, fmtNum, lightSentence, fmtYears, lookbackYears, AGE_OF_UNIVERSE, CMB_DISTANCE } from '../astro.js';
-import { ui, go, openScope, startLink, openFeeds } from './actions.js';
+import { exoTarget, sbTarget, craftTarget, nextPeak } from '../targets.js';
+import * as smallbodies from '../layers/smallbodies.js';
+import { v3, DEG, fmtDist, fmtLightTime, fmtNum, lightSentence, fmtYears, lookbackYears, AGE_OF_UNIVERSE, CMB_DISTANCE } from '../astro.js';
+import { ui, go, openScope, startLink, openFeeds, showerParent } from './actions.js';
 import { $ } from './dom.js';
 
 const row = (k, v) => v == null || v === '' ? '' : `<dt>${k}</dt><dd>${v}</dd>`;
@@ -101,6 +102,48 @@ export function renderInfo(t) {
     dl += row('Coordenadas', `RA ${fmtNum(t.ra, 4)}°, Dec ${fmtNum(t.dec, 4)}°`);
     notes += `<div class="note">Catálogo SDSS DR16Q (Lyke et al. 2020), 750 mil quasares. Quem está perto de um quasar o veria como uma estrela ofuscante.</div>`;
     extra += `<div id="photoBox"></div>`;
+  } else if (t.kind === 'sb') {
+    const o = t.sb;
+    if (o.desc) h += `<p>${o.desc}</p>`;
+    const dKm = o.isComet ? o.diameter : smallbodies.diameterKm(o);
+    dl += row(o.isComet ? 'Núcleo' : 'Diâmetro', dKm ? `${dKm < 1 ? fmtNum(dKm * 1000, 0) + ' m' : fmtNum(dKm, dKm < 10 ? 1 : 0) + ' km'}${o.diameter ? '' : ' (estimado pelo brilho)'}` : null);
+    dl += row('Distância do Sol', `<span data-live="sun">${fmtDist(dSun)}</span>`);
+    dl += row('Distância da Terra', `<span data-live="earth">${fmtDist(v3.dist(t.pos(), solar.BODY.Earth.pos))}</span>`);
+    const a = o.a || (o.q && o.e < 1 ? o.q / (1 - o.e) : null);
+    if (o.e < 1 && a) {
+      const yrs = Math.pow(a, 1.5);
+      dl += row('Uma volta no Sol', yrs < 2 ? `${fmtNum(yrs * 365.25, 0)} dias` : `${fmtNum(yrs, yrs < 100 ? 1 : 0)} anos`);
+      dl += row('Órbita', `de ${fmtNum(a * (1 - o.e), 2)} a ${fmtNum(a * (1 + o.e), 2)} UA do Sol`);
+    } else if (o.e >= 1) dl += row('Órbita', `aberta (excentricidade ${fmtNum(o.e, 3)}): passa uma vez e vai embora`);
+    dl += row('Inclinação', `${fmtNum(o.i / DEG, 1)}°`);
+    if (o.tp) {
+      const per = o.e < 1 && a ? 365.25 * Math.pow(a, 1.5) : null;
+      const now = smallbodies.jdNow();
+      let tp = o.tp, extrapolated = false;
+      if (per) while (tp < now - per / 2) { tp += per; extrapolated = true; }
+      const d = new Date((tp - 2440587.5) * 864e5);
+      // somar períodos ignora as perturbações dos planetas: para órbitas longas, só o ano é confiável
+      const txt = extrapolated && per > 3650 ? `${d.getUTCFullYear()} (aproximado: os planetas perturbam a órbita)` : d.toLocaleDateString('pt-BR');
+      dl += row(tp < now ? 'Último periélio' : 'Próximo periélio', txt);
+    }
+    if (o.rot) dl += row('Rotação', o.rot < 48 ? `${fmtNum(o.rot, 2)} horas` : `${fmtNum(o.rot / 24, 1)} dias`);
+    if (o.isComet) { const st = smallbodies.cometState(o); if (st.mag < 30) dl += row('Brilho previsto agora', `magnitude ${fmtNum(st.mag, 1)}${st.mag < 6 ? ' (a olho nu)' : st.mag < 10 ? ' (binóculo)' : ''}`); }
+    if (o.discovery?.date) dl += row('Descoberta', `${o.discovery.date}${o.discovery.who ? ' · ' + o.discovery.who : ''}`);
+    if (o.visited) dl += row('Visitado por', o.visited);
+    notes += `<div class="note">Órbita do JPL Small-Body Database. ${o.diameter ? '' : 'Tamanho estimado pelo brilho. '}A forma 3D é ilustrativa${o.visited ? ', exceto pelo tamanho' : ''}.${o.isComet ? ' A cauda é desenhada pela distância ao Sol e pela atividade do cometa.' : ''}</div>`;
+    if (o.craft) extra += `<button id="aVisitor" class="small">🛰️ Ir até a nave que foi para lá</button>`;
+    if (o.fromCloud && o.pdes) extra += `<div id="sbMore" class="muted small">consultando o JPL…</div>`;
+  } else if (t.kind === 'shower') {
+    const s = t.shower, p = showerParent(s), peak = nextPeak(s);
+    h += `<p>Quando a Terra atravessa a poeira deixada por ${p ? p.name : s.parent}, os grãos entram na atmosfera a ${s.v} km/s e queimam como estrelas cadentes. Todos parecem sair do mesmo ponto do céu, o radiante.</p>`;
+    dl += row('Pico', peak.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }));
+    dl += row('Radiante', `constelação de ${s.const}`);
+    dl += row('Meteoros por hora', `até ~${s.zhr} (com céu perfeito e o radiante no alto)`);
+    dl += row('Velocidade', `${s.v} km/s`);
+    dl += row('Origem', p ? `${p.name} (${p.isComet ? 'cometa' : 'asteroide'})` : s.parent);
+    if (s.note) notes += `<div class="note">${s.note}</div>`;
+    notes += `<div class="note">Os pontos dourados mostram a poeira ao longo da órbita do corpo de origem (espalhamento ilustrativo).</div>`;
+    extra += `<div class="actions"><button id="aRadiant">🔭 Ver o radiante no céu</button>${p ? '<button id="aParent">☄️ Ir até a origem</button>' : ''}</div>`;
   } else if (t.kind === 'view') {
     if (t.id === 'v:qso') notes += `<div class="note">Cada ponto é um quasar real do SDSS (750 mil), colorido pelo redshift: azul mais perto, vermelho mais longe. O formato de cunha é a área do céu que o telescópio do SDSS cobriu, vista de fora. Os mais distantes estão a ~30 bilhões de anos-luz (distância comóvel): a luz deles saiu quando o universo tinha menos de 1 bilhão de anos.</div>`;
     if (t.id === 'v:cmb') notes += `<div class="note">A esfera é a radiação cósmica de fundo, medida pelo satélite Planck: a luz mais antiga que existe, de quando o universo tinha 380 mil anos. Hoje esse lugar está a ${fmtDist(CMB_DISTANCE)}: é a borda do universo <b>observável a partir da Terra</b>, não a borda do universo. As manchas são diferenças de temperatura de 1 parte em 100 mil, as sementes de todas as galáxias. A faixa clara é a região tapada pelo disco da Via Láctea, preenchida por interpolação.</div>`;
@@ -141,8 +184,26 @@ export function renderInfo(t) {
       $('dsnLive').innerHTML = ls.length ? `📡 Agora, ao vivo: ${ls.map(feeds.describeLink).join(' ')}` : '';
     });
   }
+  if (t.kind === 'sb') wireSb(t);
+  if (t.kind === 'shower') {
+    $('aRadiant').onclick = () => scope.open({ ra: t.shower.ra, dec: t.shower.dec, fovDeg: 40, name: `Radiante das ${t.shower.name}` });
+    const p = showerParent(t.shower);
+    $('aParent') && ($('aParent').onclick = () => go(sbTarget(p)));
+  }
   for (const li of document.querySelectorAll('#info [data-planet]')) li.onclick = () => go(exoTarget(t.host, li.dataset.planet));
   if ($('photoBox')) showPhoto(t);
+}
+
+function wireSb(t) {
+  const o = t.sb;
+  if ($('aVisitor')) $('aVisitor').onclick = () => { const c = craft.CRAFT.find(x => x.id === o.craft); if (c) go(craftTarget(c)); };
+  // asteroide clicado na nuvem: busca no JPL o nome completo, o tamanho medido e a descoberta
+  if ($('sbMore')) smallbodies.fetchSbdb(o.pdes).then(full => {
+    if (ui.selected !== t || !$('sbMore')) return;
+    if (!full) { $('sbMore').remove(); return; }
+    Object.assign(o, { full: full.full, diameter: full.diameter, albedo: full.albedo, rot: full.rot, discovery: full.discovery, pha: full.pha, fromCloud: false });
+    renderInfo(t);
+  }).catch(() => $('sbMore')?.remove());
 }
 
 async function showPhoto(t) {

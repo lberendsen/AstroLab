@@ -51,7 +51,7 @@ export function flyTo(t, { dist } = {}) {
   // chegada pelo lado iluminado, quando o alvo é iluminado pelo Sol (planetas e luas)
   let uf = u0;
   if (t.arriveDir) uf = typeof t.arriveDir === 'function' ? t.arriveDir() : t.arriveDir;
-  else if (t.kind === 'planet' || t.kind === 'moon') {
+  else if (t.kind === 'planet' || t.kind === 'moon' || t.kind === 'sb') {
     const toSun = v3.norm(v3.scale(T, -1));
     const side = v3.norm(v3.cross(toSun, [0, 0, 1]));
     uf = v3.norm(v3.add(v3.add(v3.scale(toSun, 0.75), v3.scale(side, 0.55)), [0, 0, 0.18]));
