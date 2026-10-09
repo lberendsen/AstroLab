@@ -1,0 +1,14 @@
+{
+  "name": "astrolab",
+  "private": true,
+  "type": "module",
+  "description": "Navegador 3D do universo com dados reais",
+  "scripts": {
+    "start": "node serve.mjs 8080",
+    "data": "node tools/build-data.mjs",
+    "smoke": "node tools/smoke.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^23.11.1"
+  }
+}

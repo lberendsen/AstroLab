@@ -48,7 +48,7 @@ http.createServer((req, res) => {
   });
 }).listen(PORT, () => {
   console.log(`AstroLab em http://localhost:${PORT}`);
-  refresh();
+  if (!process.env.ASTROLAB_NO_REFRESH) refresh(); // o teste de fumaça desliga as atualizações
 });
 
 // Atualiza em segundo plano os dados que envelhecem: satélites (1 dia) e trajetórias de naves (7 dias).
