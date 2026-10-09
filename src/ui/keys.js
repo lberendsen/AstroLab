@@ -25,6 +25,9 @@ export function wireControls(onTimeChange) {
   $('btnScope').onclick = () => openScope(ui.selected);
   $('btnHelp').onclick = () => { $('help').hidden = !$('help').hidden; };
   $('scopeClose').onclick = () => scope.close();
+  $('scopeExit').onclick = () => scope.close();
+  // Esc sai do telescópio mesmo com o foco dentro do Aladin (que trata o teclado por conta própria)
+  addEventListener('keydown', e => { if (e.key === 'Escape' && scope.isOpen()) { e.stopPropagation(); e.preventDefault(); scope.close(); } }, true);
   $('dsnClose').onclick = () => feeds.closeDSN();
   $('tPause').onclick = () => { time.togglePause(); onTimeChange(); };
   $('tSlower').onclick = () => { time.slower(); onTimeChange(); };
@@ -51,7 +54,7 @@ export function wireControls(onTimeChange) {
   addEventListener('keydown', e => {
     if (e.key === 'F3') { e.preventDefault(); perf.toggle(); return; }
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
-    if (scope.isOpen()) { if (e.key === 'Escape') scope.close(); return; }
+    if (scope.isOpen()) return;
     if (!$('viewer').hidden) return; // o visualizador de imagens tem as próprias teclas
     switch (e.key) {
       case 'Tab': e.preventDefault(); if (!PLN.PL.active) toggleMode(); break;

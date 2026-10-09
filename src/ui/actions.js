@@ -51,6 +51,7 @@ export const showerParent = s => smallbodies.SB.famous.find(f => f.sstr === s.pa
 
 export function go(t) {
   if (!t) return;
+  if (scope.isOpen()) scope.close();
   // telescópio aposentado ou mapa montado: só a ficha (não há lugar para ir)
   if (t.noGo) { select(t); return; }
   if (t.kind === 'shower') {
