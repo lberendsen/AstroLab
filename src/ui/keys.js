@@ -12,7 +12,7 @@ import { focusSearch } from './searchbox.js';
 import { toggleSide } from './places.js';
 import { togglePlanetarium } from './planpanel.js';
 import { toggleTourPanel } from './tours.js';
-import { togglePhenomena } from './phenomena.js';
+import { reveal } from './places.js';
 import { stageXY } from '../engine.js';
 import { perf } from './perf.js';
 import { openTime, stopReplay } from './timepanel.js';
@@ -69,7 +69,7 @@ export function wireControls(onTimeChange) {
       case 'x': case 'X': $('btnFeeds').click(); break;
       case 'p': case 'P': togglePlanetarium(); break;
       case 'u': case 'U': toggleTourPanel(); break;
-      case 'k': case 'K': togglePhenomena(); break;
+      case 'k': case 'K': reveal('Fenômenos extremos'); break;
       case 'y': case 'Y': $('timePanel').hidden ? openTime() : ($('timePanel').hidden = true); break;
       case 'v': case 'V': linkMode.link.target ? linkMode.stop() : startLink(ui.selected); break;
       case 'm': case 'M': toggleMassaroca(); break;

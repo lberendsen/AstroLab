@@ -10,11 +10,10 @@ import { SB } from '../layers/smallbodies.js';
 import { P5 } from '../layers/phase5.js';
 import { SHOWERS } from '../../tools/smallbodies.mjs';
 import { bodyTarget, starTarget, exoTarget, curatedTarget, craftTarget, moonTarget, sbTarget, showerTarget } from '../targets.js';
-import { pulsarTarget, structTarget } from './phenomena.js';
+import * as PH from './phenomena.js';
 import { go } from './actions.js';
 import { openNeo } from './neo.js';
 import { TOURS, startTour } from './tours.js';
-import { openPhenomena } from './phenomena.js';
 import { openPlanetarium } from './planpanel.js';
 import { PL, PRESETS, CONST } from '../planetarium.js';
 import { CONST_PT } from '../link.js';
@@ -31,11 +30,6 @@ export function resolvePlace(q) {
   if (q.startsWith('@tour:')) {
     const t = TOURS.find(x => x.id === q.slice(6));
     return t ? { name: `🎬 ${t.title}`, action: () => startTour(t) } : null;
-  }
-  if (q.startsWith('@phen:')) {
-    const k = q.slice(6);
-    const NAME = { gw: '💥 Ondas gravitacionais', sn: '💥 Explosões recentes', bh: '💥 Todos os buracos negros, lado a lado', psr: `💥 Todos os pulsares (${P5.pulsars.length.toLocaleString('pt-BR')})`, lss: '💥 Todas as estruturas (superaglomerados e vazios)' };
-    return { name: NAME[k] || '💥 Fenômenos', action: () => openPhenomena(k) };
   }
   if (q === '@plhere') return { name: '🌅 O céu daqui, agora', action: () => openPlanetarium('Earth', PL.lat, PL.lon, PL.name) };
   if (q === '@const3d') {
@@ -171,20 +165,40 @@ function constellations() {
   return cat('✨ Constelações em 3D', [fromQ('@plhere', 'como elas aparecem no céu'), ...list], { hint: 'as estrelas não estão juntas' });
 }
 
+// Fenômenos extremos: as listas do GWOSC e do TNS chegam pela internet depois que o app abre (refreshLive)
+const itemNodes = list => list.map(x => node(x.label, { action: x.go, hint: x.tip }));
+const LIVE = { gw: ['Ondas gravitacionais', 'GWOSC', PH.GW, PH.gwItems], sn: ['Explosões recentes', 'Transient Name Server', PH.SN, PH.snItems] };
+function liveKids(k) {
+  const [, src, st, items] = LIVE[k];
+  if (st.list) return st.list.length ? itemNodes(items()) : [node('nenhuma no momento', { wait: true })];
+  return [node(st.failed ? `${src} fora do ar agora` : `consultando o ${src}…`, { wait: true })];
+}
+function phenomena() {
+  const live = k => cat(LIVE[k][0], liveKids(k), { hint: PH.INTRO[k], live: k });
+  return cat('💥 Fenômenos extremos', [live('gw'), live('sn'),
+    cat('Buracos negros', itemNodes(PH.bhItems()), { hint: PH.INTRO.bh }),
+    cat('Pulsares', itemNodes(PH.psrItems()), { hint: PH.INTRO.psr }),
+    cat('Estruturas', itemNodes(PH.lssItems()), { hint: PH.INTRO.lss })], { hint: PH.INTRO.all });
+}
+export function refreshLive() {
+  for (const n of ALL) if (n.live) n.kids = liveKids(n.live);
+  reindex();
+  if (filterQ) filterTree(rawQ); else render();
+}
+
 function deepSky() {
   const C = DB.curated;
   const of = (type, f = () => true) => C.filter(o => o.type === type && f(o)).map(o => node(o.name, { make: () => curatedTarget(o), hint: o.id !== o.name ? o.id : '' }));
   return [
     cat('🌫️ Nebulosas e aglomerados', [cat('Nebulosas', of('neb')), cat('Nebulosas planetárias', of('pn')), cat('Restos de supernova', of('snr')),
       cat('Aglomerados abertos', of('open')), cat('Aglomerados globulares', of('glob'))]),
-    cat('💥 Fenômenos extremos', [fromQ('@phen:gw', 'colisões que sacodem o espaço'), fromQ('@phen:sn', 'supernovas deste mês'),
-      cat('Buracos negros', [fromQ('@phen:bh'), ...of('bh'), ...C.filter(o => /^(M 87|TON 618)$/.test(o.id)).map(o => node(o.name, { make: () => curatedTarget(o) }))]),
-      cat('Pulsares', [fromQ('@phen:psr', 'piscando no ritmo real'), ...P5.pulsars.filter(p => p.name).map(p => node(p.name, { make: () => pulsarTarget(p) }))])]),
+    phenomena(),
+
     cat('🌌 Nossa galáxia', [fromQ('@milkyway', 'vista de fora (modelo)'), fromQ('Sgr A*', 'o buraco negro central'),
       cat('Galáxias vizinhas (Grupo Local)', of('gal', o => o.d < 3e6))]),
     cat('🌀 Galáxias', [cat('Galáxias próximas', of('gal', o => o.d >= 3e6 && o.d < 1e8)), cat('Galáxias distantes', of('gal', o => o.d >= 1e8 && o.d < 1e9)),
       cat('Aglomerados de galáxias', of('cluster'))]),
-    cat('🕸️ Universo em grande escala', [fromQ('@web', 'a teia cósmica'), fromQ('@phen:lss', 'tamanho e distância'), ...P5.structures.map(s => node(s.name, { make: () => structTarget(s), hint: s.kind }))]),
+    cat('🕸️ Universo em grande escala', [fromQ('@web', 'a teia cósmica'), ...itemNodes(PH.lssItems())]),
     cat('🔭 Até a borda do universo', [...of('qso'), ...of('gal', o => o.d >= 1e9), fromQ('@qso', '750 mil quasares'), fromQ('@cmb', 'radiação cósmica de fundo')]),
   ];
 }
@@ -202,6 +216,9 @@ function buildTree() {
     cat('🎬 Tours guiados', TOURS.map(t => node(t.title, { action: () => startTour(t), hint: t.sub || '' }))),
     planetarium(), solarSystem(), humanMade(), stars(), exoplanets(), constellations(), ...deepSky(),
   ].filter(n => n.kids?.length);
+  reindex();
+}
+function reindex() {
   ALL = [];
   const walk = (list, parent) => {
     for (const n of list) {
@@ -212,7 +229,7 @@ function buildTree() {
   };
   walk(ROOT, null);
   // contagem de destinos dentro de cada categoria
-  const count = n => (n.kids ? n.kids.reduce((s, k) => s + count(k), 0) + (n.make || n.action ? 1 : 0) : 1);
+  const count = n => (n.kids ? n.kids.reduce((s, k) => s + count(k), 0) : 0) + (n.make || n.action ? 1 : 0);
   for (const n of ALL) if (n.kids && !n.make && !n.action) n.count = count(n);
 }
 
@@ -233,9 +250,11 @@ function rowHTML(n, depth, mark) {
   const hasKids = !!n.kids, open = isOpen(n);
   const target = !!(n.make || n.action);
   const label = mark ? highlight(n.label, mark) : esc(n.label);
-  return `<div class="tn${target ? ' go' : ''}${hasKids ? ' br' : ''}${open ? ' open' : ''}" style="--d:${depth}" data-i="${n.idx}">` +
+  // as informações de cada lugar ficam na dica (ao parar o mouse em cima), junto com o nome inteiro
+  const tip = esc(n.label + (n.hint ? '\n' + n.hint : ''));
+  return `<div class="tn${target ? ' go' : ''}${hasKids ? ' br' : ''}${open ? ' open' : ''}${n.wait ? ' wait' : ''}" style="--d:${depth}" data-i="${n.idx}" title="${tip}">` +
     `<span class="tw">${hasKids ? '▸' : ''}</span><span class="tl">${label}</span>` +
-    (n.count ? `<small class="tc">${n.count.toLocaleString('pt-BR')}</small>` : n.hint ? `<small>${esc(n.hint)}</small>` : '') + `</div>`;
+    (n.count ? `<small class="tc">${n.count.toLocaleString('pt-BR')}</small>` : '') + `</div>`;
 }
 // destaca o trecho digitado, sem diferenciar acentos e maiúsculas (tirar os acentos preserva o comprimento)
 const fold = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -336,6 +355,16 @@ export function buildPlaces() {
     else activate(n);
   });
   wireSide();
+}
+
+// Abre o painel com uma categoria de primeiro nível aberta e à vista (tecla K: fenômenos extremos)
+export function reveal(text) {
+  toggleSide(true);
+  const n = ROOT.find(x => x.key.includes(normName(text)));
+  if (!n) return;
+  if (filterQ) { $('search').value = ''; filterTree(''); }
+  n.open = true; render();
+  treeEl.querySelector(`[data-i="${n.idx}"]`)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
 
 // Usado pelo teste de fumaça e pelos atalhos: ativa o primeiro destino cujo nome contém o texto

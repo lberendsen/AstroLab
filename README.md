@@ -128,7 +128,10 @@ Em Camadas → **Planetas de perto**: liga e desliga as texturas em alta resolu�
 | Supernovas e explosões dos últimos 30 dias | Transient Name Server, ao vivo | — |
 | 10 superaglomerados e vazios | literatura (posição e tamanho aproximados) | `src/layers/phase5.js` |
 
-O ramo **💥 Fenômenos extremos** dos Lugares (ou a tecla `K`) abre o painel de fenômenos, com cinco abas:
+O ramo **💥 Fenômenos extremos** dos Lugares (a tecla `K` abre o painel direto nele) tem cinco categorias, com os
+eventos e objetos dentro. As listas de ondas gravitacionais (GWOSC) e de explosões recentes (TNS) são consultadas
+pela internet quando o app abre e entram na árvore assim que chegam. Parar o mouse sobre um item mostra os detalhes
+(data, massas, distância); sobre uma categoria, a explicação dela.
 
 - **Ondas gravitacionais:** ao escolher uma, aparece a casca a essa distância, porque a direção é incerta. GW170817 leva à galáxia NGC 4993.
 - **Explosões recentes:** as que têm redshift permitem viajar até lá; as outras abrem no telescópio.

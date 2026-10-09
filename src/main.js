@@ -25,7 +25,7 @@ import { ui, select, go, wireFeeds } from './ui/actions.js';
 import { refreshInfoDistances } from './ui/info.js';
 import * as places from './ui/places.js';
 import { buildLayersMenu, buildSkyMenu, updateSbStatus, updateGaiaStatus } from './ui/menus.js';
-import { wirePhenomena } from './ui/phenomena.js';
+import * as phen from './ui/phenomena.js';
 import { wireSearch } from './ui/searchbox.js';
 import { wireControls } from './ui/keys.js';
 import { perf } from './ui/perf.js';
@@ -58,7 +58,9 @@ async function init() {
   search.buildIndex();
   places.buildPlaces(); buildLayersMenu(); buildSkyMenu();
   planetfx.FX.onLost = () => toast('A placa de vídeo ficou sem memória e o 3D foi reiniciado. As texturas de alta resolução foram desligadas; se a tela ficar preta, recarregue a página.', 15000);
-  wireSearch(); wireFeeds(); wireControls(hud); wireTime(); wirePlanetarium(); tours.wireTours(); wirePhenomena();
+  wireSearch(); wireFeeds(); wireControls(hud); wireTime(); wirePlanetarium(); tours.wireTours();
+  // listas ao vivo dos fenômenos (GWOSC, TNS): entram na árvore quando chegam
+  phen.loadGw().then(places.refreshLive); phen.loadSn().then(places.refreshLive);
 
   // começa olhando a Terra, com o Sol de lado
   const earth = bodyTarget('Earth');
@@ -183,4 +185,4 @@ init().catch(err => {
 });
 
 // para depuração no console e para o teste de fumaça
-window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies, time, timepanel, planetarium, tours, planetfx, places };
+window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies, time, timepanel, planetarium, tours, planetfx, places, phen };

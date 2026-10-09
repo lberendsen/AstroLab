@@ -65,6 +65,7 @@ body.side-collapsed #sideRail { display: flex; }
 #tree .tn[style="--d:0"] { margin-top: 2px; font-weight: 600; }
 #tree .tn.go .tl::after { content: ''; }
 #tree .tn.go:hover .tl { color: var(--accent); }
+#tree .tn.wait { color: var(--muted); font-style: italic; cursor: default; }
 #tree mark { background: rgba(255,207,122,0.28); color: inherit; border-radius: 2px; }
 #tree .empty { padding: 6px 10px; }
 #catalog h3 { margin: 12px 8px 4px; }
@@ -122,7 +123,6 @@ body.side-collapsed #sideRail { display: flex; }
 .eclRow, .repRow { padding: 6px; border-radius: 6px; cursor: pointer; font-size: 13px; }
 .eclRow small, .repRow small { display: block; color: var(--muted); font-size: 11.5px; }
 .eclRow:hover, .repRow:hover { background: rgba(127,180,255,0.14); }
-#phenPanel { position: fixed; left: 12px; top: 64px; bottom: 70px; width: 400px; overflow: auto; padding: 14px; z-index: 6; }
 .tabs.wrap { flex-wrap: wrap; }
 .tabs.wrap button { font-size: 12px; padding: 4px 8px; }
 #info img.eht { width: 100%; border-radius: 8px; margin-top: 8px; }
