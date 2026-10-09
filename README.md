@@ -42,9 +42,8 @@ título (várias podem ficar abertas ao mesmo tempo):
 - **☰ Camadas:** o que aparece no 3D, brilho, Gaia, pulsares, satélites por categoria e país, asteroides, efeitos de perto.
 - **🔭 Telescópio:** todos os filtros, de raios gama a rádio. Com o telescópio fechado, escolher um filtro abre o telescópio
   na direção do selecionado. Aqui também fica o céu de fundo do 3D em outros comprimentos de onda.
-- **📡 Transmissões:** os canais dos satélites, sondas e telescópios.
 
-O » recolhe o painel numa faixa com os quatro ícones; clicar num ícone abre o painel já naquela seção. As seções abertas
+O » recolhe o painel numa faixa com os três ícones; clicar num ícone abre o painel já naquela seção. As seções abertas
 ficam guardadas no navegador. A barra flutuante de baixo deixou de existir.
 
 ## Teclas e mouse
@@ -90,7 +89,7 @@ novos exoplanetas): `node tools/build-data.mjs exoplanets --force`.
 
 ### Transmissões (`src/feeds.js`, `src/earthskin.js`)
 
-A seção **📡 Transmissões** do painel da direita (tecla `X`) lista as imagens que os aparelhos do catálogo mandam para a Terra. A ficha de cada aparelho tem o botão "O que ele transmite".
+Cada transmissão fica na ficha **daquilo que ela mostra** e na de quem a envia: a Terra tem os canais dos satélites meteorológicos, os mosaicos diários, o vídeo da ISS e a Rede de Espaço Profundo; o Sol, os do SDO, do SOHO e do GOES; Marte, as fotos dos robôs; o Webb e o Hubble, as observações deles. O ramo **📡 Transmissões** dos Lugares (tecla `X`) reúne todas, e a busca acha cada uma pelo nome do satélite: "GOES-19" oferece o satélite e os três canais dele.
 
 | Canal | Fonte | Atualização |
 |---|---|---|

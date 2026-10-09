@@ -268,3 +268,15 @@ body.side-collapsed #sideRail { display: flex; }
 #ctlRail button:hover { background: rgba(127,180,255,0.16); }
 body.ctl-collapsed #ctlMain { display: none; }
 body.ctl-collapsed #ctlRail { display: flex; }
+
+/* transmissões na ficha */
+#info .feedSec { margin-top: 18px; padding-top: 4px; border-top: 1px solid var(--line); }
+#info .feedSec h3 small { text-transform: none; letter-spacing: 0; font-weight: 400; }
+#info .feedSec details { margin: 4px 0; }
+#info .feedSec summary { cursor: pointer; padding: 5px 4px; font-size: 13px; color: #cdd6ea; border-radius: 6px; }
+#info .feedSec summary:hover { background: rgba(127,180,255,0.10); }
+#info .feedRow { display: block; width: 100%; text-align: left; margin: 2px 0; border-color: transparent; background: none; white-space: normal; }
+#info .feedRow:hover { background: rgba(127,180,255,0.14); }
+#info .feedRow small { display: block; color: var(--muted); font-size: 11px; }
+#info .skin { font-size: 12px; background: rgba(127,180,255,0.12); border-radius: 8px; padding: 6px 8px; margin: 6px 0; }
+#info .skin button { font-size: 11px; padding: 2px 6px; margin-left: 4px; }

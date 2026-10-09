@@ -168,21 +168,36 @@ export function channelsFor(t) {
   return CHANNELS.filter(ch => (sat && ch.craft?.sat === sat.name) || (probe && ch.craft?.probe === probe));
 }
 
-// ---------------------------------------------------------------- painel de canais
-export function buildPanel(filterFor = null) {
-  const box = $('feedList');
-  const list = filterFor ? channelsFor(filterFor) : CHANNELS;
-  let html = filterFor ? `<p class="muted small">Transmissões de <b>${filterFor.name}</b> · <a href="#" id="feedAll">ver todas</a></p>` : '';
-  let last = null;
-  for (const ch of list) {
-    if (ch.group !== last && !filterFor) { html += `<div class="cat">${GROUPS[ch.group]}</div>`; last = ch.group; }
-    html += `<button data-ch="${ch.id}"><span>${ch.title}</span><small>${ch.sub}</small></button>`;
-  }
-  box.innerHTML = html;
-  for (const b of box.querySelectorAll('[data-ch]')) b.onclick = () => open(CHANNELS.find(c => c.id === b.dataset.ch));
-  $('feedAll') && ($('feedAll').onclick = e => { e.preventDefault(); buildPanel(); });
-  if (skin.active) box.insertAdjacentHTML('afterbegin', `<div class="skin">🌍 Globo: ${skin.label} <button id="skinOff">voltar ao normal</button></div>`);
-  $('skinOff') && ($('skinOff').onclick = () => { restore(); buildPanel(filterFor); hooks.toast?.('Globo de volta à textura padrão.'); });
+// ---------------------------------------------------------------- canais na ficha de quem eles mostram
+// Cada transmissão fica na ficha daquilo que ela mostra (a Terra, o Sol, Marte) e na de quem a envia (satélite, sonda).
+const SHOWS = { terra: 'Earth', 'terra-dia': 'Earth', sol: 'Sun', mundos: 'Mars' };
+const SHOWS_ID = { iss: 'Earth', dsn: 'Earth' };   // a câmera da ISS aponta para a Terra; as antenas da DSN estão nela
+export const showsBody = ch => SHOWS_ID[ch.id] || SHOWS[ch.group] || null;
+export function channelsOf(t) {
+  const key = t?.body?.key;
+  const own = key ? CHANNELS.filter(ch => showsBody(ch) === key) : [];
+  return [...new Set([...own, ...channelsFor(t)])];
+}
+export { GROUPS };
+export const feedGroupOf = ch => GROUPS[ch.group];
+
+// Seção "Transmissões" da ficha: os canais agrupados; com muitos, cada grupo vira um bloco que abre e fecha
+export function sectionHTML(t) {
+  const list = channelsOf(t);
+  if (!list.length) return '';
+  const groups = [];
+  for (const ch of list) { const g = groups.find(x => x.g === ch.group); g ? g.items.push(ch) : groups.push({ g: ch.group, items: [ch] }); }
+  const many = list.length > 5;
+  const item = ch => `<button class="feedRow" data-ch="${ch.id}" title="${(ch.desc || '').replace(/"/g, '&quot;')}"><span>${ch.title}</span><small>${ch.sub}</small></button>`;
+  let h = `<section class="feedSec"><h3>📡 Transmissões <small class="muted">(${list.length})</small></h3>`;
+  if (t?.body?.key === 'Earth' && skin.active) h += `<div class="skin">🌍 Globo: ${skin.label} <button id="skinOff">voltar ao normal</button></div>`;
+  h += many ? groups.map((g, k) => `<details${k === 0 ? ' open' : ''}><summary>${GROUPS[g.g]} <small class="muted">${g.items.length}</small></summary>${g.items.map(item).join('')}</details>`).join('')
+    : list.map(item).join('');
+  return h + '</section>';
+}
+export function wireSection() {
+  for (const b of document.querySelectorAll('#info [data-ch]')) b.onclick = () => open(CHANNELS.find(c => c.id === b.dataset.ch));
+  $('skinOff') && ($('skinOff').onclick = () => { restore(); hooks.refresh?.(); hooks.toast?.('Globo de volta à textura padrão.'); });
 }
 
 // ---------------------------------------------------------------- visualizador
@@ -275,7 +290,7 @@ async function runGlobeLive(ch) {
     const missing = LIVE_SOURCES.map(s => s.name).filter(n => !r.sources.includes(n));
     hooks.toast?.(`Globo pintado com a Terra de agora: ${r.sources.join(', ')}.${missing.length ? ` Sem resposta agora: ${missing.join(', ')}.` : ''}`, 10000);
     hooks.lookEarth?.();
-    buildPanel();
+    hooks.refresh?.();
   } catch (e) { hooks.toast?.('Não foi possível montar a Terra ao vivo agora.'); console.error(e); }
   void ch;
 }
@@ -292,7 +307,7 @@ async function showDaily(ch) {
     $('vGlobe') && ($('vGlobe').onclick = async () => {
       close();
       hooks.toast?.('Montando o planeta inteiro…', 30000);
-      try { await applyDaily(ch.layer, `${ch.sub} — ${ch.title}`, { overlay: ch.overlay }); hooks.toast?.(`Globo: ${ch.title} (${ch.sub}).`, 6000); hooks.lookEarth?.(); buildPanel(); }
+      try { await applyDaily(ch.layer, `${ch.sub} — ${ch.title}`, { overlay: ch.overlay }); hooks.toast?.(`Globo: ${ch.title} (${ch.sub}).`, 6000); hooks.lookEarth?.(); hooks.refresh?.(); }
       catch (e) { console.error(e); hooks.toast?.('Não foi possível baixar o mosaico agora.'); }
     });
   }, 0);

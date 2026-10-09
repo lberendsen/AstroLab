@@ -40,7 +40,9 @@ const STOPS = [
   { name: 'lugares-filtro', run: `(() => { const i = document.getElementById('search'); i.value = 'hélice'; i.dispatchEvent(new Event('input')); document.querySelector('#tree .tn.go .tl').click(); })()`, wait: 10000,
     check: `(astro.nav.target?.name || '').includes('Hélice') && astro.F.width < innerWidth - 150 && astro.places.placeCount() > 5000 || 'painel de lugares: filtro, voo ou largura do 3D errados'` },
   { name: 'painel-direita', run: `astro.ctl.openSection('layers'); astro.ctl.openSection('scope')`, wait: 800,
-    check: `!document.getElementById('bar') && document.querySelectorAll('#ctl .sec').length === 4 && document.querySelectorAll('#layers [data-layer]').length > 5 && document.querySelectorAll('#bands button[data-id]').length > 20 && Math.abs(document.getElementById('ctl').getBoundingClientRect().left - document.getElementById('stage').getBoundingClientRect().right) < 2 || 'painel da direita: seções, camadas, filtros ou largura do 3D errados'` },
+    check: `!document.getElementById('bar') && document.querySelectorAll('#ctl .sec').length === 3 && document.querySelectorAll('#layers [data-layer]').length > 5 && document.querySelectorAll('#bands button[data-id]').length > 20 && Math.abs(document.getElementById('ctl').getBoundingClientRect().left - document.getElementById('stage').getBoundingClientRect().right) < 2 || 'painel da direita: seções, camadas, filtros ou largura do 3D errados'` },
+  { name: 'busca-transmissao', run: `(() => { const i = document.getElementById('search'); i.value = 'GOES-19'; i.dispatchEvent(new Event('input')); })()`, wait: 500,
+    check: `[...document.querySelectorAll('#tree .tn.go .tl')].some(e => /América do Sul agora \\(GOES-19\\)/.test(e.textContent)) || 'a busca por GOES-19 não ofereceu a transmissão'` },
   { name: 'saturno', run0: `(() => { const i = document.getElementById('search'); i.value = ''; i.dispatchEvent(new Event('input')); })()`, run: go('Saturno'), wait: 8000, check: `astro.nav.target?.name === 'Saturno' || 'não chegou em Saturno'` },
   { name: 'lua-apollo11', run: go('Apollo 11'), wait: 11000, check: `!!document.querySelector('#info h2')?.textContent.includes('Apollo') || 'ficha da Apollo 11 não abriu'` },
   { name: 'iss', run: go('Estação Espacial Internacional'), wait: 9000 },
@@ -100,7 +102,7 @@ const STOPS = [
     check: `/MCG|Cartwheel|Roda/i.test(document.querySelector('#info h2')?.textContent || '') || 'busca no SIMBAD não encontrou a galáxia da Roda de Carro'` },
   { name: 'telescopio-lua', external: true, run: `astro.select(astro.search.searchLocal('Lua',1)[0].make()); dispatchEvent(new KeyboardEvent('keydown', { key: 't' }))`, wait: 10000,
     check: `!document.getElementById('scope').hidden || 'telescópio não abriu'` },
-  { name: 'transmissao-goes', external: true, run: `document.getElementById('scopeClose').click(); astro.ctl.openSection('feeds'); document.querySelector('[data-ch=goes19-ssa]').click()`, wait: 10000,
+  { name: 'transmissao-goes', external: true, run: `document.getElementById('scopeClose').click(); astro.select(astro.search.searchLocal('Terra',1)[0].make()); document.querySelector('#info [data-ch=goes19-ssa]').click()`, wait: 10000,
     check: `!document.getElementById('vImg').hidden || 'imagem do GOES-19 não carregou: ' + document.getElementById('vStatus').textContent` },
 ];
 

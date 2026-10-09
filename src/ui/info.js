@@ -17,7 +17,7 @@ import { BH_INFO } from './phenomena.js';
 import { KM, R_EARTH } from '../astro.js';
 import { openPlanetarium } from './planpanel.js';
 import { v3, DEG, fmtDist, fmtLightTime, fmtNum, lightSentence, fmtYears, lookbackYears, AGE_OF_UNIVERSE, CMB_DISTANCE } from '../astro.js';
-import { ui, go, openScope, startLink, openFeeds, showerParent } from './actions.js';
+import { ui, go, openScope, startLink, showerParent } from './actions.js';
 import * as linkMode from '../link.js';
 import { $, toast } from './dom.js';
 
@@ -246,9 +246,10 @@ export function renderInfo(t) {
   const skyHere = t.craft?.kind === 'surface' ? [t.craft.body, t.craft.lat, t.craft.lon, t.craft.name] : t.body && ['Earth', 'Moon', 'Mars'].includes(t.body.key) ? [t.body.key] : null;
   if (skyHere && !PLN.PL.active) h += `<div class="actions"><button id="aSky" title="Ficar em pé aí e ver o céu (P)">🌅 Ver o céu daqui</button></div>`;
   // transmissões deste aparelho e contato ao vivo com a Rede de Espaço Profundo
-  const chans = feeds.channelsFor(t);
   if (t.craft?.kind === 'probe' || t.craft?.kind === 'surface') h += `<div id="dsnLive" class="lighttime small"></div>`;
-  h += `<div class="actions">${chans.length ? `<button id="aFeeds" class="accent" title="Ver as imagens que ele manda para a Terra">📡 O que ele transmite (${chans.length})</button>` : ''}${t.kind !== 'sky' ? '<button id="aGo" class="accent">🚀 Ir até lá</button>' : ''}<button id="aScope">🔭 Telescópio</button>${t.kind !== 'sky' ? '<button id="aOrbit">⟲ Orbitar daqui</button>' : ''}</div>`;
+  h += `<div class="actions">${t.kind !== 'sky' ? '<button id="aGo" class="accent">🚀 Ir até lá</button>' : ''}<button id="aScope">🔭 Telescópio</button>${t.kind !== 'sky' ? '<button id="aOrbit">⟲ Orbitar daqui</button>' : ''}</div>`;
+  // transmissões do que ele mostra ou envia (antes era uma seção do painel da direita)
+  h += feeds.sectionHTML(t);
   // onde fica, visto da Terra (antes era um painel à parte)
   if (linkMode.canShow(t)) h += linkMode.sectionHTML(t);
   $('infoBody').innerHTML = h;
@@ -263,7 +264,7 @@ export function renderInfo(t) {
     if (k === 'earth') linkMode.fromEarth(); else if (linkMode.link.mode !== 'side') linkMode.sideBySide();
   };
   linkMode.render(t);
-  $('aFeeds') && ($('aFeeds').onclick = () => (chans.length === 1 ? feeds.open(chans[0]) : openFeeds(t)));
+  feeds.wireSection();
   if ($('dsnLive')) {
     const id = t.craft.kind === 'surface' ? { 'perseverance': 'perseverance', 'curiosity': 'curiosity' }[t.craft.id] : t.craft.id;
     // o contato da DSN é o de agora: só faz sentido com a data simulada perto do presente

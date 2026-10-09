@@ -18,6 +18,7 @@ import { openPlanetarium } from './planpanel.js';
 import { PL, PRESETS, CONST } from '../planetarium.js';
 import { CONST_PT } from '../link.js';
 import { radec2xyz } from '../astro.js';
+import * as feeds from '../feeds.js';
 import { $ } from './dom.js';
 
 // ---------------------------------------------------------------- vistas especiais (não são objetos do catálogo)
@@ -186,6 +187,20 @@ export function refreshLive() {
   if (filterQ) filterTree(rawQ); else render();
 }
 
+// Transmissões: também ficam na ficha de quem elas mostram; aqui, todas juntas, para achar pela busca
+// (o nome leva o satélite entre parênteses: quem digita "GOES-19" encontra "América do Sul agora (GOES-19)")
+function transmissions() {
+  const short = ch => ch.sub.split(' · ')[0].replace(/ \(.*\)$/, '');
+  const chNode = ch => node(`${ch.title} (${short(ch)})`, { action: () => feeds.open(ch), hint: `${ch.sub}${ch.desc ? '\n' + ch.desc : ''}` });
+  const by = test => feeds.CHANNELS.filter(test).map(chNode);
+  return cat('📡 Transmissões', [
+    cat('A Terra', by(ch => feeds.showsBody(ch) === 'Earth')),
+    cat('O Sol', by(ch => feeds.showsBody(ch) === 'Sun')),
+    cat('Marte', by(ch => feeds.showsBody(ch) === 'Mars')),
+    cat('Webb e Hubble', by(ch => !feeds.showsBody(ch))),
+  ], { hint: 'Imagens e sinais que os satélites, sondas e telescópios do catálogo mandam para a Terra. Cada uma também aparece na ficha de quem ela mostra (Terra, Sol, Marte) e de quem a envia.' });
+}
+
 function deepSky() {
   const C = DB.curated;
   const of = (type, f = () => true) => C.filter(o => o.type === type && f(o)).map(o => node(o.name, { make: () => curatedTarget(o), hint: o.id !== o.name ? o.id : '' }));
@@ -214,7 +229,7 @@ let ROOT = [], ALL = [];
 function buildTree() {
   ROOT = [
     cat('🎬 Tours guiados', TOURS.map(t => node(t.title, { action: () => startTour(t), hint: t.sub || '' }))),
-    planetarium(), solarSystem(), humanMade(), stars(), exoplanets(), constellations(), ...deepSky(),
+    planetarium(), solarSystem(), humanMade(), transmissions(), stars(), exoplanets(), constellations(), ...deepSky(),
   ].filter(n => n.kids?.length);
   reindex();
 }

@@ -1,4 +1,4 @@
-// Painel da direita: os controles globais da vista (tempo, camadas, telescópio, transmissões) em seções que
+// Painel da direita: os controles globais da vista (tempo, camadas, telescópio) em seções que
 // abrem e fecham clicando no título, como os painéis do Expression Design. Várias podem ficar abertas ao mesmo tempo.
 // O painel inteiro também recolhe numa faixa estreita com os ícones das seções.
 import { $ } from './dom.js';

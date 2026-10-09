@@ -145,11 +145,7 @@ export function startLink(t) {
 }
 
 // ---------------------------------------------------------------- transmissões
-// a seção Transmissões do painel da direita (filtrada para um aparelho, se for o caso); toggle: tecla X
-export function openFeeds(filterFor = null, toggle = false) {
-  feeds.buildPanel(filterFor);
-  openSection('feeds', { toggle });
-}
+// transmissões: ficam nas fichas de quem elas mostram; a lista completa é o ramo "Transmissões" dos Lugares
 const craftToTarget = c => (c.sat && !c.id ? satTarget(c.sat) : craftTarget(c));
 // Câmera onde o satélite está, olhando para a Terra
 function viewpointOf(c) {
@@ -167,10 +163,10 @@ export function wireFeeds() {
     goCraft: c => go(craftToTarget(c)),
     viewpoint: viewpointOf,
     sky: s => scope.open({ ra: s.ra, dec: s.dec, fovDeg: 0.15, name: s.name }),
+    refresh: () => { if (ui.selected && !$('info').hidden) renderInfo(ui.selected); },
     lookEarth: () => { if (v3.dist(F.cam, solar.BODY.Earth.pos) > 2e6 * KM) go(bodyTarget('Earth')); },
   });
   feeds.wireViewer();
-  feeds.buildPanel();
   // filtro escolhido com o telescópio fechado: abre na direção do selecionado
   scope.setOpenHook(() => openScope(ui.selected, { sky: true }));
 }

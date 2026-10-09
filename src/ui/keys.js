@@ -5,7 +5,7 @@ import * as linkMode from '../link.js';
 import * as feeds from '../feeds.js';
 import * as time from '../time.js';
 import { nav, wasClick, cancelFlight } from '../nav.js';
-import { ui, select, go, toggleMode, openScope, startLink, openFeeds } from './actions.js';
+import { ui, select, go, toggleMode, openScope, startLink } from './actions.js';
 import { renderInfo } from './info.js';
 import { toggleMassaroca } from './menus.js';
 import { focusSearch } from './searchbox.js';
@@ -59,7 +59,7 @@ export function wireControls(onTimeChange) {
       case 'g': case 'G': go(ui.selected); break;
       case 't': case 'T': openScope(ui.selected); break;
       case 'l': case 'L': toggleSide(); break;
-      case 'x': case 'X': openFeeds(null, true); break;
+      case 'x': case 'X': reveal('Transmissões'); break;
       case 'p': case 'P': togglePlanetarium(); break;
       case 'u': case 'U': toggleTourPanel(); break;
       case 'k': case 'K': reveal('Fenômenos extremos'); break;

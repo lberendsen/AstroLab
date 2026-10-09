@@ -152,7 +152,7 @@
     <tr><td>U</td><td>tours guiados: viagens narradas pelo universo</td></tr>
     <tr><td>P</td><td>planetário: ficar em pé na Terra, na Lua ou em Marte e ver o céu daí</td></tr>
     <tr><td>Y</td><td>abre/fecha a seção Tempo do painel da direita: data, eclipses e replays de missões</td></tr>
-    <tr><td>X</td><td>abre/fecha a seção Transmissões: o que os satélites, telescópios e robôs mandam para a Terra</td></tr>
+    <tr><td>X</td><td>abre nos lugares as transmissões: o que os satélites, telescópios e robôs mandam para a Terra (também ficam na ficha de quem elas mostram)</td></tr>
     <tr><td>V</td><td>onde fica o objeto selecionado, visto da Terra (linha Terra ↔ objeto)</td></tr>
     <tr><td>M</td><td>mostrar / esconder a massaroca de satélites em volta da Terra (detalhes na seção Camadas)</td></tr>
     <tr><td>espaço , .</td><td>pausar / desacelerar / acelerar o tempo</td></tr>
@@ -176,13 +176,12 @@
 
 <div id="toast" hidden></div>
 </main>
-<!-- Controles globais da vista (à direita): tempo, camadas, telescópio e transmissões, em seções que abrem e fecham -->
+<!-- Controles globais da vista (à direita): tempo, camadas e telescópio, em seções que abrem e fecham -->
 <aside id="ctl">
   <div id="ctlRail">
     <button data-rail="time" title="Tempo (Y)">🕰️</button>
     <button data-rail="layers" title="Camadas">☰</button>
     <button data-rail="scope" title="Telescópio (T)">🔭</button>
-    <button data-rail="feeds" title="Transmissões (X)">📡</button>
   </div>
   <div id="ctlMain">
     <div id="ctlHead">
@@ -246,13 +245,6 @@
           <h3>Céu de fundo do 3D</h3>
           <select id="skySel" title="Mapa do céu de fundo em outros comprimentos de onda"></select>
           <p class="muted small">Imagens: HiPS do CDS/Strasbourg via Aladin Lite. Cada filtro é uma foto real tirada naquele comprimento de onda.</p>
-        </div>
-      </section>
-      <section class="sec" data-sec="feeds">
-        <h2 class="secHead"><span class="tw">▸</span>📡 Transmissões</h2>
-        <div class="secBody">
-          <p class="muted small">O que os satélites, telescópios e robôs do catálogo estão mandando para a Terra.</p>
-          <div id="feedList"></div>
         </div>
       </section>
     </div>
