@@ -1,0 +1,11 @@
+# cache de downloads dos catálogos (refeito por tools/build-data.mjs)
+tools/raw/
+
+# reescritos automaticamente pelo serve.mjs (satélites: diário; trajetórias: semanal)
+data/satellites.json
+data/spacecraft.json
+data/spacecraft.bin
+
+# dependências de desenvolvimento e saídas de teste
+node_modules/
+tools/smoke-out/

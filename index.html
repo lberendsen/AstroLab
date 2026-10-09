@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AstroLab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='7' fill='%237fb4ff'/%3E%3Cellipse cx='16' cy='16' rx='14' ry='4' fill='none' stroke='%23ffcf7a' stroke-width='2' transform='rotate(-20 16 16)'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+  "astronomy-engine": "https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/esm/astronomy.js"
+} }
+</script>
+</head>
+<body>
+<canvas id="view"></canvas>
+<div id="labels"></div>
+<div id="warp"></div>
+
+<header id="top">
+  <div id="brand">Astro<b>Lab</b></div>
+  <div id="searchbox">
+    <input id="search" type="search" placeholder="Procurar: Saturno, Betelgeuse, Andrômeda, TRAPPIST-1, M87, Cartwheel…" autocomplete="off" spellcheck="false">
+    <ul id="suggest" hidden></ul>
+  </div>
+  <div id="where"></div>
+</header>
+
+<aside id="places" class="panel" hidden>
+  <h2>Lugares legais</h2>
+  <div id="placeList"></div>
+</aside>
+
+<aside id="feeds" class="panel" hidden>
+  <button class="close" data-close="feeds">×</button>
+  <h2>📡 Transmissões</h2>
+  <p class="muted small">O que os satélites, telescópios e robôs do catálogo estão mandando para a Terra.</p>
+  <div id="feedList"></div>
+</aside>
+
+<aside id="dsnPanel" class="panel" hidden>
+  <button class="close" id="dsnClose">×</button>
+  <h2>📡 Rede de Espaço Profundo, agora</h2>
+  <div id="dsnBody">consultando…</div>
+</aside>
+
+<section id="viewer" hidden>
+  <header><h2 id="vTitle"></h2><button class="close" id="vClose" title="Fechar (Esc)">×</button></header>
+  <div id="vStage">
+    <img id="vImg" alt="" hidden>
+    <iframe id="vFrame" hidden allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+    <div id="vStatus"></div>
+    <div id="vNav" hidden><button id="vPrev">◀</button><button id="vNext">▶</button></div>
+  </div>
+  <footer>
+    <div id="vCaption"></div>
+    <div class="actions">
+      <button id="vPlay" hidden title="Animar">▶</button>
+      <button id="vGoCraft">🛰️ Ir até quem tirou</button>
+      <button id="vView">👁️ Ver deste ponto de vista</button>
+      <button id="vSky" hidden>🔭 Ver no céu</button>
+    </div>
+  </footer>
+</section>
+
+<aside id="info" class="panel" hidden>
+  <button class="close" data-close="info" title="Fechar">×</button>
+  <div id="infoBody"></div>
+</aside>
+
+<aside id="linkPanel" class="panel" hidden>
+  <button class="close" id="lkClose" title="Sair (Esc)">×</button>
+  <div class="row">
+    <button data-lk="side" id="lkSide" title="A Terra numa ponta, o objeto na outra">↔ Lado a lado</button>
+    <button data-lk="earth" id="lkEarth" title="Atrás da Terra, olhando para o objeto">🌍 Olhar da Terra</button>
+  </div>
+  <div id="linkBody"></div>
+  <button id="lkLoc" class="small">📍 Usar minha localização</button>
+</aside>
+
+<nav id="bar">
+  <button id="btnPlaces" title="Lugares legais (L)">✦ Lugares</button>
+  <button id="btnMode" title="Alternar entre orbitar o alvo e voar livre (Tab)">⟲ Orbitar</button>
+  <div class="group" title="Velocidade do tempo">
+    <button id="tSlower" title="Mais devagar ( , )">◀◀</button>
+    <button id="tPause" title="Pausar (espaço)">❚❚</button>
+    <button id="tFaster" title="Mais rápido ( . )">▶▶</button>
+    <button id="tNow" title="Voltar para agora">agora</button>
+    <span id="clock"></span>
+  </div>
+  <label class="sel" title="Mapa do céu de fundo em outros comprimentos de onda">Céu
+    <select id="skySel"></select>
+  </label>
+  <div class="dropup">
+    <button id="btnLayers">☰ Camadas</button>
+    <div id="layers" class="panel menu" hidden></div>
+  </div>
+  <button id="btnFeeds" title="O que os satélites e sondas transmitem (X)">📡 Transmissões</button>
+  <button id="btnScope" class="accent" title="Abrir o telescópio na direção do alvo (T)">🔭 Telescópio</button>
+  <button id="btnHelp" title="Controles (H)">?</button>
+</nav>
+
+<section id="scope" hidden>
+  <div id="aladin"></div>
+  <aside id="scopePanel" class="panel">
+    <button class="close" id="scopeClose" title="Voltar à nave (Esc)">×</button>
+    <h2>Telescópio</h2>
+    <p class="muted" id="scopeTarget"></p>
+    <div id="bands"></div>
+    <div id="overlayCtl">
+      <h3>Comparar com</h3>
+      <select id="overlaySel"><option value="">— nenhum —</option></select>
+      <input type="range" id="overlayOp" min="0" max="1" step="0.01" value="0.5" disabled>
+    </div>
+    <p class="muted small">Imagens: HiPS do CDS/Strasbourg via Aladin Lite. Cada filtro é uma foto real tirada naquele comprimento de onda.</p>
+  </aside>
+</section>
+
+<section id="help" class="panel" hidden>
+  <button class="close" data-close="help">×</button>
+  <h2>Controles</h2>
+  <table>
+    <tr><td>Arrastar (botão esq.)</td><td>girar em volta do alvo / olhar em volta</td></tr>
+    <tr><td>Roda do mouse</td><td>aproximar / afastar</td></tr>
+    <tr><td>Clique</td><td>selecionar astro · duplo clique: ir até lá</td></tr>
+    <tr><td>Tab</td><td>alternar Orbitar ↔ Voar livre</td></tr>
+    <tr><td>W A S D · R F · Q E</td><td>voar (frente, lados, sobe/desce, rolar)</td></tr>
+    <tr><td>Shift</td><td>turbo ×20</td></tr>
+    <tr><td>G</td><td>ir até o selecionado · <b>T</b> telescópio · <b>L</b> lugares</td></tr>
+    <tr><td>/</td><td>procurar</td></tr>
+    <tr><td>X</td><td>transmissões: o que os satélites, telescópios e robôs mandam para a Terra</td></tr>
+    <tr><td>V</td><td>onde fica o objeto selecionado, visto da Terra (linha Terra ↔ objeto)</td></tr>
+    <tr><td>M</td><td>mostrar / esconder a massaroca de satélites em volta da Terra (detalhes em Camadas)</td></tr>
+    <tr><td>espaço , .</td><td>pausar / desacelerar / acelerar o tempo</td></tr>
+  </table>
+  <h3>De onde vêm os dados</h3>
+  <ul class="small">
+    <li>Estrelas: HYG v4.1 (Hipparcos, Yale, Gliese), 109 mil estrelas com posição 3D.</li>
+    <li>Planetas e luas: efemérides reais (Astronomy Engine), na posição de agora.</li>
+    <li>Exoplanetas: NASA Exoplanet Archive. Tamanhos e órbitas medidos; a inclinação das órbitas é ilustrativa.</li>
+    <li>Galáxias: levantamento 2MASS Redshift Survey, 43 mil galáxias, distância pela lei de Hubble.</li>
+    <li>Quasares: SDSS DR16Q, 750 mil, até ~30 bilhões de anos-luz (distância comóvel, cosmologia ΛCDM).</li>
+    <li>Borda do universo observável: radiação cósmica de fundo medida pelo satélite Planck.</li>
+    <li>Busca e fotos: SIMBAD, Sesame e hips2fits (CDS, Strasbourg); imagens do JWST, Hubble, DESI e DSS.</li>
+    <li>Céu de fundo: mosaico óptico de A. Mellinger e levantamentos de céu inteiro (WISE, Planck, Fermi, ROSAT…).</li>
+    <li>A Via Láctea vista de fora é um <b>modelo</b>, porque não existe foto dela vista de fora.</li>
+    <li>Texturas dos planetas: Solar System Scope (CC BY 4.0).</li>
+  </ul>
+</section>
+
+<div id="toast" hidden></div>
+<div id="loading"><div>Carregando o universo…</div><small id="loadStep"></small></div>
+
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
