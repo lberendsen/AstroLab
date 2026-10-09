@@ -31,6 +31,8 @@ import { perf } from './ui/perf.js';
 import * as timepanel from './ui/timepanel.js';
 import { wireTime, tick as replayTick } from './ui/timepanel.js';
 import * as eclipse from './layers/eclipse.js';
+import * as planetarium from './planetarium.js';
+import { wirePlanetarium } from './ui/planpanel.js';
 import { $ } from './ui/dom.js';
 
 // ---------------------------------------------------------------- inicialização
@@ -41,16 +43,16 @@ async function init() {
   await Promise.all([sats.load(), craft.load()]);
   step('asteroides e cometas');
   await smallbodies.load();
-  step('quasares');
-  await deep.load();
+  step('quasares e constelações');
+  await Promise.all([deep.load(), planetarium.load()]);
   deep.addCurated(DB.curated);
   step('montando a cena');
   solar.build(); solar.computePositions();
   stars.build(); galaxies.build(); milkyway.build(); systems.build();
-  sats.build(); craft.addNotableSats(); craft.build(); deep.build(); smallbodies.build(); eclipse.build();
+  sats.build(); craft.addNotableSats(); craft.build(); deep.build(); smallbodies.build(); eclipse.build(); planetarium.build();
   search.buildIndex();
   buildPlaces(); buildLayersMenu(); buildSkyMenu();
-  wireSearch(); wireFeeds(); wireControls(hud); wireTime();
+  wireSearch(); wireFeeds(); wireControls(hud); wireTime(); wirePlanetarium();
 
   // começa olhando a Terra, com o Sol de lado
   const earth = bodyTarget('Earth');
@@ -111,13 +113,14 @@ function loop(now) {
   T('efemérides', () => solar.computePositions());
   T('navegação', () => navUpdate(dt));
   // leve abertura do campo de visão durante a dobra
-  const fov = 60 + 18 * nav.warp;
+  const fov = (F.fovOverride ?? 60) + 18 * nav.warp;
   if (Math.abs(camera.fov - fov) > 0.01) { camera.fov = fov; resize(); }
   camera.updateMatrixWorld();
   F.near = T('escala', computeNear);
   beginFrame();
   T('céu e estrelas', () => { sky.update(); stars.update(); galaxies.update(); milkyway.update(); });
   T('Sistema Solar', () => { solar.update(); eclipse.update(); });
+  T('planetário', () => planetarium.update());
   T('exoplanetas', () => systems.update(dt));
   T('fotos', () => images.update());
   T('satélites', () => { sats.update(); sats.updateOrbitLine(local, place); });
@@ -136,8 +139,11 @@ let hudCount = 0;
 function hud() {
   const dSun = v3.len(F.cam);
   let html = `Distância do Sol: <b>${dSun < 1e-9 ? '—' : fmtDist(dSun)}</b>`;
-  if (nav.target) html += `<br>Até ${nav.target.name}: <b>${fmtDist(Math.max(v3.dist(F.cam, nav.target.pos()) - (nav.target.radius || 0), 0))}</b>`;
-  if (nav.speed > 0) html += `<br>Velocidade: <b>${fmtSpeed(nav.speed)}</b>`;
+  if (planetarium.PL.active) {
+    const P = planetarium.PL;
+    html = `Em pé em <b>${P.name}</b><br>Olhando para o <b>${planetarium.azName(P.az)}</b>, ${Math.round(P.alt)}° acima do horizonte · campo de ${Math.round(P.fov)}°`;
+  } else if (nav.target) html += `<br>Até ${nav.target.name}: <b>${fmtDist(Math.max(v3.dist(F.cam, nav.target.pos()) - (nav.target.radius || 0), 0))}</b>`;
+  if (nav.speed > 0 && !planetarium.PL.active) html += `<br>Velocidade: <b>${fmtSpeed(nav.speed)}</b>`;
   $('where').innerHTML = html;
   $('clock').innerHTML = `${time.fmtDate()}<br><small>${time.rateLabel()}${solar.ephFrozen() ? ' · planetas fixos' : ''}</small>`;
   $('tPause').textContent = time.clock.paused ? '▶' : '❚❚';
@@ -163,4 +169,4 @@ init().catch(err => {
 });
 
 // para depuração no console e para o teste de fumaça
-window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies, time, timepanel };
+window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies, time, timepanel, planetarium };

@@ -28,15 +28,19 @@ Legenda: ⬜ a fazer · 🟨 em andamento · ✅ pronto
 
 Observações de desempenho: com o processador livre, 60–77 fps. As vistas com o cinturão inteiro e a vista Terra–Marte ficam em 35–45 fps neste computador (Intel Iris Xe). Fica para a Fase 6, junto com o restante da renderização, um sistema de nível de detalhe mais fino.
 
-## Fase 2: Planetário ⭐ ⬜
+## Fase 2: Planetário ⭐ ✅ (2026-10-09)
 
-- [ ] **Modo "em pé":** a câmera fica na superfície, num lugar e numa hora escolhidos, e olha em volta com o mouse. Vale para a Terra, a Lua, Marte e o local de qualquer robô.
-- [ ] **Horizonte e chão:** o chão esconde o que está abaixo do horizonte, e o céu clareia durante o dia, com crepúsculo e atmosfera azul na Terra ou rosada em Marte.
-- [ ] **Constelações:** linhas e nomes (dados IAU / Stellarium), que podem ser ligados e desligados.
-- [ ] **Grades:** pontos cardeais, grade de altura e azimute, eclíptica e equador celeste.
-- [ ] **"O que está no céu agora":** o que está acima do horizonte na sua localização, ordenado por brilho.
-- [ ] **Passagens da ISS e eventos:** as próximas passagens visíveis, eclipses (com a sombra no globo) e conjunções de planetas.
-- [ ] **Constelações em 3D:** as mesmas linhas vistas de fora, mostrando que as estrelas não estão juntas.
+- [x] **Modo "em pé":** Terra, Lua, Marte e o local de qualquer robô, com 30 lugares prontos ou latitude e longitude livres. Olhar em volta e zoom de binóculo.
+- [x] **Horizonte e chão:** chão iluminado pelo Sol. Céu da Terra azul com crepúsculo; o de Marte é caramelo, com pôr do sol azul; o da Lua é preto.
+- [x] **Constelações:** 88 constelações (Stellarium, padrão IAU), 795 linhas e nomes em português.
+- [x] **Grades:** pontos cardeais, altura e azimute, equador e eclíptica.
+- [x] **"No céu agora":** o que está acima do horizonte, com altura, direção e magnitude; nascer e pôr do Sol.
+- [x] **Passagens e eventos:** passagens visíveis da ISS, da Tiangong e do Hubble em 72 h; conjunções em 12 meses; eclipses (Fase 3).
+- [x] **Constelações em 3D:** as linhas ligam posições 3D reais; lugar "Órion de lado" e camada "Constelações no espaço".
+
+Ficou para depois:
+- Refração e apagamento das estrelas perto do horizonte.
+- Relevo do horizonte (Fase 6).
 
 ## Fase 3: Viajar no tempo ✅ (2026-10-09)
 

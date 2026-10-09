@@ -10,6 +10,8 @@ import * as feeds from '../feeds.js';
 import { setOrbit } from '../nav.js';
 import { exoTarget, sbTarget, craftTarget, nextPeak } from '../targets.js';
 import * as smallbodies from '../layers/smallbodies.js';
+import * as PLN from '../planetarium.js';
+import { openPlanetarium } from './planpanel.js';
 import { v3, DEG, fmtDist, fmtLightTime, fmtNum, lightSentence, fmtYears, lookbackYears, AGE_OF_UNIVERSE, CMB_DISTANCE } from '../astro.js';
 import { ui, go, openScope, startLink, openFeeds, showerParent } from './actions.js';
 import { $ } from './dom.js';
@@ -153,6 +155,7 @@ export function renderInfo(t) {
   } else if (t.kind === 'view') {
     if (t.id === 'v:qso') notes += `<div class="note">Cada ponto é um quasar real do SDSS (750 mil), colorido pelo redshift: azul mais perto, vermelho mais longe. O formato de cunha é a área do céu que o telescópio do SDSS cobriu, vista de fora. Os mais distantes estão a ~30 bilhões de anos-luz (distância comóvel): a luz deles saiu quando o universo tinha menos de 1 bilhão de anos.</div>`;
     if (t.id === 'v:cmb') notes += `<div class="note">A esfera é a radiação cósmica de fundo, medida pelo satélite Planck: a luz mais antiga que existe, de quando o universo tinha 380 mil anos. Hoje esse lugar está a ${fmtDist(CMB_DISTANCE)}: é a borda do universo <b>observável a partir da Terra</b>, não a borda do universo. As manchas são diferenças de temperatura de 1 parte em 100 mil, as sementes de todas as galáxias. A faixa clara é a região tapada pelo disco da Via Láctea, preenchida por interpolação.</div>`;
+    if (t.id === 'v:ori3d') notes += `<div class="note">As linhas ligam as estrelas de Órion nas posições 3D reais. Daqui de lado, o desenho do caçador some: Betelgeuse está a ~550 anos-luz, Bellatrix a ~250 e as Três Marias entre 700 e 1.300. Elas só parecem formar uma figura vistas da Terra. Para esconder as linhas, desmarque "Constelações no espaço" em Camadas.</div>`;
     if (t.id === 'v:mw') notes += `<div class="note">Ninguém tem foto da Via Láctea vista de fora. Isto é um modelo feito com medidas reais: disco de ~100 mil anos-luz, barra central, 4 braços espirais, e o Sol a 26.700 anos-luz do centro, entre os braços de Perseu e de Sagitário.</div>`;
     if (t.id === 'v:web') notes += `<div class="note">Cada ponto é uma galáxia real do 2MASS Redshift Survey (43 mil), posicionada pela distância do redshift. Os filamentos e vazios são a teia cósmica. A faixa vazia é a "zona de evitação": o disco da Via Láctea tapa essa parte do céu.</div>`;
   } else {
@@ -171,7 +174,12 @@ export function renderInfo(t) {
     if (t.kind === 'sky') notes += `<div class="note">O SIMBAD não tem distância medida para este objeto, então não dá para viajar até ele. Dá para observá-lo no telescópio.</div>`;
     extra += `<div id="photoBox"></div>`;
   }
+  // no planetário: onde está no céu de quem está em pé
+  const aa = PLN.altAzOf(t.pos());
+  if (aa) dl = row('No seu céu', aa.alt > 0 ? `${fmtNum(aa.alt, 0)}° de altura, para o ${PLN.azName(aa.az)}` : `abaixo do horizonte (${fmtNum(aa.alt, 0)}°)`) + dl;
   h += `<dl>${dl}</dl>${notes}${extra}`;
+  const skyHere = t.craft?.kind === 'surface' ? [t.craft.body, t.craft.lat, t.craft.lon, t.craft.name] : t.body && ['Earth', 'Moon', 'Mars'].includes(t.body.key) ? [t.body.key] : null;
+  if (skyHere && !PLN.PL.active) h += `<div class="actions"><button id="aSky" title="Ficar em pé aí e ver o céu (P)">🌅 Ver o céu daqui</button></div>`;
   // transmissões deste aparelho e contato ao vivo com a Rede de Espaço Profundo
   const chans = feeds.channelsFor(t);
   if (t.craft?.kind === 'probe' || t.craft?.kind === 'surface') h += `<div id="dsnLive" class="lighttime small"></div>`;
@@ -192,6 +200,10 @@ export function renderInfo(t) {
     });
   }
   if (t.kind === 'sb') wireSb(t);
+  if ($('aSky')) $('aSky').onclick = () => {
+    if (skyHere.length > 1) openPlanetarium(...skyHere);
+    else { const k = skyHere[0], p = k === 'Earth' ? null : PLN.PRESETS[k][0]; p ? openPlanetarium(k, p[1], p[2], p[0]) : openPlanetarium('Earth', PLN.PL.lat, PLN.PL.lon, PLN.PL.name); }
+  };
   if (t.kind === 'shower') {
     $('aRadiant').onclick = () => scope.open({ ra: t.shower.ra, dec: t.shower.dec, fovDeg: 40, name: `Radiante das ${t.shower.name}` });
     const p = showerParent(t.shower);

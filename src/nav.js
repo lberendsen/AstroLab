@@ -131,8 +131,17 @@ function updateFlight(dt) {
   }
 }
 
+// Modo "em pé" (planetário): quem controla a câmera é o módulo do planetário; aqui só entregamos o mouse e a roda
+export const ground = { update: null };
+
 export function update(dt) {
   if (nav.flight) { updateFlight(dt); return; }
+  if (nav.mode === 'ground' && ground.update) {
+    ground.update(dt, rotVel[0], rotVel[1], zoomVel);
+    if (dragging) { fling = [...rotVel]; rotVel = [0, 0]; } else { const k = Math.pow(0.004, dt); rotVel = [rotVel[0] * k, rotVel[1] * k]; }
+    zoomVel *= Math.pow(0.002, dt);
+    return;
+  }
   // rotação com inércia
   const [rx, ry] = rotVel;
   if (Math.abs(rx) + Math.abs(ry) > 1e-5) {

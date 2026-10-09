@@ -12,6 +12,8 @@ import { qsoTarget, sbTarget, cometTarget, astTarget } from './targets.js';
 import * as smallbodies from './layers/smallbodies.js';
 import { SB, showSB, bodyPos } from './layers/smallbodies.js';
 import { labelCandidates as linkLabels } from './link.js';
+import * as PLN from './planetarium.js';
+import { labelCandidates as plLabels } from './planetarium.js';
 import { AU, DEG, v3 } from './astro.js';
 
 const root = document.getElementById('labels');
@@ -146,7 +148,8 @@ export function update() {
   if (frame++ % 12 === 0) buildSlow();
   const show = F.layers.labels !== false;
   let cands = [...fastCandidates(), ...slow];
-  cands.push(...linkLabels());
+  cands.push(...linkLabels(), ...plLabels());
+  if (PLN.PL.active) cands = cands.filter(PLN.labelFilter);
   // de muito longe, marca onde nós estamos
   if (v3.len(F.cam) > 3e7) cands.push({ id: 'home', pos: [0, 0, 0], name: 'Você está aqui (Via Láctea)', cls: 'sel', prio: 900, make: () => bodyTarget('Earth') });
   if (selectedT) cands.push({ id: selectedT.id, pos: selectedT.pos(), name: selectedT.name, cls: 'sel', prio: 1000, radius: selectedT.radius, make: () => selectedT });

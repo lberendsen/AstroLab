@@ -215,10 +215,34 @@ async function cmb() {
 async function satellites() { await buildSatellites(DATA, RAW); }
 async function spacecraft() { await buildSpacecraft(DATA); }
 
+// ---------------------------------------------------------------- Constelações (Stellarium, padrão IAU)
+// Linhas como pares de índices de estrela do HYG (os mesmos índices de stars-pos.bin)
+async function constellations() {
+  const csv = await download('https://raw.githubusercontent.com/astronexus/HYG-Database/main/hyg/CURRENT/hygdata_v41.csv', path.join(RAW, 'hyg.csv'));
+  const rows = parseCSV(csv).filter(r => r.id !== '0' && +r.dist > 0 && +r.dist < 100000); // mesmo filtro de stars()
+  const byHip = new Map();
+  rows.forEach((r, i) => { if (r.hip) byHip.set(+r.hip, i); });
+  const j = JSON.parse(await download('https://raw.githubusercontent.com/Stellarium/stellarium/master/skycultures/modern_iau/index.json', path.join(RAW, 'constellations-iau.json')));
+  const out = [];
+  let missing = 0;
+  for (const c of j.constellations) {
+    const abbr = c.id.split(' ').pop();
+    const segs = [];
+    for (const poly of c.lines) for (let k = 0; k + 1 < poly.length; k++) {
+      const a = byHip.get(poly[k]), b = byHip.get(poly[k + 1]);
+      if (a == null || b == null) { missing++; continue; }
+      segs.push(a, b);
+    }
+    out.push({ abbr, name: c.common_name?.native || abbr, segs });
+  }
+  fs.writeFileSync(path.join(DATA, 'constellations.json'), JSON.stringify(out));
+  console.log(`constelações: ${out.length}, ${out.reduce((s, c) => s + c.segs.length / 2, 0)} linhas (${missing} sem estrela no catálogo)`);
+}
+
 async function smallbodies() { await buildSmallBodies(DATA, RAW); }
 async function history() { await buildHistory(DATA, RAW); }
 
-const steps = { stars, galaxies, exoplanets, curated, textures, quasars, cmb, smallbodies, history, satellites, spacecraft };
+const steps = { stars, constellations, galaxies, exoplanets, curated, textures, quasars, cmb, smallbodies, history, satellites, spacecraft };
 const only = process.argv.slice(2).filter(a => !a.startsWith('--'));
 for (const [k, f] of Object.entries(steps)) if (!only.length || only.includes(k)) await f();
 console.log('pronto.');

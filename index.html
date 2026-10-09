@@ -52,6 +52,27 @@
   <div id="neoBody"></div>
 </aside>
 
+<aside id="planPanel" class="panel" hidden>
+  <button class="close" id="plClose" title="Esconder o painel (continua no planetário)">×</button>
+  <h2>🌅 Planetário</h2>
+  <div class="row"><select id="plBody"><option value="Earth">Terra</option><option value="Moon">Lua</option><option value="Mars">Marte</option></select>
+    <select id="plLoc" style="flex:1"></select></div>
+  <div class="row"><input id="plLat" placeholder="latitude" size="7"><input id="plLon" placeholder="longitude" size="7"><button id="plGo">Ir</button><button id="plMe" title="Usar a localização do navegador">📍</button></div>
+  <p id="plStatus" class="small"></p>
+  <div class="chips plShow">
+    <label><input type="checkbox" data-plshow="lines"> Constelações</label>
+    <label><input type="checkbox" data-plshow="names"> Nomes</label>
+    <label><input type="checkbox" data-plshow="altaz"> Grade</label>
+    <label><input type="checkbox" data-plshow="eqecl"> Equador e eclíptica</label>
+    <label><input type="checkbox" data-plshow="atmo"> Atmosfera</label>
+    <label><input type="checkbox" data-plshow="ground"> Chão</label>
+  </div>
+  <div class="tabs"><button data-pltab="up">No céu agora</button><button data-pltab="iss">Estações espaciais</button><button data-pltab="conj">Conjunções</button></div>
+  <div id="plList"></div>
+  <p class="muted small">Arraste para olhar em volta; a roda do mouse faz zoom (como um binóculo). Acelere o tempo para ver o céu girar.</p>
+  <button id="plExit">Sair do planetário</button>
+</aside>
+
 <aside id="timePanel" class="panel" hidden>
   <button class="close" id="tpClose">×</button>
   <h2>🕰️ Tempo</h2>
@@ -124,6 +145,7 @@
 
 <nav id="bar">
   <button id="btnPlaces" title="Lugares legais (L)">✦ Lugares</button>
+  <button id="btnPlan" title="Planetário: ver o céu de um lugar na Terra, na Lua ou em Marte (P)">🌅 Planetário</button>
   <button id="btnMode" title="Alternar entre orbitar o alvo e voar livre (Tab)">⟲ Orbitar</button>
   <div class="group" title="Velocidade do tempo">
     <button id="tSlower" title="Mais devagar ( , )">◀◀</button>
@@ -173,6 +195,7 @@
     <tr><td>Shift</td><td>turbo ×20</td></tr>
     <tr><td>G</td><td>ir até o selecionado · <b>T</b> telescópio · <b>L</b> lugares</td></tr>
     <tr><td>/</td><td>procurar</td></tr>
+    <tr><td>P</td><td>planetário: ficar em pé na Terra, na Lua ou em Marte e ver o céu daí</td></tr>
     <tr><td>Y</td><td>tempo: escolher a data, eclipses e replays de missões</td></tr>
     <tr><td>X</td><td>transmissões: o que os satélites, telescópios e robôs mandam para a Terra</td></tr>
     <tr><td>V</td><td>onde fica o objeto selecionado, visto da Terra (linha Terra ↔ objeto)</td></tr>

@@ -11,6 +11,7 @@ import { toggleMassaroca } from './menus.js';
 import { input } from './searchbox.js';
 import { perf } from './perf.js';
 import { openTime, stopReplay } from './timepanel.js';
+import * as PLN from '../planetarium.js';
 import { $, toast } from './dom.js';
 
 export function wireControls(onTimeChange) {
@@ -56,12 +57,13 @@ export function wireControls(onTimeChange) {
     if (scope.isOpen()) { if (e.key === 'Escape') scope.close(); return; }
     if (!$('viewer').hidden) return; // o visualizador de imagens tem as próprias teclas
     switch (e.key) {
-      case 'Tab': e.preventDefault(); toggleMode(); break;
+      case 'Tab': e.preventDefault(); if (!PLN.PL.active) toggleMode(); break;
       case '/': e.preventDefault(); input.focus(); input.select(); break;
       case 'g': case 'G': go(ui.selected); break;
       case 't': case 'T': openScope(ui.selected); break;
       case 'l': case 'L': $('btnPlaces').click(); break;
       case 'x': case 'X': $('btnFeeds').click(); break;
+      case 'p': case 'P': $('btnPlan').click(); break;
       case 'y': case 'Y': $('timePanel').hidden ? openTime() : ($('timePanel').hidden = true); break;
       case 'v': case 'V': linkMode.link.target ? linkMode.stop() : startLink(ui.selected); break;
       case 'm': case 'M': toggleMassaroca(); break;

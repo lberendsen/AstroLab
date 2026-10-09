@@ -106,7 +106,7 @@ export function stop() {
 }
 
 // ---------------------------------------------------------------- painel
-const CONST_PT = {
+export const CONST_PT = {
   And: 'Andrômeda', Ant: 'Máquina Pneumática', Aps: 'Ave do Paraíso', Aqr: 'Aquário', Aql: 'Águia', Ara: 'Altar', Ari: 'Áries', Aur: 'Cocheiro', Boo: 'Boieiro',
   Cae: 'Buril', Cam: 'Girafa', Cnc: 'Câncer', CVn: 'Cães de Caça', CMa: 'Cão Maior', CMi: 'Cão Menor', Cap: 'Capricórnio', Car: 'Quilha', Cas: 'Cassiopeia',
   Cen: 'Centauro', Cep: 'Cefeu', Cet: 'Baleia', Cha: 'Camaleão', Cir: 'Compasso', Col: 'Pomba', Com: 'Cabeleira de Berenice', CrA: 'Coroa Austral',

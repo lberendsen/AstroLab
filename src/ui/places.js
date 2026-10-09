@@ -3,9 +3,14 @@ import * as search from '../search.js';
 import { v3, gal2eq, GALACTIC_CENTER } from '../astro.js';
 import { go } from './actions.js';
 import { openNeo } from './neo.js';
+import { openPlanetarium } from './planpanel.js';
+import { PL, PRESETS } from '../planetarium.js';
+import { radec2xyz } from '../astro.js';
 import { $ } from './dom.js';
 
 const PLACES = [
+  ['Planetário: o céu de outros lugares', [['@plhere'], ['@pl:Earth#10', 'céu mais escuro da Terra'], ['@pl:Earth#18', 'o céu gira em volta de você'], ['@pl:Moon#0', 'a Terra parada no céu'],
+    ['@pl:Mars#0', 'pôr do sol azul'], ['@const3d', 'as estrelas não estão juntas']]],
   ['Sistema Solar', [['Terra'], ['Lua'], ['Sol'], ['Marte'], ['Júpiter'], ['Saturno'], ['Urano'], ['Netuno'], ['Plutão']]],
   ['Feito pelo homem', [['Estação Espacial Internacional (ISS)'], ['Estação Espacial Tiangong'], ['Telescópio Espacial Hubble'], ['Telescópio Espacial James Webb'],
     ['Voyager 1', 'o mais distante'], ['Voyager 2'], ['New Horizons'], ['Parker Solar Probe', 'o mais rápido'], ['Juno'],
@@ -29,6 +34,19 @@ const PLACES = [
 // Vistas especiais (não são objetos do catálogo)
 export function resolvePlace(q) {
   if (q === '@neo') return { name: '☄️ Próximas aproximações', action: openNeo };
+  if (q.startsWith('@pl:')) {
+    const [body, i] = q.slice(4).split('#'), p = PRESETS[body][+i];
+    return { name: `🌅 ${p[0]}`, action: () => openPlanetarium(body, p[1], p[2], p[0]) };
+  }
+  if (q === '@plhere') return { name: '🌅 O céu daqui, agora', action: () => openPlanetarium('Earth', PL.lat, PL.lon, PL.name) };
+  if (q === '@const3d') {
+    // Órion de lado: as estrelas do desenho estão de 240 a 1.300 anos-luz da Terra
+    const ori = radec2xyz(84, 0, 250);
+    return { name: '✨ Constelações em 3D: Órion de lado', action: () => {
+      PL.show.space = true; PL.show.only = 'Ori';
+      go({ id: 'v:ori3d', name: 'Órion vista de lado', kind: 'view', kindLabel: 'Constelações em 3D', pos: () => ori, radius: 0, viewDist: 420, arriveDir: v3.norm([0.25, -0.1, 1]) });
+    } };
+  }
   if (q === '@milkyway') {
     // chega por cima do disco, inclinado, com o lado do Sol à frente
     const arriveDir = v3.norm(v3.add(v3.scale(gal2eq([0, 0, 1]), 0.8), v3.scale(gal2eq([-1, 0, 0]), 0.6)));

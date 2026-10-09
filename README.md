@@ -18,6 +18,7 @@ a busca no SIMBAD e o telescópio.
 | Roda do mouse | aproximar / afastar |
 | Clique / duplo clique | selecionar / viajar até lá |
 | `Tab` | alternar entre orbitar e voar livre (`W A S D`, `R F`, `Q E`, `Shift` = turbo) |
+| `P` | Planetário: o céu de um lugar da Terra, da Lua ou de Marte |
 | `Y` | Tempo: data, eclipses e replays de missões |
 | `X` | Transmissões: imagens e sinais dos aparelhos do catálogo |
 | `V` | "Onde fica, visto da Terra": linha Terra ↔ objeto selecionado |
@@ -83,6 +84,28 @@ O painel da esquerda mostra:
 - a direção dele na Via Láctea;
 - a distância ao Sol no céu, para objetos do Sistema Solar;
 - a posição agora para quem está em São Paulo (ou na sua localização, pelo botão 📍): se está acima do horizonte, em que direção e a altura máxima que alcança.
+
+### Planetário (Fase 2)
+
+O botão **🌅 Planetário** (tecla `P`) põe você em pé num lugar da Terra, da Lua ou de Marte, na data simulada. A ficha dos robôs e pousos tem o botão "Ver o céu daqui".
+
+- **Olhar em volta:** arrastar o mouse; a roda faz zoom de 110° a 1°, como um binóculo.
+- **Lugares:** capitais brasileiras, observatórios, os polos e lugares da Lua e de Marte, ou qualquer latitude e longitude. O 📍 usa a sua localização.
+- **Céu:** chão no lugar do planeta.
+  - **Na Terra:** atmosfera que clareia com o Sol, crepúsculo e halo.
+  - **Em Marte:** céu cor de caramelo e pôr do sol azul.
+  - **Na Lua:** céu preto mesmo de dia.
+- **Camadas:** linhas e nomes das 88 constelações (Stellarium, padrão IAU), grade de altura e azimute, equador celeste, eclíptica e pontos cardeais.
+- **No céu agora:** o que está acima do horizonte, com altura, direção e magnitude. Na Terra também mostra o nascer e o pôr do Sol.
+- **Estações espaciais:** passagens visíveis da ISS, da Tiangong e do Hubble nas próximas 72 h (a estação iluminada e o céu escuro); clicar leva ao momento da passagem.
+- **Conjunções:** encontros de planetas e da Lua nos próximos 12 meses; clicar leva ao melhor horário para ver.
+- **Constelações em 3D:** as linhas ligam as posições 3D reais das estrelas. Em **Camadas → Constelações no espaço**, ou no lugar "Órion de lado", dá para ver que as estrelas de uma constelação estão a distâncias muito diferentes.
+
+Limites:
+
+- **Refração e brilho:** não há refração atmosférica nem apagamento das estrelas perto do horizonte.
+- **Chão:** é plano, sem relevo; o relevo fica para a Fase 6.
+- **Estrelas:** 24 das 819 linhas de constelação ficaram de fora, porque usam estrelas que não estão no catálogo HYG.
 
 ### Viajar no tempo (Fase 3)
 

@@ -6,6 +6,7 @@ import * as galaxies from '../layers/galaxies.js';
 import * as sats from '../layers/sats.js';
 import * as craft from '../layers/craft.js';
 import * as smallbodies from '../layers/smallbodies.js';
+import { PL } from '../planetarium.js';
 import { BANDS } from '../surveys.js';
 import { fmtNum } from '../astro.js';
 import { $, toast } from './dom.js';
@@ -22,6 +23,9 @@ export function buildLayersMenu() {
     `<h3>Brilho das estrelas</h3><input type="range" id="starGain" min="4" max="12" step="0.1" value="${stars.starUniforms.uLimit.value}">` +
     `<h3>Brilho das galáxias</h3><input type="range" id="galGain" min="9" max="18" step="0.1" value="${galaxies.galSettings.limit}">`;
   for (const cb of m.querySelectorAll('[data-layer]')) cb.onchange = () => { F.layers[cb.dataset.layer] = cb.checked; };
+  m.insertAdjacentHTML('beforeend', `<label><input type="checkbox" id="constSpace"> Constelações no espaço (linhas 3D)</label>`);
+  $('constSpace').onchange = e => { PL.show.space = e.target.checked; PL.show.only = null; };
+  setInterval(() => { if ($('constSpace')) $('constSpace').checked = PL.show.space; }, 1000);
   buildHumanMenu(m);
   $('starGain').oninput = e => { stars.starUniforms.uLimit.value = +e.target.value; };
   $('galGain').oninput = e => { galaxies.galSettings.limit = +e.target.value; };

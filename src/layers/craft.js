@@ -303,7 +303,7 @@ export function update() {
     if (!p) return;
     pa[i * 3] = p[0] - F.cam[0]; pa[i * 3 + 1] = p[1] - F.cam[1]; pa[i * 3 + 2] = p[2] - F.cam[2];
     const d = v3.dist(F.cam, p);
-    if (d < 4000 * (c.size || 5) * M_PC) near.push([d, c]);
+    if (vis && d < 4000 * (c.size || 5) * M_PC) near.push([d, c]);
   });
   posAttr.needsUpdate = colAttr.needsUpdate = true;
   points.visible = F.layers.solar !== false;
