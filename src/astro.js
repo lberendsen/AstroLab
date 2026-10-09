@@ -82,6 +82,7 @@ export function fmtDist(pc) {
 }
 export function fmtLightTime(pc) {
   const s = pc * PC_KM / 299792.458;
+  if (s < 1) return `${nf(s, 2)} segundo`;
   if (s < 60) return `${nf(s, 1)} segundos`;
   if (s < 3600) return `${nf(s / 60, 1)} minutos`;
   if (s < 86400) return `${nf(s / 3600, 1)} horas`;

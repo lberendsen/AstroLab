@@ -1,7 +1,7 @@
 // Rótulos HTML projetados sobre o 3D e seleção por clique.
 import * as THREE from 'three';
 import { F, camera } from './engine.js';
-import { DB, starPos } from './data.js';
+import { DB, starPos, STARTIME } from './data.js';
 import { BODIES } from './layers/solar.js';
 import * as systems from './layers/systems.js';
 import { bodyTarget, starTarget, curatedTarget, galTarget, exoTarget, craftTarget, satTarget } from './targets.js';
@@ -63,7 +63,7 @@ function buildSlow() {
     if (i === S.sunIndex) continue;
     const n0 = inf.names[0];
     if (!n0 || /^(HIP|HD|Gl|GJ|Wo|NN) /.test(n0)) continue;
-    const x = S.pos[i * 3] - cx, y = S.pos[i * 3 + 1] - cy, z = S.pos[i * 3 + 2] - cz;
+    const yr = STARTIME.years, x = S.pos[i * 3] + S.vel[i * 3] * yr - cx, y = S.pos[i * 3 + 1] + S.vel[i * 3 + 1] * yr - cy, z = S.pos[i * 3 + 2] + S.vel[i * 3 + 2] * yr - cz;
     const d = Math.sqrt(x * x + y * y + z * z);
     const m = S.absmag[i] + 5 * Math.log10(Math.max(d, 1e-9) / 10);
     if (m < 3.2) stars.push([m, i]);
@@ -208,7 +208,7 @@ export function pickAt(x, y) {
   const ray = rayAt(x, y);
   const cosMax = Math.cos(14 / F.pxPerRad);
   for (let i = 0; i < S.n; i++) {
-    const dx = S.pos[i * 3] - cx, dy = S.pos[i * 3 + 1] - cy, dz = S.pos[i * 3 + 2] - cz;
+    const yr = STARTIME.years, dx = S.pos[i * 3] + S.vel[i * 3] * yr - cx, dy = S.pos[i * 3 + 1] + S.vel[i * 3 + 1] * yr - cy, dz = S.pos[i * 3 + 2] + S.vel[i * 3 + 2] * yr - cz;
     const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
     const c = (dx * ray[0] + dy * ray[1] + dz * ray[2]) / d;
     if (c < cosMax) continue;

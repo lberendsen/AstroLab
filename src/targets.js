@@ -6,6 +6,7 @@ import { satPos } from './layers/sats.js';
 import { F } from './engine.js';
 import { QSO, qsoPos, sdssName } from './layers/deep.js';
 import { SB, bodyPos, astElements, diameterKm } from './layers/smallbodies.js';
+import { craftCenterAt } from './layers/craft.js';
 import * as systems from './layers/systems.js';
 import { AU, R_SUN, R_EARTH, KM, LY, DEG, v3, xyz2radec, fmtNum } from './astro.js';
 
@@ -152,16 +153,26 @@ export function showerTarget(s) {
 
 // Naves, robôs e satélites
 const CRAFT_KIND = { probe: 'Nave espacial', surface: 'Na superfície', sat: 'Satélite' };
-const BODY_PT = { Moon: 'Lua', Mars: 'Marte', Venus: 'Vênus', Earth: 'Terra', Jupiter: 'Júpiter', Sun: 'Sol' };
+const BODY_PT = { Moon: 'Lua', Mars: 'Marte', Venus: 'Vênus', Earth: 'Terra', Jupiter: 'Júpiter', Sun: 'Sol', Saturn: 'Saturno', Uranus: 'Urano', Neptune: 'Netuno', Pluto: 'Plutão' };
 export function craftTarget(c) {
   const size = (c.size || 5) * 1e-3 * KM;
   const t = {
     id: 'm:' + c.id, name: c.name, kind: 'craft', craft: c,
     pos: () => c.pos(F.date.getTime()) || (c.center === 'Sun' ? [0, 0, 0] : BODY[c.center].pos),
     radius: size / 2, viewDist: Math.max(size * 3.5, 0.012 * KM),
-    kindLabel: c.kind === 'surface' ? `Na superfície · ${BODY_PT[c.body]}` : c.kind === 'sat' ? 'Satélite da Terra' : c.center !== 'Sun' && c.approxOrbit ? `Em órbita · ${BODY_PT[c.center]}` : c.eph && c.center !== 'Sun' ? `Em órbita · ${BODY_PT[c.center] || c.center}` : CRAFT_KIND[c.kind],
+    // calculado na hora: o corpo central muda ao longo da viagem
+    get kindLabel() {
+      if (c.kind === 'natural') return 'Cometa (trajetória real do JPL)';
+      if (c.kind === 'surface') return `Na superfície · ${BODY_PT[c.body]}`;
+      if (c.kind === 'sat') return 'Satélite da Terra';
+      if (c.approxOrbit) return `Em órbita · ${BODY_PT[c.center]}`;
+      if (c.end) return 'Missão histórica';
+      const cc = craftCenterAt(c);
+      // trecho fino em volta de um planeta durante uma viagem = passagem, não órbita
+      const passing = cc !== 'Sun' && cc !== c.center;
+      return cc === 'Sun' ? CRAFT_KIND[c.kind] : passing ? `Passando por ${BODY_PT[cc] || cc}` : `Em órbita · ${BODY_PT[cc] || cc}`;
+    },
   };
-  if (c.kind === 'sat') t.kindLabel = 'Satélite da Terra';
   if (c.ground) {
     t.ground = c.ground;
     // chega em voo rasante: 20° acima do horizonte

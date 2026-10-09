@@ -52,6 +52,42 @@
   <div id="neoBody"></div>
 </aside>
 
+<aside id="timePanel" class="panel" hidden>
+  <button class="close" id="tpClose">×</button>
+  <h2>🕰️ Tempo</h2>
+  <div class="tabs"><button data-tab="date">Data</button><button data-tab="ecl">Eclipses</button><button data-tab="rep">Missões</button></div>
+  <section data-pane="date">
+    <h3>Ir para uma data</h3>
+    <div class="row"><input type="datetime-local" id="tpDate"><button id="tpGo">Ir</button></div>
+    <h3>Século 20 e 21 <span class="muted small">(planetas, naves, eclipses)</span></h3>
+    <input type="range" id="tpYear" min="1900" max="2100" step="1">
+    <div class="scale"><span>1900</span><span>2000</span><span>2100</span></div>
+    <h3>Milênios <span class="muted small">(as estrelas se movem)</span></h3>
+    <input type="range" id="tpEra" min="-100000" max="100000" step="100">
+    <div class="scale"><span>100 mil anos atrás</span><b id="tpEraLbl"></b><span>daqui a 100 mil</span></div>
+    <div class="chips">
+      <button class="chip on" data-jump="now">Agora</button>
+      <button class="chip on" data-jump="-4560" data-msg="2560 a.C.: a Grande Pirâmide de Gizé está sendo construída. A estrela polar era Thuban, do Dragão.">Pirâmides de Gizé</button>
+      <button class="chip on" data-jump="-1999">Ano 1</button>
+      <button class="chip on" data-jump="12000" data-msg="Ano 14000: por causa da precessão do eixo da Terra, a estrela polar será Vega.">Ano 14000</button>
+      <button class="chip on" data-jump="27700" data-msg="Daqui a ~28 mil anos, Alfa Centauri chega ao ponto mais perto do Sol: cerca de 3 anos-luz (hoje está a 4,3).">Alfa Centauri mais perto</button>
+      <button class="chip on" data-jump="-50000">50 mil anos atrás</button>
+      <button class="chip on" data-jump="100000">Daqui a 100 mil</button>
+    </div>
+    <p class="muted small">As estrelas se movem com as velocidades medidas pelo Hipparcos: em milênios, as constelações se deformam. A foto do céu de fundo some, porque mostra o céu de hoje. Os planetas são calculados entre os anos 200 e 3800; fora disso, ficam parados na última posição calculada. Os satélites da Terra só aparecem perto da data atual.</p>
+  </section>
+  <section data-pane="ecl" hidden><div id="tpEclList"></div></section>
+  <section data-pane="rep" hidden><div id="tpRepList"></div></section>
+</aside>
+
+<div id="replayCap" class="panel" hidden>
+  <div class="rcHead"><b id="rcTitle"></b><span id="rcDate" class="muted"></span>
+    <span class="rcBtns"><button id="rcPause" title="Pausar (espaço)">❚❚</button><button id="rcNext" title="Próximo trecho">⏭</button><button id="rcStop" title="Encerrar e voltar ao presente">✕</button></span></div>
+  <div class="rcProg"><i id="rcBar"></i></div>
+  <p id="rcText"></p>
+  <p id="rcNote" class="muted small"></p>
+</div>
+
 <section id="viewer" hidden>
   <header><h2 id="vTitle"></h2><button class="close" id="vClose" title="Fechar (Esc)">×</button></header>
   <div id="vStage">
@@ -95,6 +131,7 @@
     <button id="tFaster" title="Mais rápido ( . )">▶▶</button>
     <button id="tNow" title="Voltar para agora">agora</button>
     <span id="clock"></span>
+    <button id="btnTime" title="Tempo: data, eclipses e replays de missões (Y)">🕰️ Tempo</button>
   </div>
   <label class="sel" title="Mapa do céu de fundo em outros comprimentos de onda">Céu
     <select id="skySel"></select>
@@ -136,6 +173,7 @@
     <tr><td>Shift</td><td>turbo ×20</td></tr>
     <tr><td>G</td><td>ir até o selecionado · <b>T</b> telescópio · <b>L</b> lugares</td></tr>
     <tr><td>/</td><td>procurar</td></tr>
+    <tr><td>Y</td><td>tempo: escolher a data, eclipses e replays de missões</td></tr>
     <tr><td>X</td><td>transmissões: o que os satélites, telescópios e robôs mandam para a Terra</td></tr>
     <tr><td>V</td><td>onde fica o objeto selecionado, visto da Terra (linha Terra ↔ objeto)</td></tr>
     <tr><td>M</td><td>mostrar / esconder a massaroca de satélites em volta da Terra (detalhes em Camadas)</td></tr>

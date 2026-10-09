@@ -114,7 +114,7 @@ export function build() {
 }
 
 function buildOrbits() {
-  const now = A.MakeTime(F.date);
+  const now = A.MakeTime(ephDate());
   for (const b of BODIES) {
     if (!b.period) continue;
     const n = 360, pts = [];
@@ -129,7 +129,7 @@ function buildOrbits() {
     line.userData.body = b;
     local.add(line);
     orbitLines.push(line);
-    b.orbitBuiltAt = F.date.getTime();
+    b.orbitBuiltAt = ephDate().getTime();
   }
 }
 
@@ -158,11 +158,18 @@ function orient(b, t) {
   b.group.quaternion.setFromRotationMatrix(_m);
 }
 
+export const nowMs = () => F.date.getTime();
+// As efemérides dos planetas valem por alguns milênios; além disso (e para Plutão a biblioteca simularia a gravidade
+// passo a passo, sem fim), os planetas ficam na posição de ±3.000 anos. As estrelas continuam se movendo.
+// (a tabela de Plutão da biblioteca cobre do ano 0 ao 4000; a órbita desenhada pede ±125 anos de folga)
+const EPH_MIN = Date.UTC(200, 0, 1), EPH_MAX = Date.UTC(3800, 0, 1);
+export const ephDate = () => new Date(Math.max(EPH_MIN, Math.min(EPH_MAX, F.date.getTime())));
+export const ephFrozen = () => F.date.getTime() < EPH_MIN || F.date.getTime() > EPH_MAX;
 let posTime = null;
 export function computePositions() {
-  if (posTime === F.date.getTime()) return;
-  posTime = F.date.getTime();
-  const t = A.MakeTime(F.date);
+  if (posTime === ephDate().getTime()) return;
+  posTime = ephDate().getTime();
+  const t = A.MakeTime(ephDate());
   for (const b of BODIES) {
     if (b.kind === 'sun') b.pos = [0, 0, 0];
     else if (b.parent) b.pos = v3.add(BODY[b.parent].pos, relToParent(b, t));
@@ -205,7 +212,7 @@ export function update() {
     l.visible = showOrbits && !own && (b.parent ? d < 400 * BODY[b.parent].radius : d < 3000 * AU);
   }
   // reconstrói as órbitas se o tempo simulado andou muito
-  if (Math.abs(F.date.getTime() - (orbitLines[0]?.userData.body.orbitBuiltAt ?? 0)) > 3e10) {
+  if (Math.abs(ephDate().getTime() - (orbitLines[0]?.userData.body.orbitBuiltAt ?? 0)) > 3e10) {
     for (const l of orbitLines.splice(0)) { local.remove(l); l.geometry.dispose(); }
     buildOrbits();
   }
@@ -223,7 +230,7 @@ export function nearestSurface() {
 
 // Ascensão reta e declinação de um corpo vistas do centro da Terra
 export function geocentricRaDec(b) {
-  const t = A.MakeTime(F.date);
+  const t = A.MakeTime(ephDate());
   const g = A.GeoVector(A.Body[b.key], t, true);
   const ra = (Math.atan2(g.y, g.x) * 180 / Math.PI + 360) % 360;
   return { ra, dec: Math.asin(g.z / Math.hypot(g.x, g.y, g.z)) * 180 / Math.PI };

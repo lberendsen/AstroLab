@@ -69,13 +69,19 @@ export function renderInfo(t) {
       dl += row('Local', `${Math.abs(c.lat).toFixed(2)}° ${c.lat >= 0 ? 'N' : 'S'}, ${Math.abs(c.lon).toFixed(2)}° ${c.lon >= 0 ? 'L' : 'O'}`);
       dl += row('Agora', craft.isNight(c) ? '🌙 noite (o Sol está abaixo do horizonte)' : '☀️ dia');
     }
-    const p = t.pos(), dE = v3.dist(p, solar.BODY.Earth.pos);
-    dl += row('Distância da Terra', `<span data-live="earth">${fmtDist(dE)}</span>`);
-    if (c.center === 'Sun') dl += row('Distância do Sol', `<span data-live="sun">${fmtDist(v3.len(p))}</span>`);
-    const sp = craft.speedKmS(c);
-    if (sp) dl += row(c.center === 'Sun' ? 'Velocidade (em relação ao Sol)' : `Velocidade (em relação a ${{ Earth: 'Terra', Mars: 'Marte', Moon: 'Lua', Jupiter: 'Júpiter' }[c.center]})`, `${fmtNum(sp, 2)} km/s (${fmtNum(sp * 3600, 0)} km/h)`);
-    notes += `<div class="lighttime">Um sinal de rádio leva ${fmtLightTime(dE)} para ir da Terra até aqui.</div>`;
-    notes += `<div class="note">${c.approx ? `Posição aproximada. ${c.approx}` : c.eph ? 'Trajetória real: JPL Horizons (NASA).' : c.kind === 'surface' ? 'Local de pouso publicado pela missão.' : ''} O modelo 3D é simplificado, mas está no tamanho real (${fmtNum(c.size, 1)} m).</div>`;
+    const now = c.pos(solar.nowMs());
+    if (!now) {
+      notes += `<div class="note">${c.kind === 'surface' ? 'Na data mostrada, ainda não tinha pousado.' : 'Na data mostrada, esta nave ainda não tinha sido lançada ou a missão já tinha terminado.'} Mude a data no painel 🕰️ Tempo.</div>`;
+    } else {
+      const p = t.pos(), dE = v3.dist(p, solar.BODY.Earth.pos), cc = craft.craftCenterAt(c);
+      dl += row('Distância da Terra', `<span data-live="earth">${fmtDist(dE)}</span>`);
+      if (cc === 'Sun') dl += row('Distância do Sol', `<span data-live="sun">${fmtDist(v3.len(p))}</span>`);
+      const sp = craft.speedKmS(c);
+      const PT = { Earth: 'Terra', Mars: 'Marte', Moon: 'Lua', Jupiter: 'Júpiter', Saturn: 'Saturno', Venus: 'Vênus', Uranus: 'Urano', Neptune: 'Netuno', Pluto: 'Plutão' };
+      if (sp) dl += row(cc === 'Sun' ? 'Velocidade (em relação ao Sol)' : `Velocidade (em relação a ${PT[cc] || cc})`, `<span data-live="speed">${fmtNum(sp, 2)} km/s (${fmtNum(sp * 3600, 0)} km/h)</span>`);
+      if (c.kind !== 'natural') notes += `<div class="lighttime">Um sinal de rádio leva <span data-live="light">${fmtLightTime(dE)}</span> para ir da Terra até aqui.</div>`;
+    }
+    notes += `<div class="note">${c.approx ? `Posição aproximada. ${c.approx}` : c.segs ? 'Trajetória real: JPL Horizons (NASA).' : c.kind === 'surface' ? 'Local de pouso publicado pela missão.' : ''}${c.kind === 'natural' ? '' : ` O modelo 3D é simplificado, mas está no tamanho real (${fmtNum(c.size, 1)} m).`}</div>`;
   } else if (t.sat || t.craft?.sat) {
     const s = t.sat || t.craft.sat, c = t.craft;
     const inf = sats.satInfo(s);
@@ -179,7 +185,8 @@ export function renderInfo(t) {
   $('aFeeds') && ($('aFeeds').onclick = () => (chans.length === 1 ? feeds.open(chans[0]) : openFeeds(t)));
   if ($('dsnLive')) {
     const id = t.craft.kind === 'surface' ? { 'perseverance': 'perseverance', 'curiosity': 'curiosity' }[t.craft.id] : t.craft.id;
-    if (id) feeds.dsnFor(id).then(ls => {
+    // o contato da DSN é o de agora: só faz sentido com a data simulada perto do presente
+    if (id && Math.abs(solar.nowMs() - Date.now()) < 864e5) feeds.dsnFor(id).then(ls => {
       if (ui.selected !== t || !$('dsnLive')) return;
       $('dsnLive').innerHTML = ls.length ? `📡 Agora, ao vivo: ${ls.map(feeds.describeLink).join(' ')}` : '';
     });
@@ -227,7 +234,17 @@ export function refreshInfoDistances() {
   if (sun) sun.textContent = fmtDist(v3.len(t.pos()));
   const earth = document.querySelector('#info [data-live=earth]');
   if (earth) earth.textContent = fmtDist(v3.dist(t.pos(), solar.BODY.Earth.pos));
+  const light = document.querySelector('#info [data-live=light]');
+  if (light) light.textContent = fmtLightTime(v3.dist(t.pos(), solar.BODY.Earth.pos));
   const alt = document.querySelector('#info [data-live=alt]');
   const s = t.sat || t.craft?.sat;
   if (alt && s) alt.textContent = `${fmtNum(sats.satInfo(s).altKm, 0)} km`;
+  const spd = document.querySelector('#info [data-live=speed]');
+  if (spd && t.craft) { const v = craft.speedKmS(t.craft); if (v) spd.textContent = `${fmtNum(v, 2)} km/s (${fmtNum(v * 3600, 0)} km/h)`; }
+  // nave cujo corpo central mudou (ex.: replay passando por um planeta): refaz a ficha
+  if (t.craft?.segs) {
+    const cc = craft.craftCenterAt(t.craft);
+    if (t._cc && t._cc !== cc) renderInfo(t);
+    t._cc = cc;
+  }
 }

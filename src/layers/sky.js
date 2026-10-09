@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { F, scene, texLoader } from '../engine.js';
 import { hips2fitsURL } from '../surveys.js';
 import { v3 } from '../astro.js';
+import { yearsSinceJ2000 } from '../time.js';
 
 const mat = new THREE.ShaderMaterial({
   uniforms: { map: { value: null }, uFade: { value: 1 }, uGain: { value: 0.75 } },
@@ -61,7 +62,10 @@ export function update() {
   const r = v3.len(F.cam);
   // some entre 30 pc e 600 pc do Sol
   const t = Math.min(Math.max((r - 30) / 570, 0), 1);
-  mat.uniforms.uFade.value = (1 - t * t * (3 - 2 * t)) * (F.layers.sky === false ? 0 : 1);
+  // a foto é do céu de hoje: longe no tempo (as estrelas já se moveram), ela some
+  const yrs = Math.abs(yearsSinceJ2000());
+  const ty = Math.min(Math.max((yrs - 300) / 2700, 0), 1);
+  mat.uniforms.uFade.value = (1 - t * t * (3 - 2 * t)) * (1 - ty) * (F.layers.sky === false ? 0 : 1);
   mesh.visible = mat.uniforms.uFade.value > 0.002;
 }
 export const skyMaterial = mat;

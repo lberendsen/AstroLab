@@ -68,6 +68,27 @@ h3 { margin: 14px 0 6px; font-size: 13px; color: var(--muted); font-weight: 600;
 #feeds .skin button { font-size: 11px; padding: 2px 6px; margin-left: 4px; }
 #feeds a { color: var(--accent); }
 #dsnPanel { position: fixed; right: 12px; top: 64px; width: 360px; max-height: calc(100% - 140px); overflow: auto; padding: 14px; z-index: 5; }
+#timePanel { position: fixed; left: 12px; top: 64px; bottom: 70px; width: 380px; overflow: auto; padding: 14px; z-index: 5; }
+#timePanel section[hidden] { display: none; }
+.tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+.tabs button.on { background: rgba(127,180,255,0.25); border-color: rgba(127,180,255,0.6); }
+#timePanel input[type=range] { width: 100%; }
+#timePanel input[type=datetime-local] { flex: 1; background: #111827; border: 1px solid var(--line); border-radius: 8px; padding: 5px 6px; color-scheme: dark; }
+.scale { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+.scale b { color: var(--warm); font-weight: 500; }
+.eclRow, .repRow { padding: 6px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+.eclRow small, .repRow small { display: block; color: var(--muted); font-size: 11.5px; }
+.eclRow:hover, .repRow:hover { background: rgba(127,180,255,0.14); }
+#replayCap { position: fixed; left: 50%; transform: translateX(-50%); bottom: 76px; width: min(720px, calc(100% - 24px)); padding: 10px 14px; z-index: 6; }
+#replayCap[hidden] { display: none; }
+.rcHead { display: flex; gap: 10px; align-items: center; }
+.rcHead b { font-size: 14px; }
+.rcBtns { margin-left: auto; display: flex; gap: 4px; }
+.rcBtns button { padding: 3px 9px; }
+.rcProg { height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; margin: 6px 0; }
+.rcProg i { display: block; height: 100%; background: var(--warm); border-radius: 2px; }
+#rcText { margin: 4px 0 0; font-size: 14px; }
+#rcNote { margin: 4px 0 0; }
 #neoPanel { position: fixed; left: 12px; top: 64px; bottom: 70px; width: 380px; overflow: auto; padding: 14px; z-index: 5; }
 .neoRow { padding: 5px 6px; border-radius: 6px; font-size: 13px; cursor: pointer; }
 .neoRow small { display: block; color: var(--muted); font-size: 11.5px; }

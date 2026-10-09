@@ -83,6 +83,9 @@ export function satInfo(s) {
   return { altKm: r - RE, periodMin: TAU / s._n / 60, speedKmS: Math.sqrt(MU * (2 / r - 1 / s._a)), perigee: s._a * (1 - s.e) - RE, apogee: s._a * (1 + s.e) - RE };
 }
 
+// Os elementos orbitais públicos só valem perto da data em que foram medidos (o arrasto muda as órbitas baixas)
+export const satsValidNow = () => Math.abs(F.date.getTime() - Date.now()) < 120 * 864e5;
+
 export function build() {
   if (!SAT.n) return;
   const n = SAT.n;
@@ -182,7 +185,7 @@ export function update() {
   // some quando a Terra vira um ponto (a mais de ~5 milhões de km)
   const fade = 1 - Math.min(Math.max((d / KM - 2e6) / 3e6, 0), 1);
   uniforms.uFade.value = fade;
-  points.visible = fade > 0.01 && F.layers.solar !== false && show.cats.some(Boolean);
+  points.visible = fade > 0.01 && F.layers.solar !== false && show.cats.some(Boolean) && satsValidNow();
 }
 
 // Clique: satélite visível mais próximo do cursor

@@ -38,17 +38,16 @@ Observações de desempenho: com o processador livre, 60–77 fps. As vistas com
 - [ ] **Passagens da ISS e eventos:** as próximas passagens visíveis, eclipses (com a sombra no globo) e conjunções de planetas.
 - [ ] **Constelações em 3D:** as mesmas linhas vistas de fora, mostrando que as estrelas não estão juntas.
 
-## Fase 3: Viajar no tempo ⬜
+## Fase 3: Viajar no tempo ✅ (2026-10-09)
 
-- [ ] **Linha do tempo:** um controle deslizante de 1950 a 2100 para o Sistema Solar, com o tempo acelerado de verdade.
-- [ ] **Movimento das estrelas:** velocidades do HYG/Gaia projetadas por ±100 mil anos. O Cruzeiro do Sul e a Ursa Maior se desmancham.
-- [ ] **Replays de missões** (trajetórias históricas do Horizons, com a câmera seguindo a nave):
-  - [ ] Apollo 11
-  - [ ] Voyager 1 e 2, de 1977 até hoje
-  - [ ] New Horizons chegando a Plutão
-  - [ ] o Grand Finale da Cassini
-  - [ ] Rosetta e o cometa 67P
-- [ ] **Eclipses passados e futuros:** a sombra da Lua correndo sobre a Terra.
+- [x] **Linha do tempo:** painel 🕰️ Tempo com data livre e réguas de 1900–2100 e ±100 mil anos. Relógio de −1.000 a +1.000 anos por segundo, com datas a.C.
+- [x] **Movimento das estrelas:** velocidades do HYG aplicadas na GPU. Conferido: Alfa Centauri chega a ~2,9 anos-luz daqui a 28 mil anos (literatura: ~3).
+- [x] **Replays de missões:** Apollo 11, Voyager 1 e 2, New Horizons, Cassini, Rosetta + 67P, Galileo, Artemis I e Artemis II. Trajetórias em trechos (155 mil pontos, 7,4 MB) com passagens planetárias em alta resolução, narração e câmera automática.
+- [x] **Eclipses passados e futuros:** lista calculada e eclipses famosos. A sombra é calculada por pixel na Terra (solar), na Lua (lunar, avermelhada) e em Júpiter (sombras das luas galileanas).
+
+Ficou de fora:
+- Replays de missões sem efeméride pública: Philae, Huygens e as missões soviéticas.
+- O caminho da Apollo 11 depois do dia 17 é aproximado (órbita circular calculada).
 
 ## Fase 4: Tours guiados ⭐ ⬜
 

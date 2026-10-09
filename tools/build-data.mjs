@@ -8,6 +8,7 @@ import { buildSatellites } from './satellites.mjs';
 import { buildSpacecraft } from './spacecraft-build.mjs';
 import { comovingDistance } from '../src/astro.js';
 import { buildSmallBodies } from './smallbodies-build.mjs';
+import { buildHistory } from './history.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DATA = path.join(ROOT, 'data');
@@ -57,9 +58,11 @@ async function stars() {
   const n = rows.length;
   const pos = new Float64Array(n * 3);
   const phot = new Float32Array(n * 2); // absmag, B-V
+  const vel = new Float32Array(n * 3);  // velocidade espacial (pc/ano), para o movimento das estrelas ao longo dos milênios
   const names = [];
   rows.forEach((r, i) => {
     pos[i * 3] = +r.x; pos[i * 3 + 1] = +r.y; pos[i * 3 + 2] = +r.z;
+    vel[i * 3] = num(r.vx) || 0; vel[i * 3 + 1] = num(r.vy) || 0; vel[i * 3 + 2] = num(r.vz) || 0;
     phot[i * 2] = +r.absmag;
     phot[i * 2 + 1] = isNaN(num(r.ci)) ? 0.65 : +r.ci;
     const bayer = r.bayer ? `${r.bayer} ${r.con}` : '';
@@ -69,6 +72,7 @@ async function stars() {
   });
   fs.writeFileSync(path.join(DATA, 'stars-pos.bin'), Buffer.from(pos.buffer));
   fs.writeFileSync(path.join(DATA, 'stars-phot.bin'), Buffer.from(phot.buffer));
+  fs.writeFileSync(path.join(DATA, 'stars-vel.bin'), Buffer.from(vel.buffer));
   fs.writeFileSync(path.join(DATA, 'stars-names.json'), JSON.stringify(names));
   console.log(`estrelas: ${n}, com nome/visíveis: ${names.length}`);
 }
@@ -212,8 +216,9 @@ async function satellites() { await buildSatellites(DATA, RAW); }
 async function spacecraft() { await buildSpacecraft(DATA); }
 
 async function smallbodies() { await buildSmallBodies(DATA, RAW); }
+async function history() { await buildHistory(DATA, RAW); }
 
-const steps = { stars, galaxies, exoplanets, curated, textures, quasars, cmb, smallbodies, satellites, spacecraft };
+const steps = { stars, galaxies, exoplanets, curated, textures, quasars, cmb, smallbodies, history, satellites, spacecraft };
 const only = process.argv.slice(2).filter(a => !a.startsWith('--'));
 for (const [k, f] of Object.entries(steps)) if (!only.length || only.includes(k)) await f();
 console.log('pronto.');

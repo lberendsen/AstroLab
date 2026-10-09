@@ -135,6 +135,28 @@ const BUILD = {
     return o;
   },
   venera() { return g(new THREE.Mesh(new THREE.SphereGeometry(0.8, 24, 16), M.white).translateY(1.2), cyl(1.0, 0.25, M.grey, 0, 0.15, 0, 24), cyl(1.0, 0.06, M.dark, 0, 2.1, 0, 24)); },
+  cassini() { // corpo de 6,8 m, antena de 4 m, braço do magnetômetro de 11 m, sonda Huygens ao lado
+    const d = dish(2, 0.5, M.white); d.position.y = 3.2;
+    const o = g(cyl(0.9, 3, M.gold, 0, 1.2, 0, 12), cyl(0.5, 1.4, M.dark, 0, -0.9, 0, 12), d, rotZ(cyl(0.03, 11, M.grey, 5.5, 1.8, 0, 6), Math.PI / 2));
+    const huy = cyl(1.35, 0.6, M.gold, 1.4, 0.8, 0, 24, 0.3); huy.rotation.z = -Math.PI / 2; o.add(huy);
+    return o;
+  },
+  'apollo-stack'() { // módulo de comando e serviço (Columbia) acoplado ao módulo lunar (Eagle)
+    const o = g(cyl(0.05, 3.2, M.white, 0, 6.5, 0, 24, 1.95), cyl(1.95, 7.5, M.grey, 0, 1.4, 0, 24), cyl(0.9, 2, M.dark, 0, -3.2, 0, 24, 1.3));
+    const lm = BUILD.apollo(); lm.scale.setScalar(0.8); lm.rotation.z = Math.PI; lm.position.y = 11.5; o.add(lm);
+    return o;
+  },
+  orion() { // cápsula de 5 m e módulo de serviço europeu com 4 asas solares em X (19 m)
+    const o = g(cyl(0.6, 3.3, M.white, 0, 3.6, 0, 32, 2.5), cyl(2.05, 4, M.grey, 0, 0, 0, 32));
+    for (let k = 0; k < 4; k++) { const w = box(7, 0.05, 2, M.panel, 5.5, 0, 0); const p = g(w); p.rotation.y = k * Math.PI / 2 + Math.PI / 4; o.add(p); }
+    return o;
+  },
+  comet67p(size = 4100) { // duas "cabeças" grudadas (forma de pato), em metros
+    const s = size / 4.1;
+    const a = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), M.dark); a.scale.set(2.05 * s, 1.6 * s, 1.5 * s);
+    const b = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 32), M.dark); b.scale.set(1.3 * s, 1.15 * s, 1.05 * s); b.position.set(1.4 * s, 1.9 * s, 0.2 * s);
+    return g(a, b);
+  },
   roadster() {
     const o = g(box(3.9, 0.5, 1.8, M.red, 0, 0.6, 0), box(1.6, 0.4, 1.6, M.black, -0.3, 1.05, 0));
     for (const x of [-1.3, 1.3]) for (const z of [-0.9, 0.9]) { const w = cyl(0.33, 0.25, M.black, x, 0.33, z, 16); w.rotation.x = Math.PI / 2; o.add(w); }

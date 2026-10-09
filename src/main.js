@@ -28,6 +28,9 @@ import { buildLayersMenu, buildSkyMenu, updateSbStatus } from './ui/menus.js';
 import { wireSearch } from './ui/searchbox.js';
 import { wireControls } from './ui/keys.js';
 import { perf } from './ui/perf.js';
+import * as timepanel from './ui/timepanel.js';
+import { wireTime, tick as replayTick } from './ui/timepanel.js';
+import * as eclipse from './layers/eclipse.js';
 import { $ } from './ui/dom.js';
 
 // ---------------------------------------------------------------- inicialização
@@ -44,10 +47,10 @@ async function init() {
   step('montando a cena');
   solar.build(); solar.computePositions();
   stars.build(); galaxies.build(); milkyway.build(); systems.build();
-  sats.build(); craft.addNotableSats(); craft.build(); deep.build(); smallbodies.build();
+  sats.build(); craft.addNotableSats(); craft.build(); deep.build(); smallbodies.build(); eclipse.build();
   search.buildIndex();
   buildPlaces(); buildLayersMenu(); buildSkyMenu();
-  wireSearch(); wireFeeds(); wireControls(hud);
+  wireSearch(); wireFeeds(); wireControls(hud); wireTime();
 
   // começa olhando a Terra, com o Sol de lado
   const earth = bodyTarget('Earth');
@@ -104,6 +107,7 @@ function loop(now) {
   last = now;
   F.dt = dt;
   time.advance(dt);
+  replayTick();
   T('efemérides', () => solar.computePositions());
   T('navegação', () => navUpdate(dt));
   // leve abertura do campo de visão durante a dobra
@@ -113,7 +117,7 @@ function loop(now) {
   F.near = T('escala', computeNear);
   beginFrame();
   T('céu e estrelas', () => { sky.update(); stars.update(); galaxies.update(); milkyway.update(); });
-  T('Sistema Solar', () => solar.update());
+  T('Sistema Solar', () => { solar.update(); eclipse.update(); });
   T('exoplanetas', () => systems.update(dt));
   T('fotos', () => images.update());
   T('satélites', () => { sats.update(); sats.updateOrbitLine(local, place); });
@@ -128,16 +132,17 @@ function loop(now) {
   perf.frame(performance.now() - t0);
 }
 
+let hudCount = 0;
 function hud() {
   const dSun = v3.len(F.cam);
   let html = `Distância do Sol: <b>${dSun < 1e-9 ? '—' : fmtDist(dSun)}</b>`;
   if (nav.target) html += `<br>Até ${nav.target.name}: <b>${fmtDist(Math.max(v3.dist(F.cam, nav.target.pos()) - (nav.target.radius || 0), 0))}</b>`;
   if (nav.speed > 0) html += `<br>Velocidade: <b>${fmtSpeed(nav.speed)}</b>`;
   $('where').innerHTML = html;
-  $('clock').innerHTML = `${F.date.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}<br><small>${time.rateLabel()}</small>`;
+  $('clock').innerHTML = `${time.fmtDate()}<br><small>${time.rateLabel()}${solar.ephFrozen() ? ' · planetas fixos' : ''}</small>`;
   $('tPause').textContent = time.clock.paused ? '▶' : '❚❚';
   $('btnMode').textContent = nav.mode === 'orbit' ? '⟲ Orbitar' : '✈ Voar livre';
-  if (frameNo % 30 === 0) refreshInfoDistances();
+  if (++hudCount % 3 === 0) refreshInfoDistances();
   maybeLoadMoreAsteroids();
 }
 
@@ -158,4 +163,4 @@ init().catch(err => {
 });
 
 // para depuração no console e para o teste de fumaça
-window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies };
+window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies, time, timepanel };

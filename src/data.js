@@ -8,7 +8,7 @@ const json = async url => (await fetch(url)).json();
 
 export async function loadAll(step) {
   step('estrelas');
-  const [spos, sphot, snames] = await Promise.all([bin('data/stars-pos.bin', Float64Array), bin('data/stars-phot.bin', Float32Array), json('data/stars-names.json')]);
+  const [spos, sphot, snames, svel] = await Promise.all([bin('data/stars-pos.bin', Float64Array), bin('data/stars-phot.bin', Float32Array), json('data/stars-names.json'), bin('data/stars-vel.bin', Float32Array)]);
   step('exoplanetas');
   const hosts = await json('data/exoplanets.json');
   step('galáxias');
@@ -85,7 +85,10 @@ export async function loadAll(step) {
   for (const h of hosts) if (h.rad > 0) radius.set(h.star, h.rad);
   const hostByStar = new Map(hosts.map(h => [h.star, h]));
 
-  DB.stars = { n, nHyg: nH, pos, absmag, color, teff, info, radius, hostByStar, sunIndex };
+  // velocidade (pc/ano): as do HYG; as estrelas acrescentadas (hospedeiras de exoplanetas e o Sol) ficam paradas
+  const vel = new Float32Array(n * 3);
+  vel.set(svel.subarray(0, nH * 3));
+  DB.stars = { n, nHyg: nH, pos, vel, absmag, color, teff, info, radius, hostByStar, sunIndex };
   DB.hosts = hosts;
 
   // ---- galáxias
@@ -101,8 +104,12 @@ export async function loadAll(step) {
   DB.curated = curated;
 }
 
-// Posição de uma estrela pelo índice
-export const starPos = i => [DB.stars.pos[i * 3], DB.stars.pos[i * 3 + 1], DB.stars.pos[i * 3 + 2]];
+// Posição de uma estrela pelo índice, na data simulada (posição do ano 2000 + velocidade × tempo)
+export const STARTIME = { years: 0 };
+export const starPos = i => {
+  const S = DB.stars, y = STARTIME.years;
+  return [S.pos[i * 3] + S.vel[i * 3] * y, S.pos[i * 3 + 1] + S.vel[i * 3 + 1] * y, S.pos[i * 3 + 2] + S.vel[i * 3 + 2] * y];
+};
 export const galPos = i => [DB.gals.pos[i * 3], DB.gals.pos[i * 3 + 1], DB.gals.pos[i * 3 + 2]];
 
 // Raio estimado (pc) de uma estrela, pela luminosidade e temperatura (Stefan-Boltzmann)

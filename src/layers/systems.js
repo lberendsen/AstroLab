@@ -3,7 +3,7 @@
 // detectados por trânsito são desenhados de perfil para a Terra, como precisam estar).
 import * as THREE from 'three';
 import { F, local, place } from '../engine.js';
-import { DB, starPos, starRadiusSun } from '../data.js';
+import { DB, starPos, starRadiusSun, STARTIME } from '../data.js';
 import { AU, R_SUN, R_EARTH, v3, tempToRGB } from '../astro.js';
 import { GLOW_TEX } from './solar.js';
 
@@ -46,10 +46,10 @@ export function build() {
 // Busca a estrela mais próxima por força bruta (é rápido: ~115 mil pontos), a cada poucos quadros
 let frame = 0;
 function findNearest() {
-  const p = DB.stars.pos, n = DB.stars.n, [cx, cy, cz] = F.cam;
+  const p = DB.stars.pos, v = DB.stars.vel, yr = STARTIME.years, n = DB.stars.n, [cx, cy, cz] = F.cam;
   let best = -1, bd = Infinity;
   for (let i = 0; i < n; i++) {
-    const dx = p[i * 3] - cx, dy = p[i * 3 + 1] - cy, dz = p[i * 3 + 2] - cz;
+    const dx = p[i * 3] + v[i * 3] * yr - cx, dy = p[i * 3 + 1] + v[i * 3 + 1] * yr - cy, dz = p[i * 3 + 2] + v[i * 3 + 2] * yr - cz;
     const d = dx * dx + dy * dy + dz * dz;
     if (d < bd) { bd = d; best = i; }
   }

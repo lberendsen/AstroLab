@@ -7,7 +7,7 @@ import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { F, local } from './engine.js';
-import { BODY } from './layers/solar.js';
+import { BODY, ephDate } from './layers/solar.js';
 import { flyTo } from './nav.js';
 import { v3, AU, KM, EQ2GAL, xyz2radec, fmtDist, fmtNum, lightSentence } from './astro.js';
 
@@ -154,7 +154,7 @@ function galacticPhrase(p, d) {
 export function render() {
   const t = link.target;
   if (!t) return;
-  const time = A.MakeTime(F.date);
+  const time = A.MakeTime(ephDate());
   const P = t.pos(), E = earth();
   const geo = v3.sub(P, E), D = v3.len(geo);
   const { ra, dec } = xyz2radec(geo);

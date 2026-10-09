@@ -10,6 +10,7 @@ import { renderInfo } from './info.js';
 import { toggleMassaroca } from './menus.js';
 import { input } from './searchbox.js';
 import { perf } from './perf.js';
+import { openTime, stopReplay } from './timepanel.js';
 import { $, toast } from './dom.js';
 
 export function wireControls(onTimeChange) {
@@ -19,12 +20,13 @@ export function wireControls(onTimeChange) {
   $('btnScope').onclick = () => openScope(ui.selected);
   $('btnHelp').onclick = () => { $('help').hidden = !$('help').hidden; };
   $('btnFeeds').onclick = () => ($('feeds').hidden ? openFeeds() : ($('feeds').hidden = true));
+  $('btnTime').onclick = () => ($('timePanel').hidden ? openTime() : ($('timePanel').hidden = true));
   $('scopeClose').onclick = () => scope.close();
   $('dsnClose').onclick = () => feeds.closeDSN();
   $('tPause').onclick = () => { time.togglePause(); onTimeChange(); };
   $('tSlower').onclick = () => { time.slower(); onTimeChange(); };
   $('tFaster').onclick = () => { time.faster(); onTimeChange(); };
-  $('tNow').onclick = () => { time.now(); onTimeChange(); };
+  $('tNow').onclick = () => { stopReplay(true); time.now(); onTimeChange(); };
   for (const b of document.querySelectorAll('[data-close]')) b.onclick = () => { $(b.dataset.close).hidden = true; if (b.dataset.close === 'info') select(null); };
 
   // ---- painel "visto da Terra"
@@ -60,6 +62,7 @@ export function wireControls(onTimeChange) {
       case 't': case 'T': openScope(ui.selected); break;
       case 'l': case 'L': $('btnPlaces').click(); break;
       case 'x': case 'X': $('btnFeeds').click(); break;
+      case 'y': case 'Y': $('timePanel').hidden ? openTime() : ($('timePanel').hidden = true); break;
       case 'v': case 'V': linkMode.link.target ? linkMode.stop() : startLink(ui.selected); break;
       case 'm': case 'M': toggleMassaroca(); break;
       case 'h': case 'H': case '?': $('btnHelp').click(); break;
@@ -69,7 +72,7 @@ export function wireControls(onTimeChange) {
       case 'Escape':
         if (nav.flight) cancelFlight();
         else if (linkMode.link.target) linkMode.stop();
-        else { $('help').hidden = true; $('places').hidden = true; $('layers').hidden = true; $('feeds').hidden = true; }
+        else { $('help').hidden = true; $('places').hidden = true; $('layers').hidden = true; $('feeds').hidden = true; $('timePanel').hidden = true; }
         break;
     }
   });

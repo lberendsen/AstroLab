@@ -18,6 +18,7 @@ a busca no SIMBAD e o telescópio.
 | Roda do mouse | aproximar / afastar |
 | Clique / duplo clique | selecionar / viajar até lá |
 | `Tab` | alternar entre orbitar e voar livre (`W A S D`, `R F`, `Q E`, `Shift` = turbo) |
+| `Y` | Tempo: data, eclipses e replays de missões |
 | `X` | Transmissões: imagens e sinais dos aparelhos do catálogo |
 | `V` | "Onde fica, visto da Terra": linha Terra ↔ objeto selecionado |
 | `M` | mostrar / esconder a massaroca de satélites em volta da Terra |
@@ -82,6 +83,34 @@ O painel da esquerda mostra:
 - a direção dele na Via Láctea;
 - a distância ao Sol no céu, para objetos do Sistema Solar;
 - a posição agora para quem está em São Paulo (ou na sua localização, pelo botão 📍): se está acima do horizonte, em que direção e a altura máxima que alcança.
+
+### Viajar no tempo (Fase 3)
+
+O botão **🕰️ Tempo** (tecla `Y`) tem três abas.
+
+- **Data:** escolher qualquer data e hora.
+  - Uma régua de 1900 a 2100.
+  - Outra de 100 mil anos atrás a 100 mil anos à frente.
+  - Atalhos para momentos marcantes (as pirâmides, o ano 1, Vega como estrela polar, Alfa Centauri no ponto mais próximo).
+  - As estrelas se movem com as velocidades do catálogo (Hipparcos), e o relógio vai até 1.000 anos por segundo.
+- **Eclipses:** os próximos eclipses solares e lunares (Astronomy Engine) e alguns famosos, como Sobral 1919 e o anular de 2027 no sul do Brasil. Ao escolher um, a sombra aparece no globo, calculada ponto a ponto pela posição real do Sol, da Lua e da Terra. A Lua fica avermelhada no eclipse lunar total.
+- **Missões:** replays narrados com trajetórias reais do JPL Horizons:
+  - Apollo 11, Voyager 1 e 2 (de 1977 até hoje), New Horizons, Cassini, Rosetta e o cometa 67P, Galileo, Artemis I e Artemis II.
+  - O tempo acelera e desacelera sozinho, a câmera acompanha cada passagem por um planeta, e a barra do replay permite pausar, pular de trecho ou sair.
+
+Detalhes técnicos:
+
+- **Trajetórias em trechos (`tools/history.mjs` → `data/history.*`):** em cada passagem por um planeta, um trecho fino (10–30 min) centrado nele mostra a curva do estilingue gravitacional. Em cada data, vale o trecho mais fino disponível.
+- **Depois do fim dos dados:** só as naves que estão escapando do Sistema Solar (Voyager, Pioneer, New Horizons) seguem em linha reta; as outras somem.
+- **Robôs e pousos** só aparecem na superfície a partir da data em que pousaram.
+
+Limites:
+
+- **Planetas:** são calculados entre os anos 200 e 3800 (alcance da tabela de Plutão da biblioteca). Fora disso, ficam parados, e o relógio avisa "planetas fixos".
+- **Satélites da Terra:** só aparecem até 4 meses longe de hoje, porque as órbitas públicas envelhecem.
+- **Foto do céu de fundo:** some a mais de alguns séculos de hoje, porque é o céu atual.
+- **Apollo 11:** a trajetória até a Lua é a do terceiro estágio do foguete, que viajou junto até o dia 17 (o JPL não guarda a da cápsula). Em volta da Lua, a nave segue uma órbita circular de 110 km.
+- **Eclipses:** o contraste da penumbra é realçado para ficar visível na tela.
 
 ### Asteroides e cometas (Fase 1)
 

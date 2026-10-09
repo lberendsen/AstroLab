@@ -2,9 +2,10 @@
 // até a nave, então as constelações se deformam e as estrelas acendem ou apagam conforme você viaja.
 import * as THREE from 'three';
 import { F, scene, rteGeometry, pointsMaterial } from '../engine.js';
-import { DB } from '../data.js';
+import { DB, STARTIME } from '../data.js';
+import { yearsSinceJ2000 } from '../time.js';
 
-export const starUniforms = { uLimit: { value: 7.0 }, uFade: { value: 1 } };
+export const starUniforms = { uLimit: { value: 7.0 }, uFade: { value: 1 }, uYears: { value: 0 } };
 let points;
 
 export function build() {
@@ -12,17 +13,19 @@ export function build() {
   const g = rteGeometry(s.pos);
   g.setAttribute('absmag', new THREE.BufferAttribute(s.absmag, 1));
   g.setAttribute('color', new THREE.BufferAttribute(s.color, 3));
+  g.setAttribute('vel', new THREE.BufferAttribute(s.vel, 3));
   const mat = pointsMaterial({
     uniforms: starUniforms,
     vertex: /* glsl */`
-      uniform float uLimit;
+      uniform float uLimit, uYears;
       attribute float absmag;
       attribute vec3 color;
+      attribute vec3 vel;   // pc/ano
       varying vec3 vColor;
       varying float vAlpha;
       varying float vGlow;
       void main() {
-        vec3 rel = relPos();
+        vec3 rel = relPos() + vel * uYears;   // movimento próprio desde o ano 2000
         float d = max(length(rel), 1e-12);
         float m = absmag + 5.0 * log10(d / 10.0);
         float b = pow(10.0, -0.4 * (m - uLimit));        // fluxo relativo ao limite de visibilidade
@@ -58,4 +61,6 @@ export function build() {
 
 export function update() {
   points.visible = F.layers.stars !== false;
+  STARTIME.years = yearsSinceJ2000();
+  starUniforms.uYears.value = STARTIME.years;
 }
