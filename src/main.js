@@ -137,7 +137,7 @@ function loop(now) {
   T('naves', () => craft.update());
   T('asteroides/cometas', () => smallbodies.update());
   T('quasares/CMB', () => deep.update());
-  T('linhas', () => { linkMode.update(); if (linkMode.link.target && frameNo % 30 === 0) linkMode.render(); feeds.update(); });
+  T('linhas', () => { linkMode.update(); if (frameNo % 30 === 0 && ui.selected && !$('info').hidden && linkMode.canShow(ui.selected)) linkMode.render(ui.selected); feeds.update(); });
   T('rótulos', () => labels.update());
   $('warp').style.opacity = nav.warp.toFixed(3);
   T('desenho (CPU)', () => renderer.render(scene, camera));

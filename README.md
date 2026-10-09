@@ -24,6 +24,14 @@ e o universo distante (mais de 12 mil destinos). Um clique no nome viaja; a seta
 - **Largura:** arraste a borda direita do painel. Duplo clique na borda, o botão « ou a tecla `L` recolhem o painel
   numa faixa estreita (✦ abre de novo, 🔍 abre já na busca). A largura e o estado ficam guardados no navegador.
 
+## Ficha do selecionado
+
+Há um único lugar com informações: a ficha, uma coluna inteira ao lado dos lugares (o 3D começa depois dela).
+Ela mostra o que está **selecionado**, não importa como: clique na árvore, busca, clique num astro no espaço,
+tour ou chegada de uma viagem. Trocar a seleção atualiza a ficha. Olhar em volta sem selecionar não muda nada.
+O × fecha a ficha e devolve o espaço ao 3D. Além dos dados e das opções (ir até lá, telescópio, orbitar, céu daqui,
+transmissões), a ficha tem a seção **Visto da Terra** (abaixo).
+
 ## Controles
 
 | | |
@@ -33,11 +41,11 @@ e o universo distante (mais de 12 mil destinos). Um clique no nome viaja; a seta
 | Clique / duplo clique | selecionar / viajar até lá |
 | `Tab` | alternar entre orbitar e voar livre (`W A S D`, `R F`, `Q E`, `Shift` = turbo) |
 | `U` | Tours guiados |
-| `K` | Fenômenos: ondas gravitacionais, explosões, buracos negros, pulsares, estruturas |
+| `K` | abre os lugares em Fenômenos extremos: ondas gravitacionais, explosões, buracos negros, pulsares, estruturas |
 | `P` | Planetário: o céu de um lugar da Terra, da Lua ou de Marte |
 | `Y` | Tempo: data, eclipses e replays de missões |
 | `X` | Transmissões: imagens e sinais dos aparelhos do catálogo |
-| `V` | "Onde fica, visto da Terra": linha Terra ↔ objeto selecionado |
+| `V` | "Visto da Terra": linha Terra ↔ objeto selecionado (lado a lado) |
 | `M` | mostrar / esconder a massaroca de satélites em volta da Terra |
 | `/` | procurar · `G` ir até o selecionado · `T` telescópio · `L` recolher/abrir os lugares · `H` ajuda |
 | `espaço` `,` `.` | pausar / desacelerar / acelerar o tempo |
@@ -89,14 +97,15 @@ Notas:
 
 ### Onde fica, visto da Terra
 
-Botão na ficha de qualquer objeto, ou tecla `V`. Desenha uma linha da superfície da Terra até o objeto e oferece duas câmeras:
+Seção da ficha de qualquer objeto (menos a Terra). Os botões dela, ou a tecla `V`, desenham uma linha da superfície da
+Terra até o objeto, com duas câmeras; ✕ "Sair desta vista" (ou `Esc`, ou selecionar outra coisa) encerra:
 
 - **Lado a lado:** a Terra numa ponta, o objeto na outra e a distância no meio. A câmera fica um pouco acima do plano das órbitas.
 - **Olhar da Terra:** a câmera fica atrás da Terra, com o planeta embaixo na tela e a linha subindo até o objeto, na direção em que ele está no céu.
 
-O painel da esquerda mostra:
+A seção mostra (sem repetir o que já está na ficha, como a distância e o tempo da luz):
 
-- a constelação em que o objeto aparece;
+- a constelação em que o objeto aparece e as coordenadas;
 - a direção dele na Via Láctea;
 - a distância ao Sol no céu, para objetos do Sistema Solar;
 - a posição agora para quem está em São Paulo (ou na sua localização, pelo botão 📍): se está acima do horizonte, em que direção e a altura máxima que alcança.

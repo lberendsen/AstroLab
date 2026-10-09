@@ -1,6 +1,6 @@
 // "Onde fica, visto da Terra": linha da Terra até o objeto selecionado, duas câmeras (lado a lado e olhar da Terra)
-// e um painel que traduz a posição em coisas do céu de quem está na Terra: constelação, direção na Via Láctea,
-// e se dá para ver agora, de onde você está.
+// e a seção "Visto da Terra" da ficha, que traduz a posição em coisas do céu de quem está na Terra: constelação,
+// direção na Via Láctea e se dá para ver agora, de onde você está.
 import * as THREE from 'three';
 import * as A from 'astronomy-engine';
 import { Line2 } from 'three/addons/lines/Line2.js';
@@ -9,7 +9,7 @@ import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { F, local } from './engine.js';
 import { BODY, ephDate } from './layers/solar.js';
 import { flyTo } from './nav.js';
-import { v3, AU, KM, EQ2GAL, xyz2radec, fmtDist, fmtNum, lightSentence } from './astro.js';
+import { v3, AU, KM, EQ2GAL, xyz2radec, fmtDist, fmtNum } from './astro.js';
 
 export const link = { target: null, mode: null };
 const $ = id => document.getElementById(id);
@@ -94,15 +94,12 @@ export function fromEarth() {
 export function start(t) {
   link.target = t;
   F.linkActive = true;
-  $('linkPanel').hidden = false;
-  const near = separation() < 25 * R_E();
-  $('lkEarth').disabled = near; // objeto colado na Terra: a Terra taparia a vista
   sideBySide();
 }
 export function stop() {
   link.target = null; link.mode = null; F.linkActive = false;
-  $('linkPanel').hidden = true;
   if (line) line.visible = false;
+  syncButtons();
 }
 
 // ---------------------------------------------------------------- painel
@@ -151,9 +148,31 @@ function galacticPhrase(p, d) {
     : 'longe da faixa da Via Láctea no céu, numa região limpa de poeira';
 }
 
-export function render() {
-  const t = link.target;
-  if (!t) return;
+// A seção pode ser mostrada para qualquer objeto (exceto a Terra, vistas e pontos do céu sem distância)
+export const canShow = t => t && t.kind !== 'sky' && t.kind !== 'view' && t.id !== 'b:Earth';
+export const tooClose = t => v3.dist(t.pos(), earth()) < 25 * R_E();   // a Terra taparia a vista "olhar da Terra"
+
+// HTML da seção "Visto da Terra" da ficha; os botões são ligados pela ficha (info.js)
+export function sectionHTML(t) {
+  return `<section class="earthSec"><h3>Visto da Terra</h3><div id="earthBody">${bodyHTML(t)}</div>` +
+    `<div class="actions"><button data-lk="side" title="A Terra numa ponta, o objeto na outra, com uma linha ligando os dois (V)">↔ Lado a lado</button>` +
+    `<button data-lk="earth" title="Atrás da Terra, olhando para o objeto"${tooClose(t) ? ' disabled' : ''}>🌍 Olhar da Terra</button>` +
+    `<button data-lk="loc" title="Calcular a visibilidade a partir de onde você está">📍 Usar minha localização</button>` +
+    `<button data-lk="stop" title="Sair da vista Terra–objeto (Esc)" hidden>✕ Sair desta vista</button></div></section>`;
+}
+// atualiza os números da seção aberta (a posição muda com o tempo) e o estado dos botões
+export function render(t = link.target) {
+  const box = $('earthBody');
+  if (box && t) box.innerHTML = bodyHTML(t);
+  syncButtons();
+}
+function syncButtons() {
+  for (const b of document.querySelectorAll('#info [data-lk]')) {
+    if (b.dataset.lk === 'stop') b.hidden = !link.target;
+    else b.classList.toggle('on', !!link.target && b.dataset.lk === link.mode);
+  }
+}
+function bodyHTML(t) {
   const time = A.MakeTime(ephDate());
   const P = t.pos(), E = earth();
   const geo = v3.sub(P, E), D = v3.len(geo);
@@ -164,7 +183,7 @@ export function render() {
   const sunH = A.Horizon(time, obs, ...(() => { const s = A.Equator(A.Body.Sun, time, obs, true, true); return [s.ra, s.dec]; })(), 'normal');
   const near = D < 25 * R_E();
   const rows = [];
-  rows.push(['Distância da Terra', near ? `${fmtDist(Math.max(D - R_E(), 0))} acima da superfície` : fmtDist(D)]);
+  // a distância da Terra não se repete aqui: a ficha já mostra (no Sistema Solar) ou é igual à do Sol (fora dele)
   rows.push(['No céu, fica em', `${CONST_PT[c.symbol] || c.name} <small class="muted">(${c.name})</small>`]);
   const gal = galacticPhrase(P, v3.len(P));
   if (gal) rows.push(['Na Via Láctea', gal]);
@@ -188,20 +207,17 @@ export function render() {
       vis += ` Chega a ${fmtNum(maxAlt, 0)}° de altura${90 - Math.abs(loc.lat + dec) < 0 && Math.sign(loc.lat) === Math.sign(dec) ? ' e nunca se põe' : ''}.`;
     }
   }
-  $('linkBody').innerHTML =
-    `<div class="kind">Visto da Terra</div><h2>${t.name}</h2>` +
-    `<dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>` +
-    `<h3>De ${loc.name}</h3><p class="small">${vis}${isNight ? ' É noite aí.' : ''}</p>` +
-    (!near && D > 0.5 ? `<p class="small lighttime">${lightSentence(D, t.z || t.curated?.z || t.simbad?.z)}</p>` : '');
-  for (const b of document.querySelectorAll('#linkPanel [data-lk]')) b.classList.toggle('on', b.dataset.lk === link.mode);
+  // (a frase sobre a luz já está na ficha, logo acima)
+  return `<dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>` +
+    `<p class="small"><b>De ${loc.name}:</b> ${vis}${isNight ? ' É noite aí.' : ''}</p>`;
 }
 
-export function useMyLocation(onDone) {
+export function useMyLocation(onDone, t) {
   if (!navigator.geolocation) { onDone?.(false); return; }
   navigator.geolocation.getCurrentPosition(p => {
     loc = { lat: p.coords.latitude, lon: p.coords.longitude, name: 'sua localização' };
     try { localStorage.setItem('astrolab.loc', JSON.stringify(loc)); } catch { /* sem armazenamento */ }
-    render(); onDone?.(true);
+    render(t || link.target); onDone?.(true);
   }, () => onDone?.(false), { timeout: 10000 });
 }
 

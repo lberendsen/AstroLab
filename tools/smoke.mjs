@@ -48,9 +48,10 @@ const STOPS = [
   { name: 'via-lactea', run: `astro.places.goPlace('Via Láctea')`, wait: 11000 },
   { name: 'andromeda', run: go('M 31'), wait: 12000 },
   { name: 'quasares', run: `astro.places.goPlace('Mapa dos quasares')`, wait: 12000 },
-  { name: 'visto-da-terra', run: `astro.select(astro.search.searchLocal('Marte',1)[0].make()); document.getElementById('aLink').click()`, wait: 9000,
-    check: `!document.getElementById('linkPanel').hidden || 'painel "visto da Terra" não abriu'` },
-  { name: 'massaroca', run: `document.getElementById('lkClose').click(); ${go('Terra')}; setTimeout(() => dispatchEvent(new KeyboardEvent('keydown', { key: 'm', code: 'KeyM' })), 7000)`, wait: 9000 },
+  { name: 'visto-da-terra', run: `astro.select(astro.search.searchLocal('Marte',1)[0].make()); document.querySelector('#info [data-lk=side]').click()`, wait: 9000,
+    // a ficha é uma coluna só, ao lado dos lugares, com a seção "Visto da Terra"; o 3D começa depois dela
+    check: `astro.F.linkActive && /Visto da Terra/.test(document.getElementById('info').textContent) && Math.abs(document.getElementById('info').getBoundingClientRect().right + astro.F.width - innerWidth) < 3 || 'ficha com "Visto da Terra" não abriu na coluna ao lado dos lugares'` },
+  { name: 'massaroca', run: `document.querySelector('#info [data-lk=stop]')?.click(); ${go('Terra')}; setTimeout(() => dispatchEvent(new KeyboardEvent('keydown', { key: 'm', code: 'KeyM' })), 7000)`, wait: 9000 },
   { name: 'cinturao', run: `(() => { const AU = 1 / 206264.806; astro.select(null); astro.flyTo({ id: 'v', name: 'Sistema Solar interno', kind: 'view', pos: () => [0, 0, 0], radius: 0, viewDist: 9 * AU, arriveDir: [0, -0.398, 0.917] }); })()`, wait: 9000,
     check: `astro.smallbodies.loadedCount() >= 100000 || 'asteroides não carregaram'` },
   { name: 'ceres', run: go('Ceres'), wait: 11000, check: `/Ceres/.test(document.querySelector('#info h2')?.textContent) || 'ficha de Ceres não abriu'` },

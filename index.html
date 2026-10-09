@@ -40,6 +40,12 @@
   <div id="sideGrip" title="Arraste para mudar a largura · duplo clique recolhe"></div>
 </aside>
 
+<!-- Ficha do lugar selecionado: coluna ao lado dos lugares (o 3D começa depois dela quando está aberta) -->
+<aside id="info" hidden>
+  <button class="close" data-close="info" title="Fechar">×</button>
+  <div id="infoBody"></div>
+</aside>
+
 <main id="stage">
 <canvas id="view"></canvas>
 <div id="labels"></div>
@@ -117,7 +123,6 @@
   <section data-pane="rep" hidden><div id="tpRepList"></div></section>
 </aside>
 
-
 <aside id="tourPanel" class="panel" hidden>
   <button class="close" id="tpClose2">×</button>
   <h2>🎬 Tours guiados</h2>
@@ -159,21 +164,6 @@
     </div>
   </footer>
 </section>
-
-<aside id="info" class="panel" hidden>
-  <button class="close" data-close="info" title="Fechar">×</button>
-  <div id="infoBody"></div>
-</aside>
-
-<aside id="linkPanel" class="panel" hidden>
-  <button class="close" id="lkClose" title="Sair (Esc)">×</button>
-  <div class="row">
-    <button data-lk="side" id="lkSide" title="A Terra numa ponta, o objeto na outra">↔ Lado a lado</button>
-    <button data-lk="earth" id="lkEarth" title="Atrás da Terra, olhando para o objeto">🌍 Olhar da Terra</button>
-  </div>
-  <div id="linkBody"></div>
-  <button id="lkLoc" class="small">📍 Usar minha localização</button>
-</aside>
 
 <nav id="bar">
   <button id="btnMode" title="Alternar entre orbitar o alvo e voar livre (Tab)">⟲ Orbitar</button>

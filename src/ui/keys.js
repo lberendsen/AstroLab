@@ -34,11 +34,6 @@ export function wireControls(onTimeChange) {
   $('tNow').onclick = () => { stopReplay(true); time.now(); onTimeChange(); };
   for (const b of document.querySelectorAll('[data-close]')) b.onclick = () => { $(b.dataset.close).hidden = true; if (b.dataset.close === 'info') select(null); };
 
-  // ---- painel "visto da Terra"
-  $('lkSide').onclick = () => linkMode.sideBySide();
-  $('lkEarth').onclick = () => linkMode.fromEarth();
-  $('lkClose').onclick = () => linkMode.stop();
-  $('lkLoc').onclick = () => linkMode.useMyLocation(ok => toast(ok ? 'Usando a sua localização.' : 'Não foi possível obter a localização (permissão negada?).'));
 
   // ---- cliques no 3D: um clique seleciona, duplo clique viaja
   const canvas = $('view');

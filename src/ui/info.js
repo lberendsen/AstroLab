@@ -18,7 +18,8 @@ import { KM, R_EARTH } from '../astro.js';
 import { openPlanetarium } from './planpanel.js';
 import { v3, DEG, fmtDist, fmtLightTime, fmtNum, lightSentence, fmtYears, lookbackYears, AGE_OF_UNIVERSE, CMB_DISTANCE } from '../astro.js';
 import { ui, go, openScope, startLink, openFeeds, showerParent } from './actions.js';
-import { $ } from './dom.js';
+import * as linkMode from '../link.js';
+import { $, toast } from './dom.js';
 
 const row = (k, v) => v == null || v === '' ? '' : `<dt>${k}</dt><dd>${v}</dd>`;
 
@@ -247,13 +248,21 @@ export function renderInfo(t) {
   // transmissões deste aparelho e contato ao vivo com a Rede de Espaço Profundo
   const chans = feeds.channelsFor(t);
   if (t.craft?.kind === 'probe' || t.craft?.kind === 'surface') h += `<div id="dsnLive" class="lighttime small"></div>`;
-  const canLink = t.kind !== 'sky' && t.kind !== 'view' && t.id !== 'b:Earth';
-  h += `<div class="actions">${chans.length ? `<button id="aFeeds" class="accent" title="Ver as imagens que ele manda para a Terra">📡 O que ele transmite (${chans.length})</button>` : ''}${t.kind !== 'sky' ? '<button id="aGo" class="accent">🚀 Ir até lá</button>' : ''}${canLink ? '<button id="aLink" title="Mostrar este objeto e a Terra juntos, com uma linha ligando os dois (V)">🌍 Onde fica, visto da Terra</button>' : ''}<button id="aScope">🔭 Telescópio</button>${t.kind !== 'sky' ? '<button id="aOrbit">⟲ Orbitar daqui</button>' : ''}</div>`;
+  h += `<div class="actions">${chans.length ? `<button id="aFeeds" class="accent" title="Ver as imagens que ele manda para a Terra">📡 O que ele transmite (${chans.length})</button>` : ''}${t.kind !== 'sky' ? '<button id="aGo" class="accent">🚀 Ir até lá</button>' : ''}<button id="aScope">🔭 Telescópio</button>${t.kind !== 'sky' ? '<button id="aOrbit">⟲ Orbitar daqui</button>' : ''}</div>`;
+  // onde fica, visto da Terra (antes era um painel à parte)
+  if (linkMode.canShow(t)) h += linkMode.sectionHTML(t);
   $('infoBody').innerHTML = h;
   $('aGo') && ($('aGo').onclick = () => go(t));
   $('aOrbit') && ($('aOrbit').onclick = () => { setOrbit(t); });
   $('aScope').onclick = () => openScope(t);
-  $('aLink') && ($('aLink').onclick = () => startLink(t));
+  for (const b of document.querySelectorAll('#info [data-lk]')) b.onclick = () => {
+    const k = b.dataset.lk;
+    if (k === 'loc') return linkMode.useMyLocation(ok => toast(ok ? 'Usando a sua localização.' : 'Não foi possível obter a localização (permissão negada?).'), t);
+    if (k === 'stop') return linkMode.stop();
+    if (linkMode.link.target !== t) startLink(t);
+    if (k === 'earth') linkMode.fromEarth(); else if (linkMode.link.mode !== 'side') linkMode.sideBySide();
+  };
+  linkMode.render(t);
   $('aFeeds') && ($('aFeeds').onclick = () => (chans.length === 1 ? feeds.open(chans[0]) : openFeeds(t)));
   if ($('dsnLive')) {
     const id = t.craft.kind === 'surface' ? { 'perseverance': 'perseverance', 'curiosity': 'curiosity' }[t.craft.id] : t.craft.id;

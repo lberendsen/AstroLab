@@ -12,8 +12,9 @@
 html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font: 14px/1.4 var(--font); }
 /* Painel de lugares à esquerda (permanente); o 3D e o resto da interface ficam em #stage, à direita dele.
    O transform de #stage faz os elementos "fixed" de dentro se posicionarem em relação a ele, não à janela. */
-:root { --side-w: 300px; }
-#stage { position: fixed; top: 0; bottom: 0; right: 0; left: var(--side-w); overflow: hidden; transform: translateZ(0); }
+:root { --side-w: 300px; --info-w: 0px; }
+body.info-open { --info-w: 360px; }
+#stage { position: fixed; top: 0; bottom: 0; right: 0; left: calc(var(--side-w) + var(--info-w)); overflow: hidden; transform: translateZ(0); }
 canvas#view { position: absolute; inset: 0; width: 100%; height: 100%; display: block; cursor: grab; }
 canvas#view:active { cursor: grabbing; }
 button, select, input { font: inherit; color: inherit; }
@@ -75,7 +76,12 @@ body.side-collapsed #sideRail { display: flex; }
 #suggest li.sel, #suggest li:hover { background: rgba(127,180,255,0.18); }
 #suggest li small { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 50%; }
 
-#info { position: fixed; right: 12px; top: 64px; width: 330px; max-height: calc(100% - 140px); overflow: auto; padding: 16px; z-index: 4; }
+/* ficha do selecionado: coluna inteira ao lado do painel de lugares */
+#info { position: fixed; left: var(--side-w); top: 0; bottom: 0; width: var(--info-w); overflow: auto; padding: 16px 16px 24px; z-index: 7; background: #0c111d; border-right: 1px solid var(--line); overscroll-behavior: contain; }
+#info[hidden] { display: none; }
+#info .earthSec { margin-top: 18px; padding-top: 4px; border-top: 1px solid var(--line); }
+#info .earthSec h3 { color: #7fd8ff; }
+#info .earthSec button:disabled { opacity: .35; cursor: default; }
 #info .kind { color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
 #info h2 { font-size: 20px; margin: 2px 0 4px; padding-right: 20px; }
 #info .aka { color: var(--muted); font-size: 12px; margin-bottom: 10px; }
@@ -180,14 +186,6 @@ body.side-collapsed #sideRail { display: flex; }
 #perf .r { display: grid; grid-template-columns: 110px 1fr 64px; gap: 6px; align-items: center; }
 #perf .r i { display: block; height: 6px; background: var(--accent); border-radius: 3px; }
 #perf .r em { font-style: normal; text-align: right; }
-#linkPanel { position: fixed; left: 12px; top: 64px; width: 310px; max-height: calc(100% - 140px); overflow: auto; padding: 14px; z-index: 4; }
-#linkPanel .kind { color: #7fd8ff; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-top: 8px; }
-#linkPanel h2 { font-size: 18px; margin: 2px 0 8px; padding-right: 18px; }
-#linkPanel dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 13px; margin: 6px 0; }
-#linkPanel dt { color: var(--muted); }
-#linkPanel dd { margin: 0; }
-#linkPanel .lighttime { color: var(--warm); }
-#linkPanel button:disabled { opacity: .35; cursor: default; }
 .lbl.link { color: #7fd8ff; font-weight: 600; }
 .lbl.link.dist { color: #ffcf7a; font-weight: 500; background: rgba(0,0,0,.45); border-radius: 6px; padding: 1px 6px; }
 #bar { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); display: flex; gap: 6px; align-items: center; padding: 8px; background: var(--panel); backdrop-filter: blur(10px); border: 1px solid var(--line); border-radius: 14px; z-index: 5; width: max-content; max-width: calc(100% - 24px); flex-wrap: wrap; justify-content: center; }
@@ -249,6 +247,5 @@ body.side-collapsed #sideRail { display: flex; }
 
 @media (max-width: 720px) {
   #where { display: none; }
-  #info { left: 12px; right: 12px; width: auto; top: auto; bottom: 70px; max-height: 45%; }
   #scopePanel { left: 12px; width: auto; top: auto; bottom: 12px; max-height: 45%; }
 }

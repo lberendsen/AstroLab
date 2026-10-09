@@ -22,6 +22,11 @@ import { $, toast } from './dom.js';
 
 export const ui = { selected: null };
 
+// A ficha é uma coluna ao lado dos lugares: aberta, o 3D começa depois dela (classe info-open no body).
+// Observa o atributo hidden, para valer também quando alguém fecha a ficha direto.
+new MutationObserver(() => document.body.classList.toggle('info-open', !$('info').hidden))
+  .observe($('info'), { attributes: true, attributeFilter: ['hidden'] });
+
 export function select(t) {
   ui.selected = t;
   labels.setSelected(t);
@@ -34,6 +39,7 @@ export function select(t) {
   smallbodies.showStream(parent);
   P5L.showBlackHole(bhForTarget(t));
   if (!t?.gw) P5L.showGwShell(0);
+  if (linkMode.link.target && linkMode.link.target.id !== t?.id) linkMode.stop();
   if (!t) { $('info').hidden = true; return; }
   renderInfo(t);
   $('info').hidden = false;
