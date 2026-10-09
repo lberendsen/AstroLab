@@ -28,6 +28,8 @@ if (!exe) { console.error('Nenhum Edge ou Chrome encontrado.'); process.exit(2);
 const go = q => `astro.go(astro.search.searchLocal(${JSON.stringify(q)},1)[0].make())`;
 const STOPS = [
   { name: 'inicio', check: `!!astro.DB.stars && astro.DB.stars.n > 100000 || 'catálogo de estrelas não carregou'` },
+  { name: 'desempenho-f3', run: `dispatchEvent(new KeyboardEvent('keydown', { key: 'F3' }))`, wait: 1500,
+    check: `/fps/.test(document.getElementById('perf')?.textContent || '') || 'painel de desempenho não abriu'` },
   { name: 'saturno', run: go('Saturno'), wait: 8000, check: `astro.nav.target?.name === 'Saturno' || 'não chegou em Saturno'` },
   { name: 'lua-apollo11', run: go('Apollo 11'), wait: 11000, check: `!!document.querySelector('#info h2')?.textContent.includes('Apollo') || 'ficha da Apollo 11 não abriu'` },
   { name: 'iss', run: go('Estação Espacial Internacional'), wait: 9000 },

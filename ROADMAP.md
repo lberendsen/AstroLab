@@ -7,14 +7,14 @@ Legenda: ⬜ a fazer · 🟨 em andamento · ✅ pronto
 
 ---
 
-## Fase 0: Fundações ⬜
+## Fase 0: Fundações ✅ (2026-10-09)
 
-Antes de crescer mais (hoje são ~4.300 linhas), três cuidados para não perder trabalho nem desempenho.
-
-- [ ] **Controle de versão:** `git init`, `.gitignore` (deixar `tools/raw/` de fora, porque são 150 MB de cache) e um primeiro commit. Cada fase vira um commit; dá para voltar atrás se algo quebrar.
-- [ ] **Dividir o `main.js` (633 linhas):** separar a ficha de informações (`ui/info.js`), os lugares (`ui/places.js`), os menus (`ui/menus.js`) e a busca (`ui/search-box.js`).
-- [ ] **Painel de desempenho (tecla `F3`):** quadros por segundo e tempo de cada camada. Vai ser necessário quando entrarem os asteroides e o Gaia.
-- [ ] **Teste automático de fumaça:** promover o roteiro de capturas usado até aqui (Edge controlado por script) a `tools/smoke.mjs`. Ele visita ~15 lugares, captura a tela e falha se houver erro no console.
+- [x] **Controle de versão:** repositório git local, `.gitignore` (cache de 90 MB e arquivos reescritos pelo servidor ficam de fora) e um commit por etapa.
+- [x] **`main.js` dividido:** de 633 para ~150 linhas, com a interface separada em `src/ui/` (ações, ficha, lugares, menus, busca, teclado) e o relógio em `src/time.js`.
+- [x] **Painel de desempenho (tecla `F3`):** fps, CPU por etapa do quadro, chamadas de desenho, pontos e memória.
+  - Primeiro diagnóstico: na vista dos quasares, a CPU usa 4 ms por quadro e o gargalo é a GPU (1 milhão de pontos sobrepostos).
+  - Levar isso para a Fase 1: carregar e desenhar só o necessário (nível de detalhe).
+- [x] **Teste de fumaça (`npm run smoke`):** 16 paradas, capturas em `tools/smoke-out/`. Fontes externas fora do ar dão aviso, não reprovação.
 
 ## Fase 1: Asteroides e cometas ⭐ ⬜
 

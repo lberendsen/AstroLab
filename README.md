@@ -108,9 +108,22 @@ O que é **ilustrativo**, e o app avisa onde aparece:
 - O achatamento e a orientação das manchas de galáxias distantes.
 - As fotos de nebulosas e galáxias são a vista da Terra; vistas de outro ângulo, continuam sendo a mesma foto.
 
+## Desenvolvimento
+
+- `npm install` instala a dependência de teste (`puppeteer-core`, que usa o Edge ou o Chrome já instalado).
+- `npm run smoke` roda o teste de fumaça: visita os lugares principais e reprova com erro de JavaScript. As capturas ficam em `tools/smoke-out/`. Com `npm run smoke -- rapido`, pula as paradas que dependem de fontes externas.
+- **F3** dentro do app abre o painel de desempenho: quadros por segundo, tempo de CPU de cada etapa do quadro e o que a GPU desenhou. Se a CPU gasta pouco e os fps caem, o gargalo é a placa de vídeo.
+- O plano de evolução está em [ROADMAP.md](ROADMAP.md).
+
 ## Estrutura
 
 - `src/engine.js`: renderização com origem flutuante e double emulado na GPU, o que permite ir de 1 km a bilhões de anos-luz sem tremer.
 - `src/layers/`: céu de fundo, estrelas, galáxias, Via Láctea, Sistema Solar, sistemas exoplanetários, fotos.
 - `src/nav.js`: órbita, voo livre e viagem em escala logarítmica.
-- `src/search.js`, `src/telescope.js`, `src/labels.js`, `src/main.js`: busca, telescópio, rótulos e interface.
+- `src/main.js`: inicialização e laço de quadros. `src/time.js`: relógio da simulação.
+- `src/ui/`: interface.
+  - `actions.js`: selecionar, ir até, telescópio, "visto da Terra".
+  - `info.js`: ficha de informações.
+  - `places.js`, `menus.js`, `searchbox.js`, `keys.js`: lugares, menus, busca, teclado.
+  - `perf.js`: painel F3.
+- `src/search.js`, `src/telescope.js`, `src/labels.js`, `src/link.js`, `src/feeds.js`: busca, telescópio, rótulos, "visto da Terra", transmissões.
