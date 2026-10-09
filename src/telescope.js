@@ -4,6 +4,7 @@
 //    tiradas anos atrás, quando a Lua e os planetas estavam em outro lugar, então lá eles não aparecem).
 import { BANDS, SURVEY_BY_ID } from './surveys.js';
 import { openSection } from './ui/ctlpanel.js';
+import { telescopesOfSurvey } from './telescopes.js';
 
 const ALADIN_URL = 'https://cdn.jsdelivr.net/npm/aladin-lite@3.8.2/dist/aladin.js';
 let aladin = null, loading = null, skySurvey = 'CDS/P/DSS2/color', current = skySurvey;
@@ -79,6 +80,9 @@ function buildPanel() {
     for (const s of b.items) {
       const bt = document.createElement('button');
       bt.textContent = s.label; bt.dataset.id = s.id;
+      // dica: quem fez esta foto do céu
+      const tels = telescopesOfSurvey(s.id);
+      if (tels.length) bt.title = tels.map(T => `${T.name}: ${T.mirror}, ${T.years}`).join('\n');
       bt.onclick = () => setSurvey(s.id);
       div.appendChild(bt);
       og.appendChild(new Option(s.label, s.id));
@@ -105,12 +109,22 @@ function buildPanel() {
   $('overlayOp').oninput = e => { try { aladin.getOverlayImageLayer('compare')?.setOpacity(+e.target.value); } catch { /* camada ausente */ } };
 }
 
+let creditHook = null;
+export const setCreditHook = fn => { creditHook = fn; };
 function mark() {
   for (const b of document.querySelectorAll('#bands button[data-id]')) b.classList.toggle('on', b.dataset.id === current);
+  // crédito da foto que está na tela, com link para a ficha de quem a fez
+  const box = $('scopeCredit');
+  const tels = isOpen() && state?.mode === 'sky' ? telescopesOfSurvey(current) : [];
+  box.hidden = !tels.length;
+  box.innerHTML = tels.length ? `Foto do céu feita por ${tels.map(T => `<a href="#" data-tel="${T.key}">${T.name}</a>`).join(' e ')}` : '';
+  for (const a of box.querySelectorAll('[data-tel]')) a.onclick = e => { e.preventDefault(); creditHook?.(a.dataset.tel); };
 }
 
 let openHook = null;
 export const setOpenHook = fn => { openHook = fn; };
+// abre já num levantamento (ex.: "ver o céu por este telescópio")
+export function openWith(id, args) { skySurvey = id; current = id; return open(args); }
 export function setSurvey(id) {
   // telescópio fechado: guarda o filtro e abre na direção do selecionado
   if (!isOpen()) { skySurvey = id; openHook?.(); return; }

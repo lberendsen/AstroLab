@@ -102,6 +102,9 @@ const STOPS = [
     check: `/MCG|Cartwheel|Roda/i.test(document.querySelector('#info h2')?.textContent || '') || 'busca no SIMBAD não encontrou a galáxia da Roda de Carro'` },
   { name: 'telescopio-lua', external: true, run: `astro.select(astro.search.searchLocal('Lua',1)[0].make()); dispatchEvent(new KeyboardEvent('keydown', { key: 't' }))`, wait: 10000,
     check: `!document.getElementById('scope').hidden || 'telescópio não abriu'` },
+  // telescópios: ficha de quem fez as fotos do céu; "ver o céu por este telescópio" abre o levantamento dele, com crédito
+  { name: 'telescopio-panstarrs', external: true, run: `document.getElementById('scopeClose').click(); astro.places.goPlace('Pan-STARRS1'); setTimeout(() => document.querySelector('#info [data-survey]').click(), 9000)`, wait: 16000,
+    check: `!document.getElementById('scope').hidden && /Pan-STARRS1/.test(document.getElementById('scopeCredit').textContent) && /Haleakal/.test(document.getElementById('info').textContent) || 'telescópio Pan-STARRS: ficha ou levantamento não abriu'` },
   { name: 'transmissao-goes', external: true, run: `document.getElementById('scopeClose').click(); astro.select(astro.search.searchLocal('Terra',1)[0].make()); document.querySelector('#info [data-ch=goes19-ssa]').click()`, wait: 10000,
     check: `!document.getElementById('vImg').hidden || 'imagem do GOES-19 não carregou: ' + document.getElementById('vStatus').textContent` },
 ];

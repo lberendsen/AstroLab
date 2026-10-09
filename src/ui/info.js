@@ -19,6 +19,8 @@ import { openPlanetarium } from './planpanel.js';
 import { v3, DEG, fmtDist, fmtLightTime, fmtNum, lightSentence, fmtYears, lookbackYears, AGE_OF_UNIVERSE, CMB_DISTANCE } from '../astro.js';
 import { ui, go, openScope, startLink, showerParent } from './actions.js';
 import * as linkMode from '../link.js';
+import { telescopeOf } from '../telescopes.js';
+import { SURVEY_BY_ID } from '../surveys.js';
 import { $, toast } from './dom.js';
 
 const row = (k, v) => v == null || v === '' ? '' : `<dt>${k}</dt><dd>${v}</dd>`;
@@ -86,6 +88,17 @@ export function renderInfo(t) {
     dl += row('Descoberto', `${p.y || '?'} · ${p.how || ''}`);
     dl += row('Distância do Sol', fmtDist(dSun));
     notes += `<div class="note">Tamanho e órbita vêm de medidas reais. A cor e a inclinação da órbita são ilustrativas: ninguém viu este planeta de perto.</div>`;
+  } else if (t.kind === 'telescope') {
+    const T = t.tel;
+    h += `<p>${T.desc}</p>`;
+    if (T.site) dl += row('Onde fica', `${T.site.place}, a ${fmtNum(T.site.alt * 1000, 0)} m de altitude`);
+    if (T.orbit) dl += row('Onde está', T.orbit);
+    dl += row('De quem é', T.who);
+    dl += row(T.where === 'none' ? 'Feito com' : 'Instrumento', T.mirror);
+    dl += row('Enxerga', T.light);
+    dl += row(T.where === 'none' ? 'Quando' : 'Em operação', T.years);
+    if (T.where === 'ground') notes += `<div class="note">${/rádio/.test(T.light) ? 'Ondas de rádio atravessam a atmosfera e até nuvens: radiotelescópios funcionam de dia e com tempo ruim.' : 'Fica no alto de uma montanha seca, longe das luzes das cidades: acima de boa parte do ar e do vapor de água que borram e apagam a luz das estrelas.'}</div>`;
+    else if (T.where === 'space') notes += `<div class="note">Fora da atmosfera, que bloqueia ${/gama|X|ultravioleta/.test(T.light) ? 'os raios gama, os raios X e o ultravioleta' : /infravermelho|micro/.test(T.light) ? 'quase todo o infravermelho e as micro-ondas' : 'parte da luz e borra as imagens'}.${/^desde/.test(T.years) ? ' Ele não está no catálogo de satélites do app, então aqui fica só a ficha.' : ' A missão já terminou: aqui fica só a ficha.'}</div>`;
   } else if (t.kind === 'craft' && t.craft.kind !== 'sat') {
     const c = t.craft;
     if (c.desc) h += `<p>${c.desc}</p>`;
@@ -243,11 +256,19 @@ export function renderInfo(t) {
   const aa = PLN.altAzOf(t.pos());
   if (aa) dl = row('No seu céu', aa.alt > 0 ? `${fmtNum(aa.alt, 0)}° de altura, para o ${PLN.azName(aa.az)}` : `abaixo do horizonte (${fmtNum(aa.alt, 0)}°)`) + dl;
   h += `<dl>${dl}</dl>${notes}${extra}`;
-  const skyHere = t.craft?.kind === 'surface' ? [t.craft.body, t.craft.lat, t.craft.lon, t.craft.name] : t.body && ['Earth', 'Moon', 'Mars'].includes(t.body.key) ? [t.body.key] : null;
+  const skyHere = t.tel?.site ? ['Earth', t.tel.site.lat, t.tel.site.lon, t.tel.site.place] : t.craft?.kind === 'surface' ? [t.craft.body, t.craft.lat, t.craft.lon, t.craft.name] : t.body && ['Earth', 'Moon', 'Mars'].includes(t.body.key) ? [t.body.key] : null;
   if (skyHere && !PLN.PL.active) h += `<div class="actions"><button id="aSky" title="Ficar em pé aí e ver o céu (P)">🌅 Ver o céu daqui</button></div>`;
   // transmissões deste aparelho e contato ao vivo com a Rede de Espaço Profundo
   if (t.craft?.kind === 'probe' || t.craft?.kind === 'surface') h += `<div id="dsnLive" class="lighttime small"></div>`;
-  h += `<div class="actions">${t.kind !== 'sky' ? '<button id="aGo" class="accent">🚀 Ir até lá</button>' : ''}<button id="aScope">🔭 Telescópio</button>${t.kind !== 'sky' ? '<button id="aOrbit">⟲ Orbitar daqui</button>' : ''}</div>`;
+  h += `<div class="actions">${t.kind !== 'sky' && !t.noGo ? '<button id="aGo" class="accent">🚀 Ir até lá</button>' : ''}${t.kind !== 'telescope' ? '<button id="aScope">🔭 Telescópio</button>' : ''}${t.kind !== 'sky' && !t.noGo ? '<button id="aOrbit">⟲ Orbitar daqui</button>' : ''}</div>`;
+  // o céu visto por este telescópio: os levantamentos que ele fez, abertos num campo onde brilham
+  const tel = telescopeOf(t);
+  if (tel?.surveys.length) {
+    h += `<section class="telSec"><h3>🔭 O céu por este telescópio</h3><p class="small muted">Abre o telescópio do app mostrando ${tel.show.name}, com as fotos que ${tel.where === 'none' ? 'formam este mapa' : 'ele tirou'}.</p><div class="bands">` +
+      tel.surveys.map(id => `<button data-survey="${id}">${SURVEY_BY_ID[id]?.label || id}</button>`).join('') + '</div>';
+    if (t.kind !== 'telescope') h += `<p class="small muted">${tel.desc}</p>`;
+    h += '</section>';
+  }
   // transmissões do que ele mostra ou envia (antes era uma seção do painel da direita)
   h += feeds.sectionHTML(t);
   // onde fica, visto da Terra (antes era um painel à parte)
@@ -255,7 +276,7 @@ export function renderInfo(t) {
   $('infoBody').innerHTML = h;
   $('aGo') && ($('aGo').onclick = () => go(t));
   $('aOrbit') && ($('aOrbit').onclick = () => { setOrbit(t); });
-  $('aScope').onclick = () => openScope(t);
+  $('aScope') && ($('aScope').onclick = () => openScope(t));
   for (const b of document.querySelectorAll('#info [data-lk]')) b.onclick = () => {
     const k = b.dataset.lk;
     if (k === 'loc') return linkMode.useMyLocation(ok => toast(ok ? 'Usando a sua localização.' : 'Não foi possível obter a localização (permissão negada?).'), t);
@@ -265,6 +286,7 @@ export function renderInfo(t) {
   };
   linkMode.render(t);
   feeds.wireSection();
+  for (const b of document.querySelectorAll('#info [data-survey]')) b.onclick = () => { const T = telescopeOf(t); scope.openWith(b.dataset.survey, { ra: T.show.ra, dec: T.show.dec, fovDeg: T.show.fov, name: `${T.show.name[0].toUpperCase()}${T.show.name.slice(1)}, por ${T.name}` }); };
   if ($('dsnLive')) {
     const id = t.craft.kind === 'surface' ? { 'perseverance': 'perseverance', 'curiosity': 'curiosity' }[t.craft.id] : t.craft.id;
     // o contato da DSN é o de agora: só faz sentido com a data simulada perto do presente

@@ -20,6 +20,7 @@ import { v3, KM, AU, DEG, xyz2radec } from '../astro.js';
 import { renderInfo } from './info.js';
 import { $, toast } from './dom.js';
 import { openSection } from './ctlpanel.js';
+import { telescopeTarget, telescopeByKey } from '../telescopes.js';
 
 export const ui = { selected: null };
 
@@ -50,6 +51,8 @@ export const showerParent = s => smallbodies.SB.famous.find(f => f.sstr === s.pa
 
 export function go(t) {
   if (!t) return;
+  // telescópio aposentado ou mapa montado: só a ficha (não há lugar para ir)
+  if (t.noGo) { select(t); return; }
   if (t.kind === 'shower') {
     // vai para o dia do pico e mostra a Terra atravessando a poeira deixada pelo corpo de origem
     const peak = nextPeak(t.shower);
@@ -169,4 +172,5 @@ export function wireFeeds() {
   feeds.wireViewer();
   // filtro escolhido com o telescópio fechado: abre na direção do selecionado
   scope.setOpenHook(() => openScope(ui.selected, { sky: true }));
+  scope.setCreditHook(k => { scope.close(); select(telescopeTarget(telescopeByKey(k))); });
 }

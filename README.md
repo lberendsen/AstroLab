@@ -40,7 +40,8 @@ título (várias podem ficar abertas ao mesmo tempo):
 - **No topo, sempre à vista:** a data simulada com ◀◀ ❚❚ ▶▶ agora, "Orbitar / Voar livre" e a ajuda (?).
 - **🕰️ Tempo:** ir para uma data, do século 20 aos milênios; eclipses; replays de missões.
 - **☰ Camadas:** o que aparece no 3D, brilho, Gaia, pulsares, satélites por categoria e país, asteroides, efeitos de perto.
-- **🔭 Telescópio:** todos os filtros, de raios gama a rádio. Com o telescópio fechado, escolher um filtro abre o telescópio
+- **🔭 Telescópio:** todas as fotos do céu, de raios gama a rádio. Cada botão é um levantamento: um atlas que um telescópio
+  fez ao longo de anos (a dica diz qual). Com a foto na tela, "Foto do céu feita por…" leva à ficha do telescópio. Com o telescópio fechado, escolher um filtro abre o telescópio
   na direção do selecionado. Aqui também fica o céu de fundo do 3D em outros comprimentos de onda.
 
 O » recolhe o painel numa faixa com os três ícones; clicar num ícone abre o painel já naquela seção. As seções abertas
@@ -86,6 +87,19 @@ novos exoplanetas): `node tools/build-data.mjs exoplanets --force`.
 | Naves no espaço profundo | JPL Horizons (32 trajetórias reais) + 7 posições aproximadas para missões sem efeméride pública (China, Índia, Rússia) — lista em `tools/spacecraft.mjs` |
 | Robôs e pousos | 38 locais na Lua, em Marte e em Vênus (coordenadas publicadas pelas missões) |
 | Satélites da Terra | CelesTrak: ~17 mil objetos (elementos GP) com o país dono (SATCAT) |
+
+### Telescópios (`src/telescopes.js`)
+
+O ramo **🔭 Telescópios** dos Lugares tem quem fez cada foto do céu do telescópio do app: 14 no espaço, 16 na Terra e dois
+mapas que não são telescópios (o panorama de Axel Mellinger, que é o céu de fundo do 3D, e o mapa de hidrogênio de Finkbeiner).
+
+- **No espaço:** os que estão no catálogo (Hubble, Webb, Euclid, Spitzer, Fermi) usam a ficha de nave ou satélite, com a
+  seção nova. Os aposentados (ROSAT, GALEX, WISE, IRAS, AKARI, Herschel, Planck, Compton) e o SPHEREx têm só a ficha.
+- **Na Terra:** um ponto no globo (latitude, longitude, altitude), como os robôs na Lua; a ficha tem "Ver o céu daqui".
+- **Ficha:** o que ele é, de quem é, o instrumento, em que luz enxerga, os anos de operação e por que fica onde fica.
+  "O céu por este telescópio" abre o telescópio do app num campo onde as fotos dele brilham (o Pan-STARRS mostra M101).
+
+Os textos foram escritos para o app a partir das informações públicas das missões e observatórios.
 
 ### Transmissões (`src/feeds.js`, `src/earthskin.js`)
 

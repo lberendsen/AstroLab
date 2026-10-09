@@ -224,6 +224,9 @@ body.side-collapsed #sideRail { display: flex; }
 #bands button.switch { display: block; width: 100%; margin-top: 14px; padding: 8px; font-size: 13px; }
 #bands button { margin: 2px 2px 2px 0; padding: 4px 8px; font-size: 12px; }
 #overlayCtl select, #overlayCtl input { width: 100%; margin-top: 4px; }
+#scopeCredit a, #info .telSec a { color: var(--accent); }
+#info .telSec { margin-top: 18px; padding-top: 4px; border-top: 1px solid var(--line); }
+#info .telSec .bands button { margin: 2px 2px 2px 0; padding: 4px 8px; font-size: 12px; }
 
 #help { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(560px, calc(100% - 32px)); max-height: 80vh; overflow: auto; padding: 20px; z-index: 12; }
 #help td { padding: 3px 12px 3px 0; vertical-align: top; }

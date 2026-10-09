@@ -19,6 +19,7 @@ import { PL, PRESETS, CONST } from '../planetarium.js';
 import { CONST_PT } from '../link.js';
 import { radec2xyz } from '../astro.js';
 import * as feeds from '../feeds.js';
+import { TELESCOPES, telescopeTarget } from '../telescopes.js';
 import { $ } from './dom.js';
 
 // ---------------------------------------------------------------- vistas especiais (não são objetos do catálogo)
@@ -201,6 +202,17 @@ function transmissions() {
   ], { hint: 'Imagens e sinais que os satélites, sondas e telescópios do catálogo mandam para a Terra. Cada uma também aparece na ficha de quem ela mostra (Terra, Sol, Marte) e de quem a envia.' });
 }
 
+// Telescópios: quem fez cada foto do céu que o telescópio do app mostra (telescopes.js)
+function telescopes() {
+  const tNode = T => node(T.name, { make: () => telescopeTarget(T), hint: `${T.light} · ${T.years}${T.site ? '\n' + T.site.place : ''}` });
+  const of = w => TELESCOPES.filter(T => T.where === w).map(tNode).sort(byName);
+  return cat('🔭 Telescópios', [
+    cat('No espaço', of('space'), { hint: 'Acima da atmosfera, que bloqueia os raios gama, os raios X, o ultravioleta e boa parte do infravermelho.' }),
+    cat('Na Terra', of('ground'), { hint: 'A luz visível e as ondas de rádio atravessam o ar: no chão, os telescópios podem ser enormes. Ficam em montanhas secas, longe das cidades.' }),
+    cat('Mapas montados (não são telescópios)', of('none')),
+  ], { hint: 'Os telescópios que fizeram as fotos do céu que o telescópio do app mostra. Cada ficha explica o que ele é, em que luz enxerga e abre o céu visto por ele.' });
+}
+
 function deepSky() {
   const C = DB.curated;
   const of = (type, f = () => true) => C.filter(o => o.type === type && f(o)).map(o => node(o.name, { make: () => curatedTarget(o), hint: o.id !== o.name ? o.id : '' }));
@@ -229,7 +241,7 @@ let ROOT = [], ALL = [];
 function buildTree() {
   ROOT = [
     cat('🎬 Tours guiados', TOURS.map(t => node(t.title, { action: () => startTour(t), hint: t.sub || '' }))),
-    planetarium(), solarSystem(), humanMade(), transmissions(), stars(), exoplanets(), constellations(), ...deepSky(),
+    planetarium(), solarSystem(), humanMade(), transmissions(), telescopes(), stars(), exoplanets(), constellations(), ...deepSky(),
   ].filter(n => n.kids?.length);
   reindex();
 }
