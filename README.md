@@ -32,7 +32,22 @@ tour ou chegada de uma viagem. Trocar a seleção atualiza a ficha. Olhar em vol
 O × fecha a ficha e devolve o espaço ao 3D. Além dos dados e das opções (ir até lá, telescópio, orbitar, céu daqui,
 transmissões), a ficha tem a seção **Visto da Terra** (abaixo).
 
-## Controles
+## Controles da vista (painel da direita)
+
+Tudo o que muda a vista do universo inteiro fica num painel à direita, em seções que abrem e fecham clicando no
+título (várias podem ficar abertas ao mesmo tempo):
+
+- **No topo, sempre à vista:** a data simulada com ◀◀ ❚❚ ▶▶ agora, "Orbitar / Voar livre" e a ajuda (?).
+- **🕰️ Tempo:** ir para uma data, do século 20 aos milênios; eclipses; replays de missões.
+- **☰ Camadas:** o que aparece no 3D, brilho, Gaia, pulsares, satélites por categoria e país, asteroides, efeitos de perto.
+- **🔭 Telescópio:** todos os filtros, de raios gama a rádio. Com o telescópio fechado, escolher um filtro abre o telescópio
+  na direção do selecionado. Aqui também fica o céu de fundo do 3D em outros comprimentos de onda.
+- **📡 Transmissões:** os canais dos satélites, sondas e telescópios.
+
+O » recolhe o painel numa faixa com os quatro ícones; clicar num ícone abre o painel já naquela seção. As seções abertas
+ficam guardadas no navegador. A barra flutuante de baixo deixou de existir.
+
+## Teclas e mouse
 
 | | |
 |---|---|
@@ -75,7 +90,7 @@ novos exoplanetas): `node tools/build-data.mjs exoplanets --force`.
 
 ### Transmissões (`src/feeds.js`, `src/earthskin.js`)
 
-O botão **📡 Transmissões** (tecla `X`) abre as imagens que os aparelhos do catálogo mandam para a Terra. A ficha de cada aparelho tem o botão "O que ele transmite".
+A seção **📡 Transmissões** do painel da direita (tecla `X`) lista as imagens que os aparelhos do catálogo mandam para a Terra. A ficha de cada aparelho tem o botão "O que ele transmite".
 
 | Canal | Fonte | Atualização |
 |---|---|---|
@@ -205,7 +220,7 @@ Limites:
 
 ### Viajar no tempo (Fase 3)
 
-O botão **🕰️ Tempo** (tecla `Y`) tem três abas.
+A seção **🕰️ Tempo** do painel da direita (tecla `Y`) tem três abas.
 
 - **Data:** escolher qualquer data e hora.
   - Uma régua de 1900 a 2100.

@@ -20,7 +20,6 @@ const LAYERS = [
 
 export function buildLayersMenu() {
   const m = $('layers');
-  document.body.appendChild(m); // fora da barra: o transform e o overflow dela recortariam o menu
   m.innerHTML = LAYERS.map(([k, l]) => `<label><input type="checkbox" data-layer="${k}" checked> ${l}</label>`).join('') +
     `<h3>Brilho das estrelas</h3><input type="range" id="starGain" min="4" max="12" step="0.1" value="${stars.starUniforms.uLimit.value}">` +
     `<h3>Brilho das galáxias</h3><input type="range" id="galGain" min="9" max="18" step="0.1" value="${galaxies.galSettings.limit}">`;
@@ -42,12 +41,6 @@ export function buildLayersMenu() {
   buildHumanMenu(m);
   $('starGain').oninput = e => { stars.starUniforms.uLimit.value = +e.target.value; };
   $('galGain').oninput = e => { galaxies.galSettings.limit = +e.target.value; };
-  $('btnLayers').onclick = ev => {
-    const r = ev.currentTarget.getBoundingClientRect();
-    m.style.left = `${Math.max(8, Math.min(r.left, innerWidth - 336))}px`;
-    m.style.bottom = `${innerHeight - r.top + 8}px`;   // a barra pode ter duas linhas
-    m.hidden = !m.hidden;
-  };
 }
 
 // Objetos feitos pelo homem. A "massaroca" de satélites começa desligada e se liga por categoria e por país.

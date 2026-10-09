@@ -55,13 +55,6 @@
   <div id="where"></div>
 </header>
 
-<aside id="feeds" class="panel" hidden>
-  <button class="close" data-close="feeds">×</button>
-  <h2>📡 Transmissões</h2>
-  <p class="muted small">O que os satélites, telescópios e robôs do catálogo estão mandando para a Terra.</p>
-  <div id="feedList"></div>
-</aside>
-
 <aside id="dsnPanel" class="panel" hidden>
   <button class="close" id="dsnClose">×</button>
   <h2>📡 Rede de Espaço Profundo, agora</h2>
@@ -93,34 +86,6 @@
   <div id="plList"></div>
   <p class="muted small">Arraste para olhar em volta; a roda do mouse faz zoom (como um binóculo). Acelere o tempo para ver o céu girar.</p>
   <button id="plExit">Sair do planetário</button>
-</aside>
-
-<aside id="timePanel" class="panel" hidden>
-  <button class="close" id="tpClose">×</button>
-  <h2>🕰️ Tempo</h2>
-  <div class="tabs"><button data-tab="date">Data</button><button data-tab="ecl">Eclipses</button><button data-tab="rep">Missões</button></div>
-  <section data-pane="date">
-    <h3>Ir para uma data</h3>
-    <div class="row"><input type="datetime-local" id="tpDate"><button id="tpGo">Ir</button></div>
-    <h3>Século 20 e 21 <span class="muted small">(planetas, naves, eclipses)</span></h3>
-    <input type="range" id="tpYear" min="1900" max="2100" step="1">
-    <div class="scale"><span>1900</span><span>2000</span><span>2100</span></div>
-    <h3>Milênios <span class="muted small">(as estrelas se movem)</span></h3>
-    <input type="range" id="tpEra" min="-100000" max="100000" step="100">
-    <div class="scale"><span>100 mil anos atrás</span><b id="tpEraLbl"></b><span>daqui a 100 mil</span></div>
-    <div class="chips">
-      <button class="chip on" data-jump="now">Agora</button>
-      <button class="chip on" data-jump="-4560" data-msg="2560 a.C.: a Grande Pirâmide de Gizé está sendo construída. A estrela polar era Thuban, do Dragão.">Pirâmides de Gizé</button>
-      <button class="chip on" data-jump="-1999">Ano 1</button>
-      <button class="chip on" data-jump="12000" data-msg="Ano 14000: por causa da precessão do eixo da Terra, a estrela polar será Vega.">Ano 14000</button>
-      <button class="chip on" data-jump="27700" data-msg="Daqui a ~28 mil anos, Alfa Centauri chega ao ponto mais perto do Sol: cerca de 3 anos-luz (hoje está a 4,3).">Alfa Centauri mais perto</button>
-      <button class="chip on" data-jump="-50000">50 mil anos atrás</button>
-      <button class="chip on" data-jump="100000">Daqui a 100 mil</button>
-    </div>
-    <p class="muted small">As estrelas se movem com as velocidades medidas pelo Hipparcos: em milênios, as constelações se deformam. A foto do céu de fundo some, porque mostra o céu de hoje. Os planetas são calculados entre os anos 200 e 3800; fora disso, ficam parados na última posição calculada. Os satélites da Terra só aparecem perto da data atual.</p>
-  </section>
-  <section data-pane="ecl" hidden><div id="tpEclList"></div></section>
-  <section data-pane="rep" hidden><div id="tpRepList"></div></section>
 </aside>
 
 <aside id="tourPanel" class="panel" hidden>
@@ -165,42 +130,9 @@
   </footer>
 </section>
 
-<nav id="bar">
-  <button id="btnMode" title="Alternar entre orbitar o alvo e voar livre (Tab)">⟲ Orbitar</button>
-  <div class="group" title="Velocidade do tempo">
-    <button id="tSlower" title="Mais devagar ( , )">◀◀</button>
-    <button id="tPause" title="Pausar (espaço)">❚❚</button>
-    <button id="tFaster" title="Mais rápido ( . )">▶▶</button>
-    <button id="tNow" title="Voltar para agora">agora</button>
-    <span id="clock"></span>
-    <button id="btnTime" title="Tempo: data, eclipses e replays de missões (Y)">🕰️ Tempo</button>
-  </div>
-  <label class="sel" title="Mapa do céu de fundo em outros comprimentos de onda">Céu
-    <select id="skySel"></select>
-  </label>
-  <div class="dropup">
-    <button id="btnLayers" title="Camadas: o que aparece no 3D, brilho, satélites, asteroides, efeitos">☰</button>
-    <div id="layers" class="panel menu" hidden></div>
-  </div>
-  <button id="btnFeeds" title="Transmissões: o que os satélites e sondas mandam para a Terra (X)">📡</button>
-  <button id="btnScope" class="accent" title="Abrir o telescópio na direção do alvo (T)">🔭 Telescópio</button>
-  <button id="btnHelp" title="Controles (H)">?</button>
-</nav>
-
 <section id="scope" hidden>
   <div id="aladin"></div>
-  <aside id="scopePanel" class="panel">
-    <button class="close" id="scopeClose" title="Voltar à nave (Esc)">×</button>
-    <h2>Telescópio</h2>
-    <p class="muted" id="scopeTarget"></p>
-    <div id="bands"></div>
-    <div id="overlayCtl">
-      <h3>Comparar com</h3>
-      <select id="overlaySel"><option value="">— nenhum —</option></select>
-      <input type="range" id="overlayOp" min="0" max="1" step="0.01" value="0.5" disabled>
-    </div>
-    <p class="muted small">Imagens: HiPS do CDS/Strasbourg via Aladin Lite. Cada filtro é uma foto real tirada naquele comprimento de onda.</p>
-  </aside>
+  
 </section>
 
 <section id="help" class="panel" hidden>
@@ -219,10 +151,10 @@
     <tr><td>K</td><td>abre nos lugares os fenômenos extremos: ondas gravitacionais, explosões recentes, buracos negros, pulsares, estruturas</td></tr>
     <tr><td>U</td><td>tours guiados: viagens narradas pelo universo</td></tr>
     <tr><td>P</td><td>planetário: ficar em pé na Terra, na Lua ou em Marte e ver o céu daí</td></tr>
-    <tr><td>Y</td><td>tempo: escolher a data, eclipses e replays de missões</td></tr>
-    <tr><td>X</td><td>transmissões: o que os satélites, telescópios e robôs mandam para a Terra</td></tr>
+    <tr><td>Y</td><td>abre/fecha a seção Tempo do painel da direita: data, eclipses e replays de missões</td></tr>
+    <tr><td>X</td><td>abre/fecha a seção Transmissões: o que os satélites, telescópios e robôs mandam para a Terra</td></tr>
     <tr><td>V</td><td>onde fica o objeto selecionado, visto da Terra (linha Terra ↔ objeto)</td></tr>
-    <tr><td>M</td><td>mostrar / esconder a massaroca de satélites em volta da Terra (detalhes em Camadas)</td></tr>
+    <tr><td>M</td><td>mostrar / esconder a massaroca de satélites em volta da Terra (detalhes na seção Camadas)</td></tr>
     <tr><td>espaço , .</td><td>pausar / desacelerar / acelerar o tempo</td></tr>
     <tr><td>F3</td><td>painel de desempenho (quadros por segundo e custo de cada camada)</td></tr>
   </table>
@@ -244,6 +176,89 @@
 
 <div id="toast" hidden></div>
 </main>
+<!-- Controles globais da vista (à direita): tempo, camadas, telescópio e transmissões, em seções que abrem e fecham -->
+<aside id="ctl">
+  <div id="ctlRail">
+    <button data-rail="time" title="Tempo (Y)">🕰️</button>
+    <button data-rail="layers" title="Camadas">☰</button>
+    <button data-rail="scope" title="Telescópio (T)">🔭</button>
+    <button data-rail="feeds" title="Transmissões (X)">📡</button>
+  </div>
+  <div id="ctlMain">
+    <div id="ctlHead">
+      <div class="row">
+        <button id="btnMode" title="Alternar entre orbitar o alvo e voar livre (Tab)">⟲ Orbitar</button>
+        <span class="grow"></span>
+        <button id="btnHelp" title="Controles (H)">?</button>
+        <button id="ctlToggle" title="Recolher o painel">»</button>
+      </div>
+      <div id="timebar" title="Velocidade do tempo">
+        <span id="clock"></span>
+        <span class="tbtn">
+          <button id="tSlower" title="Mais devagar ( , )">◀◀</button><button id="tPause" title="Pausar (espaço)">❚❚</button><button id="tFaster" title="Mais rápido ( . )">▶▶</button><button id="tNow" title="Voltar para agora">agora</button>
+        </span>
+      </div>
+    </div>
+    <div id="ctlScroll">
+      <section class="sec" data-sec="time">
+        <h2 class="secHead"><span class="tw">▸</span>🕰️ Tempo</h2>
+        <div class="secBody" id="timePanel">
+  <div class="tabs"><button data-tab="date">Data</button><button data-tab="ecl">Eclipses</button><button data-tab="rep">Missões</button></div>
+    <section data-pane="date">
+      <h3>Ir para uma data</h3>
+      <div class="row"><input type="datetime-local" id="tpDate"><button id="tpGo">Ir</button></div>
+      <h3>Século 20 e 21 <span class="muted small">(planetas, naves, eclipses)</span></h3>
+      <input type="range" id="tpYear" min="1900" max="2100" step="1">
+      <div class="scale"><span>1900</span><span>2000</span><span>2100</span></div>
+      <h3>Milênios <span class="muted small">(as estrelas se movem)</span></h3>
+      <input type="range" id="tpEra" min="-100000" max="100000" step="100">
+      <div class="scale"><span>100 mil anos atrás</span><b id="tpEraLbl"></b><span>daqui a 100 mil</span></div>
+      <div class="chips">
+        <button class="chip on" data-jump="now">Agora</button>
+        <button class="chip on" data-jump="-4560" data-msg="2560 a.C.: a Grande Pirâmide de Gizé está sendo construída. A estrela polar era Thuban, do Dragão.">Pirâmides de Gizé</button>
+        <button class="chip on" data-jump="-1999">Ano 1</button>
+        <button class="chip on" data-jump="12000" data-msg="Ano 14000: por causa da precessão do eixo da Terra, a estrela polar será Vega.">Ano 14000</button>
+        <button class="chip on" data-jump="27700" data-msg="Daqui a ~28 mil anos, Alfa Centauri chega ao ponto mais perto do Sol: cerca de 3 anos-luz (hoje está a 4,3).">Alfa Centauri mais perto</button>
+        <button class="chip on" data-jump="-50000">50 mil anos atrás</button>
+        <button class="chip on" data-jump="100000">Daqui a 100 mil</button>
+      </div>
+      <p class="muted small">As estrelas se movem com as velocidades medidas pelo Hipparcos: em milênios, as constelações se deformam. A foto do céu de fundo some, porque mostra o céu de hoje. Os planetas são calculados entre os anos 200 e 3800; fora disso, ficam parados na última posição calculada. Os satélites da Terra só aparecem perto da data atual.</p>
+    </section>
+    <section data-pane="ecl" hidden><div id="tpEclList"></div></section>
+    <section data-pane="rep" hidden><div id="tpRepList"></div></section>
+        </div>
+      </section>
+      <section class="sec" data-sec="layers">
+        <h2 class="secHead"><span class="tw">▸</span>☰ Camadas</h2>
+        <div class="secBody" id="layers"></div>
+      </section>
+      <section class="sec" data-sec="scope">
+        <h2 class="secHead"><span class="tw">▸</span>🔭 Telescópio</h2>
+        <div class="secBody">
+          <p class="muted small" id="scopeTarget">Fotos reais do céu em cada comprimento de onda. Escolha um filtro para abrir o telescópio na direção do selecionado.</p>
+          <div class="row"><button id="btnScope" class="accent" title="Abrir o telescópio na direção do selecionado (T)">🔭 Abrir no selecionado</button><button id="scopeClose" title="Voltar à nave (Esc)" hidden>✕ Voltar à nave</button></div>
+          <div id="bands"></div>
+          <div id="overlayCtl">
+            <h3>Comparar com</h3>
+            <select id="overlaySel"><option value="">— nenhum —</option></select>
+            <input type="range" id="overlayOp" min="0" max="1" step="0.01" value="0.5" disabled>
+          </div>
+          <h3>Céu de fundo do 3D</h3>
+          <select id="skySel" title="Mapa do céu de fundo em outros comprimentos de onda"></select>
+          <p class="muted small">Imagens: HiPS do CDS/Strasbourg via Aladin Lite. Cada filtro é uma foto real tirada naquele comprimento de onda.</p>
+        </div>
+      </section>
+      <section class="sec" data-sec="feeds">
+        <h2 class="secHead"><span class="tw">▸</span>📡 Transmissões</h2>
+        <div class="secBody">
+          <p class="muted small">O que os satélites, telescópios e robôs do catálogo estão mandando para a Terra.</p>
+          <div id="feedList"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</aside>
+
 <div id="loading"><div>Carregando o universo…</div><small id="loadStep"></small></div>
 
 <script type="module" src="src/main.js"></script>

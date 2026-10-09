@@ -24,8 +24,6 @@ export function wireControls(onTimeChange) {
   $('btnMode').onclick = toggleMode;
   $('btnScope').onclick = () => openScope(ui.selected);
   $('btnHelp').onclick = () => { $('help').hidden = !$('help').hidden; };
-  $('btnFeeds').onclick = () => ($('feeds').hidden ? openFeeds() : ($('feeds').hidden = true));
-  $('btnTime').onclick = () => ($('timePanel').hidden ? openTime() : ($('timePanel').hidden = true));
   $('scopeClose').onclick = () => scope.close();
   $('dsnClose').onclick = () => feeds.closeDSN();
   $('tPause').onclick = () => { time.togglePause(); onTimeChange(); };
@@ -61,11 +59,11 @@ export function wireControls(onTimeChange) {
       case 'g': case 'G': go(ui.selected); break;
       case 't': case 'T': openScope(ui.selected); break;
       case 'l': case 'L': toggleSide(); break;
-      case 'x': case 'X': $('btnFeeds').click(); break;
+      case 'x': case 'X': openFeeds(null, true); break;
       case 'p': case 'P': togglePlanetarium(); break;
       case 'u': case 'U': toggleTourPanel(); break;
       case 'k': case 'K': reveal('Fenômenos extremos'); break;
-      case 'y': case 'Y': $('timePanel').hidden ? openTime() : ($('timePanel').hidden = true); break;
+      case 'y': case 'Y': openTime('date', true); break;
       case 'v': case 'V': linkMode.link.target ? linkMode.stop() : startLink(ui.selected); break;
       case 'm': case 'M': toggleMassaroca(); break;
       case 'h': case 'H': case '?': $('btnHelp').click(); break;
@@ -75,7 +73,7 @@ export function wireControls(onTimeChange) {
       case 'Escape':
         if (nav.flight) cancelFlight();
         else if (linkMode.link.target) linkMode.stop();
-        else { $('tourPanel').hidden = true; $('help').hidden = true; $('layers').hidden = true; $('feeds').hidden = true; $('timePanel').hidden = true; }
+        else { $('tourPanel').hidden = true; $('help').hidden = true; }
         break;
     }
   });

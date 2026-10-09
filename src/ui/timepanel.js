@@ -10,14 +10,15 @@ import * as time from '../time.js';
 import { v3, AU, KM, fmtNum } from '../astro.js';
 import { select, go } from './actions.js';
 import { $, toast } from './dom.js';
+import { openSection, onSectionOpen } from './ctlpanel.js';
 
 const Y_MS = 31557600000, J2000 = 946728000000;
 const ECL_POLE = [0, -0.39777716, 0.91748206];
 
 // ---------------------------------------------------------------- abas
-export function openTime(tab = 'date') {
-  $('timePanel').hidden = false;
-  showTab(tab);
+// a seção Tempo do painel da direita; toggle = fecha se já estiver aberta (tecla Y)
+export function openTime(tab = 'date', toggle = false) {
+  if (openSection('time', { toggle })) showTab(tab);
 }
 function showTab(tab) {
   for (const b of document.querySelectorAll('#timePanel [data-tab]')) b.classList.toggle('on', b.dataset.tab === tab);
@@ -45,7 +46,7 @@ function jump(date, msg) {
 }
 export function wireTime() {
   for (const b of document.querySelectorAll('#timePanel [data-tab]')) b.onclick = () => showTab(b.dataset.tab);
-  $('tpClose').onclick = () => { $('timePanel').hidden = true; };
+  onSectionOpen('time', syncDate);
   $('tpGo').onclick = () => { const v = $('tpDate').value; if (v) jump(new Date(v)); };
   $('tpYear').oninput = e => { const d = new Date(F.date); d.setUTCFullYear(+e.target.value); jump(d); };
   $('tpEra').oninput = e => {
@@ -145,7 +146,6 @@ function focusTarget(f) {
 
 export function startReplay(r) {
   R = { r, idx: -1, waiting: false };
-  $('timePanel').hidden = true;
   setFocus(r.craft);
   time.setDate(Date.parse(r.start));
   solar.computePositions();

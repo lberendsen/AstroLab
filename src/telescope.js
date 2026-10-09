@@ -3,6 +3,7 @@
 //  - mundo: para corpos do Sistema Solar, os mapas da superfície feitos por sondas (as fotos do céu foram
 //    tiradas anos atrás, quando a Lua e os planetas estavam em outro lugar, então lá eles não aparecem).
 import { BANDS, SURVEY_BY_ID } from './surveys.js';
+import { openSection } from './ui/ctlpanel.js';
 
 const ALADIN_URL = 'https://cdn.jsdelivr.net/npm/aladin-lite@3.8.2/dist/aladin.js';
 let aladin = null, loading = null, skySurvey = 'CDS/P/DSS2/color', current = skySurvey;
@@ -64,10 +65,10 @@ function buildPanel() {
   const bands = $('bands'), ov = $('overlaySel');
   bands.innerHTML = '';
   ov.innerHTML = '<option value="">— nenhum —</option>';
-  const groups = state.mode === 'body'
+  const groups = state?.mode === 'body'
     ? [{ name: `Mapas de ${BODY_PT[state.body]}`, range: 'feitos por sondas', items: BODY_MAPS[state.body].map(([id, label]) => ({ id, label })) }]
     : BANDS;
-  if (state.mode === 'body') {
+  if (state?.mode === 'body') {
     bands.insertAdjacentHTML('beforeend', `<p class="small">Fotos das sondas que mapearam ${BODY_PT[state.body]}. Arraste para girar o globo; a roda do mouse aproxima.${state.markers?.length ? ' Os marcadores laranja são os robôs e pousos do catálogo.' : ''}</p>`);
   }
   for (const b of groups) {
@@ -85,14 +86,14 @@ function buildPanel() {
     ov.appendChild(og);
     bands.appendChild(div);
   }
-  if (state.mode === 'body' && state.sky) {
+  if (state?.mode === 'body' && state.sky) {
     const b = document.createElement('button');
     b.className = 'switch';
     b.textContent = '🌌 Ver o céu atrás dele, visto da Terra';
     b.title = 'As fotos do céu foram tiradas anos atrás: o corpo não aparece nelas, só as estrelas do fundo';
     b.onclick = () => open({ ...state.sky, name: state.name });
     bands.appendChild(b);
-  } else if (state.mode === 'sky' && state.bodyArgs) {
+  } else if (state?.mode === 'sky' && state.bodyArgs) {
     const b = document.createElement('button');
     b.className = 'switch';
     b.textContent = `🗺️ Voltar aos mapas de ${BODY_PT[state.bodyArgs.body]}`;
@@ -108,7 +109,11 @@ function mark() {
   for (const b of document.querySelectorAll('#bands button[data-id]')) b.classList.toggle('on', b.dataset.id === current);
 }
 
+let openHook = null;
+export const setOpenHook = fn => { openHook = fn; };
 export function setSurvey(id) {
+  // telescópio fechado: guarda o filtro e abre na direção do selecionado
+  if (!isOpen()) { skySurvey = id; openHook?.(); return; }
   current = id;
   if (state.mode === 'sky') skySurvey = id;
   aladin?.setImageSurvey(id);
@@ -142,6 +147,8 @@ export async function open(args) {
   state = { ...args, mode: args.body && BODY_MAPS[args.body] ? 'body' : 'sky' };
   if (state.mode === 'sky' && prevBody && !args.body) state.bodyArgs = prevBody;
   $('scope').hidden = false;
+  $('scopeClose').hidden = false;
+  openSection('scope');
   $('scopeTarget').textContent = state.mode === 'body' ? `${args.name || BODY_PT[args.body]}: a superfície, em mapas de sondas` : args.name ? `${args.name}: como aparece no céu, visto da Terra` : 'O céu visto da Terra';
   try { await loadScript(); }
   catch (e) { $('scopeTarget').textContent = e.message + ' (precisa de internet)'; return; }
@@ -169,6 +176,13 @@ export async function open(args) {
   mark();
 }
 
-export function close() { $('scope').hidden = true; }
+const CLOSED_TEXT = 'Fotos reais do céu em cada comprimento de onda. Escolha um filtro para abrir o telescópio na direção do selecionado.';
+export function close() {
+  $('scope').hidden = true; $('scopeClose').hidden = true;
+  $('scopeTarget').textContent = CLOSED_TEXT;
+  state = null; buildPanel(); mark();
+}
+// lista dos filtros já na abertura do app, com o telescópio fechado
+export function initPanel() { buildPanel(); mark(); }
 export const isOpen = () => !$('scope').hidden;
 export { SURVEY_BY_ID };

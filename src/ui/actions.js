@@ -19,6 +19,7 @@ import { SCOPE_KEY } from '../layers/moons.js';
 import { v3, KM, AU, DEG, xyz2radec } from '../astro.js';
 import { renderInfo } from './info.js';
 import { $, toast } from './dom.js';
+import { openSection } from './ctlpanel.js';
 
 export const ui = { selected: null };
 
@@ -96,10 +97,10 @@ function subPoint(b, p) {
 }
 const surfaceMarkers = key => craft.CRAFT.filter(c => c.kind === 'surface' && c.body === key).map(c => ({ lon: c.lon, lat: c.lat, name: c.name, desc: `${c.country} · ${c.launch}` }));
 
-export function openScope(t) {
-  // Lua, planetas e robôs na superfície: mapas da superfície feitos por sondas
+export function openScope(t, { sky = false } = {}) {
+  // Lua, planetas e robôs na superfície: mapas da superfície feitos por sondas (a menos que se peça o céu)
   const bodyKey = t?.body?.key || (t?.craft?.kind === 'surface' ? t.craft.body : null);
-  if (bodyKey && scope.hasBodyMaps(bodyKey)) {
+  if (bodyKey && scope.hasBodyMaps(bodyKey) && !sky) {
     const b = solar.BODY[bodyKey];
     let lon, lat, fov;
     // perto o bastante para ver a cratera ou a região do pouso (Jezero tem 45 km; 1° na Lua são 30 km)
@@ -115,7 +116,7 @@ export function openScope(t) {
     return;
   }
   // luas com mapa: o telescópio abre no mapa da superfície (longitude 0 = face voltada para o planeta)
-  if (t?.moon && SCOPE_KEY[t.moon.id] && scope.hasBodyMaps(SCOPE_KEY[t.moon.id])) { scope.open({ body: SCOPE_KEY[t.moon.id], lon: 0, lat: 0, fovDeg: 180, name: t.name }); return; }
+  if (!sky && t?.moon && SCOPE_KEY[t.moon.id] && scope.hasBodyMaps(SCOPE_KEY[t.moon.id])) { scope.open({ body: SCOPE_KEY[t.moon.id], lon: 0, lat: 0, fovDeg: 180, name: t.name }); return; }
   if (t?.shower) { scope.open({ ra: t.shower.ra, dec: t.shower.dec, fovDeg: 40, name: `Radiante das ${t.shower.name}` }); return; }
   let ra, dec, fov = 1, name;
   if (t?.body) {
@@ -144,10 +145,10 @@ export function startLink(t) {
 }
 
 // ---------------------------------------------------------------- transmissões
-export function openFeeds(filterFor = null) {
-  linkMode.link.target && linkMode.stop();
+// a seção Transmissões do painel da direita (filtrada para um aparelho, se for o caso); toggle: tecla X
+export function openFeeds(filterFor = null, toggle = false) {
   feeds.buildPanel(filterFor);
-  $('feeds').hidden = false;
+  openSection('feeds', { toggle });
 }
 const craftToTarget = c => (c.sat && !c.id ? satTarget(c.sat) : craftTarget(c));
 // Câmera onde o satélite está, olhando para a Terra
@@ -169,4 +170,7 @@ export function wireFeeds() {
     lookEarth: () => { if (v3.dist(F.cam, solar.BODY.Earth.pos) > 2e6 * KM) go(bodyTarget('Earth')); },
   });
   feeds.wireViewer();
+  feeds.buildPanel();
+  // filtro escolhido com o telescópio fechado: abre na direção do selecionado
+  scope.setOpenHook(() => openScope(ui.selected, { sky: true }));
 }
