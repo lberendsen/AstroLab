@@ -81,7 +81,7 @@ const STOPS = [
   { name: 'tita', run: `document.getElementById('tcStop').click(); ${go('Titã')}`, wait: 12000,
     check: `/Titã/.test(document.querySelector('#info h2')?.textContent || '') && astro.search.searchLocal('Encélado', 1).length > 0 || 'luas de Saturno não encontradas'` },
   { name: 'gaia-vizinhanca', run: `astro.flyTo({ id: 'v', name: 'vizinhança', kind: 'view', pos: () => [0, 0, 0], radius: 0, viewDist: 120, arriveDir: [0.4, -0.6, 0.7] })`, wait: 20000 },
-  { name: 'gw-casca', external: true, run: `document.getElementById('btnPhen').click(); setTimeout(() => document.querySelector('#phenList .plRow')?.click(), 5000)`, wait: 16000,
+  { name: 'gw-casca', external: true, run: `astro.places.goPlace('Ondas gravitacionais'); setTimeout(() => document.querySelector('#phenList .plRow')?.click(), 5000)`, wait: 16000,
     check: `/Onda gravitacional/i.test(document.querySelector('#info .kind')?.textContent || '') || 'lista de ondas gravitacionais não carregou'` },
   { name: 'buraco-negro', run: `document.getElementById('phClose').click(); ${go('Gaia BH1')}`, wait: 13000,
     check: `/Gaia BH1/.test(document.querySelector('#info h2')?.textContent || '') || 'Gaia BH1 não encontrado'` },

@@ -128,7 +128,7 @@ Em Camadas → **Planetas de perto**: liga e desliga as texturas em alta resolu�
 | Supernovas e explosões dos últimos 30 dias | Transient Name Server, ao vivo | — |
 | 10 superaglomerados e vazios | literatura (posição e tamanho aproximados) | `src/layers/phase5.js` |
 
-O botão **💥** (tecla `K`) abre o painel de fenômenos, com cinco abas:
+O ramo **💥 Fenômenos extremos** dos Lugares (ou a tecla `K`) abre o painel de fenômenos, com cinco abas:
 
 - **Ondas gravitacionais:** ao escolher uma, aparece a casca a essa distância, porque a direção é incerta. GW170817 leva à galáxia NGC 4993.
 - **Explosões recentes:** as que têm redshift permitem viajar até lá; as outras abrem no telescópio.

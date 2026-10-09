@@ -34,7 +34,8 @@ export function resolvePlace(q) {
   }
   if (q.startsWith('@phen:')) {
     const k = q.slice(6);
-    return { name: k === 'gw' ? '💥 Ondas gravitacionais' : '💥 Explosões recentes', action: () => openPhenomena(k) };
+    const NAME = { gw: '💥 Ondas gravitacionais', sn: '💥 Explosões recentes', bh: '💥 Todos os buracos negros, lado a lado', psr: `💥 Todos os pulsares (${P5.pulsars.length.toLocaleString('pt-BR')})`, lss: '💥 Todas as estruturas (superaglomerados e vazios)' };
+    return { name: NAME[k] || '💥 Fenômenos', action: () => openPhenomena(k) };
   }
   if (q === '@plhere') return { name: '🌅 O céu daqui, agora', action: () => openPlanetarium('Earth', PL.lat, PL.lon, PL.name) };
   if (q === '@const3d') {
@@ -177,13 +178,13 @@ function deepSky() {
     cat('🌫️ Nebulosas e aglomerados', [cat('Nebulosas', of('neb')), cat('Nebulosas planetárias', of('pn')), cat('Restos de supernova', of('snr')),
       cat('Aglomerados abertos', of('open')), cat('Aglomerados globulares', of('glob'))]),
     cat('💥 Fenômenos extremos', [fromQ('@phen:gw', 'colisões que sacodem o espaço'), fromQ('@phen:sn', 'supernovas deste mês'),
-      cat('Buracos negros', [...of('bh'), ...C.filter(o => /^(M 87|TON 618)$/.test(o.id)).map(o => node(o.name, { make: () => curatedTarget(o) }))]),
-      cat('Pulsares', P5.pulsars.filter(p => p.name).map(p => node(p.name, { make: () => pulsarTarget(p) })))]),
+      cat('Buracos negros', [fromQ('@phen:bh'), ...of('bh'), ...C.filter(o => /^(M 87|TON 618)$/.test(o.id)).map(o => node(o.name, { make: () => curatedTarget(o) }))]),
+      cat('Pulsares', [fromQ('@phen:psr', 'piscando no ritmo real'), ...P5.pulsars.filter(p => p.name).map(p => node(p.name, { make: () => pulsarTarget(p) }))])]),
     cat('🌌 Nossa galáxia', [fromQ('@milkyway', 'vista de fora (modelo)'), fromQ('Sgr A*', 'o buraco negro central'),
       cat('Galáxias vizinhas (Grupo Local)', of('gal', o => o.d < 3e6))]),
     cat('🌀 Galáxias', [cat('Galáxias próximas', of('gal', o => o.d >= 3e6 && o.d < 1e8)), cat('Galáxias distantes', of('gal', o => o.d >= 1e8 && o.d < 1e9)),
       cat('Aglomerados de galáxias', of('cluster'))]),
-    cat('🕸️ Universo em grande escala', [fromQ('@web', 'a teia cósmica'), ...P5.structures.map(s => node(s.name, { make: () => structTarget(s), hint: s.kind }))]),
+    cat('🕸️ Universo em grande escala', [fromQ('@web', 'a teia cósmica'), fromQ('@phen:lss', 'tamanho e distância'), ...P5.structures.map(s => node(s.name, { make: () => structTarget(s), hint: s.kind }))]),
     cat('🔭 Até a borda do universo', [...of('qso'), ...of('gal', o => o.d >= 1e9), fromQ('@qso', '750 mil quasares'), fromQ('@cmb', 'radiação cósmica de fundo')]),
   ];
 }

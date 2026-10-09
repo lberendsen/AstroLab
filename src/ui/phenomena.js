@@ -134,8 +134,10 @@ function renderLss() {
   for (const el of box.querySelectorAll('.plRow')) el.onclick = () => go(structTarget(P5.structures[+el.dataset.i]));
 }
 
+// tecla K: abre ou fecha o painel de fenômenos
+export const togglePhenomena = () => ($('phenPanel').hidden ? openPhenomena() : ($('phenPanel').hidden = true));
+
 export function wirePhenomena() {
-  $('btnPhen').onclick = () => ($('phenPanel').hidden ? openPhenomena() : ($('phenPanel').hidden = true));
   $('phClose').onclick = () => { $('phenPanel').hidden = true; P5L.showGwShell(0); };
   for (const b of document.querySelectorAll('#phenPanel [data-phtab]')) b.onclick = () => openPhenomena(b.dataset.phtab);
 }
