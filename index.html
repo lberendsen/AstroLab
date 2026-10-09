@@ -101,6 +101,21 @@
   <section data-pane="rep" hidden><div id="tpRepList"></div></section>
 </aside>
 
+<aside id="tourPanel" class="panel" hidden>
+  <button class="close" id="tpClose2">×</button>
+  <h2>🎬 Tours guiados</h2>
+  <p class="muted small">Viagens narradas: a câmera e o tempo andam sozinhos. Pause com ❚❚ ou pule de parada a qualquer momento.</p>
+  <div id="tourList"></div>
+</aside>
+
+<div id="tourCap" class="panel" hidden>
+  <div class="rcHead"><b id="tcTitle"></b><span id="tcStep" class="muted"></span>
+    <span class="rcBtns"><button id="tcPrev" title="Parada anterior">⏮</button><button id="tcPlay" title="Pausar ou continuar">❚❚</button><button id="tcNext" title="Próxima parada">⏭</button><button id="tcStop" title="Encerrar o tour">✕</button></span></div>
+  <div class="rcProg"><i id="tcBar"></i></div>
+  <p id="tcText"></p>
+  <button id="tcExtra" hidden></button>
+</div>
+
 <div id="replayCap" class="panel" hidden>
   <div class="rcHead"><b id="rcTitle"></b><span id="rcDate" class="muted"></span>
     <span class="rcBtns"><button id="rcPause" title="Pausar (espaço)">❚❚</button><button id="rcNext" title="Próximo trecho">⏭</button><button id="rcStop" title="Encerrar e voltar ao presente">✕</button></span></div>
@@ -145,6 +160,7 @@
 
 <nav id="bar">
   <button id="btnPlaces" title="Lugares legais (L)">✦ Lugares</button>
+  <button id="btnTours" title="Tours guiados: viagens narradas (U)">🎬 Tours</button>
   <button id="btnPlan" title="Planetário: ver o céu de um lugar na Terra, na Lua ou em Marte (P)">🌅 Planetário</button>
   <button id="btnMode" title="Alternar entre orbitar o alvo e voar livre (Tab)">⟲ Orbitar</button>
   <div class="group" title="Velocidade do tempo">
@@ -195,6 +211,7 @@
     <tr><td>Shift</td><td>turbo ×20</td></tr>
     <tr><td>G</td><td>ir até o selecionado · <b>T</b> telescópio · <b>L</b> lugares</td></tr>
     <tr><td>/</td><td>procurar</td></tr>
+    <tr><td>U</td><td>tours guiados: viagens narradas pelo universo</td></tr>
     <tr><td>P</td><td>planetário: ficar em pé na Terra, na Lua ou em Marte e ver o céu daí</td></tr>
     <tr><td>Y</td><td>tempo: escolher a data, eclipses e replays de missões</td></tr>
     <tr><td>X</td><td>transmissões: o que os satélites, telescópios e robôs mandam para a Terra</td></tr>

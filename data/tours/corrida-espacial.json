@@ -1,0 +1,32 @@
+{
+  "id": "corrida-espacial",
+  "title": "A corrida espacial e as missões de hoje",
+  "sub": "De 1959 a 2026, em 12 paradas",
+  "end": "Em menos de 70 anos, saímos do primeiro satélite para naves fora do Sistema Solar, robôs em Marte e telescópios que veem o começo do universo. Os replays completos estão no painel 🕰️ Tempo, na aba Missões.",
+  "steps": [
+    { "text": "13 de setembro de 1959: a sonda soviética Luna 2 atinge a Lua. Pela primeira vez, algo feito por pessoas toca outro mundo.",
+      "go": "Luna 2 (impacto)", "date": "1959-09-14T00:00:00Z", "rate": 600 },
+    { "text": "1969: a Apollo 11 pousa no Mar da Tranquilidade. Neil Armstrong e Buzz Aldrin caminham na Lua; o estágio de descida do módulo lunar ficou lá até hoje.",
+      "go": "Apollo 11 (Base da Tranquilidade)", "date": "1969-07-21T03:00:00Z" },
+    { "text": "1970: o Lunokhod 1, soviético, é o primeiro jipe-robô controlado a distância em outro mundo. Ele rodou 10 km.",
+      "go": "Lunokhod 1", "date": "1971-01-01T00:00:00Z" },
+    { "text": "1977: as Voyager partem para o Grande Tour dos planetas gigantes. Hoje a Voyager 1 está no espaço interestelar.",
+      "go": "Voyager 1", "date": "now", "rate": 1 },
+    { "text": "1982: a Venera 13, soviética, faz as primeiras fotos coloridas da superfície de Vênus, a 457 °C. Resistiu 127 minutos.",
+      "go": "Venera 13" },
+    { "text": "1990: o Hubble entra em órbita e muda a astronomia. Ainda funciona, a 540 km de altitude.",
+      "go": "Telescópio Espacial Hubble", "rate": 1 },
+    { "text": "2000: começa a ocupação permanente da Estação Espacial Internacional. Desde então, sempre há gente vivendo no espaço.",
+      "go": "Estação Espacial Internacional (ISS)", "button": { "label": "📡 Ver ao vivo da estação", "feed": "iss" } },
+    { "text": "2019: a China pousa o Chang'e 4 no lado oculto da Lua, um lugar que nunca se vê da Terra.",
+      "go": "Chang'e 4 e jipe Yutu-2 (lado oculto)" },
+    { "text": "2021: o Perseverance pousa em Marte para procurar sinais de vida antiga e guardar amostras de rocha.",
+      "go": "Perseverance", "button": { "label": "📡 Últimas fotos de Marte", "feed": "m2020" } },
+    { "text": "2021: o telescópio James Webb parte para 1,5 milhão de km da Terra. Seu espelho dourado de 6,5 m enxerga galáxias de mais de 13 bilhões de anos atrás.",
+      "go": "Telescópio Espacial James Webb", "button": { "label": "📡 O que o Webb observou esta semana", "feed": "jwst-raw" } },
+    { "text": "Abril de 2026: a Artemis II leva quatro pessoas para dar a volta na Lua, a primeira viagem tripulada até lá em mais de 50 anos.",
+      "go": "Artemis II (Orion)", "date": "2026-04-06T20:00:00Z", "rate": 600 },
+    { "text": "E agora: centenas de missões ativas e milhares de satélites em volta da Terra. Aperte M para ver a quantidade.",
+      "go": "Terra", "date": "now", "rate": 1, "hold": 2 }
+  ]
+}

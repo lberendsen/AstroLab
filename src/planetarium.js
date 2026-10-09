@@ -187,7 +187,9 @@ function land() {
 export function exit(quiet = false) {
   if (!PL.active && !PL.pending) return;
   if (quiet) {
-    PL.active = false; F.ground = false;
+    PL.active = false; PL.pending = false; F.ground = false; F.fovOverride = null;
+    for (const o of [groundMesh, skyDome, gridLines, eqLines]) o.visible = false;
+    onChange?.();
     if (saved) { F.layers.orbits = saved.orbits; showCraft.trails = saved.trails; showCraft.probes = saved.probes; showCraft.surface = saved.surface; showSB.asteroids = saved.ast; showSB.comets = saved.com; saved = null; }
     BODY[PL.body].group.visible = true;
     return;

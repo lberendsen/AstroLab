@@ -64,6 +64,7 @@ export function wireControls(onTimeChange) {
       case 'l': case 'L': $('btnPlaces').click(); break;
       case 'x': case 'X': $('btnFeeds').click(); break;
       case 'p': case 'P': $('btnPlan').click(); break;
+      case 'u': case 'U': $('btnTours').click(); break;
       case 'y': case 'Y': $('timePanel').hidden ? openTime() : ($('timePanel').hidden = true); break;
       case 'v': case 'V': linkMode.link.target ? linkMode.stop() : startLink(ui.selected); break;
       case 'm': case 'M': toggleMassaroca(); break;
@@ -74,7 +75,7 @@ export function wireControls(onTimeChange) {
       case 'Escape':
         if (nav.flight) cancelFlight();
         else if (linkMode.link.target) linkMode.stop();
-        else { $('help').hidden = true; $('places').hidden = true; $('layers').hidden = true; $('feeds').hidden = true; $('timePanel').hidden = true; }
+        else { $('tourPanel').hidden = true; $('help').hidden = true; $('places').hidden = true; $('layers').hidden = true; $('feeds').hidden = true; $('timePanel').hidden = true; }
         break;
     }
   });

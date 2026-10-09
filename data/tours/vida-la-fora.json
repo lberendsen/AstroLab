@@ -1,0 +1,26 @@
+{
+  "id": "vida-la-fora",
+  "title": "Existe vida lá fora?",
+  "sub": "Os lugares mais promissores, do Sistema Solar às estrelas vizinhas",
+  "end": "Ainda não sabemos. Mas pela primeira vez na história temos as ferramentas para procurar de verdade: robôs em Marte, naves a caminho de Europa e telescópios analisando o ar de outros planetas.",
+  "steps": [
+    { "text": "O único planeta onde sabemos que existe vida. A Terra tem água líquida, uma atmosfera e um campo magnético que protege a superfície.",
+      "go": "Terra", "date": "now", "rate": 600, "button": { "label": "📡 A Terra agora, do espaço", "feed": "epic" } },
+    { "text": "Marte já teve rios e lagos. A cratera Jezero era um lago com um delta, e o Perseverance procura ali fósseis de micróbios.",
+      "go": "Perseverance", "rate": 1 },
+    { "text": "Europa, lua de Júpiter, esconde sob o gelo um oceano com mais água que todos os oceanos da Terra. A Europa Clipper chega lá em 2030.",
+      "go": "Europa" },
+    { "text": "Saturno tem duas candidatas: Encélado, que solta jatos de água salgada pelo polo sul, e Titã, com lagos de metano e uma atmosfera densa.",
+      "go": "Saturno" },
+    { "text": "Próxima Centauri, a estrela mais próxima, tem um planeta na zona habitável: Proxima b. Mas a estrela solta erupções fortes, que podem ter arrancado a atmosfera dele.",
+      "go": "Proxima Cen b" },
+    { "text": "TRAPPIST-1 tem sete planetas do tamanho da Terra, três deles na zona habitável. Daqui dá para ver como todos cabem mais perto da estrela do que Mercúrio está do Sol.",
+      "go": "TRAPPIST-1 e" },
+    { "text": "K2-18 b, a 124 anos-luz: o Webb encontrou metano e gás carbônico no ar dele. Pode ter um oceano, mas os sinais de vida ainda são muito discutidos.",
+      "go": "K2-18 b" },
+    { "text": "Kepler-452 b, o \"primo da Terra\": um planeta um pouco maior que o nosso, girando em volta de uma estrela parecida com o Sol, com um ano de 385 dias.",
+      "go": "Kepler-452 b" },
+    { "text": "E se alguém estiver procurando por nós? A Voyager 1 leva o Disco de Ouro, com sons, músicas e saudações em 55 línguas, para quem o encontrar daqui a milhões de anos.",
+      "go": "Voyager 1", "hold": 3 }
+  ]
+}

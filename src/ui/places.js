@@ -3,12 +3,14 @@ import * as search from '../search.js';
 import { v3, gal2eq, GALACTIC_CENTER } from '../astro.js';
 import { go } from './actions.js';
 import { openNeo } from './neo.js';
+import { TOURS, startTour } from './tours.js';
 import { openPlanetarium } from './planpanel.js';
 import { PL, PRESETS } from '../planetarium.js';
 import { radec2xyz } from '../astro.js';
 import { $ } from './dom.js';
 
 const PLACES = [
+  ['Tours guiados', [['@tour:quarto-ao-universo'], ['@tour:vida-de-uma-estrela'], ['@tour:poeira-de-estrelas'], ['@tour:corrida-espacial'], ['@tour:vida-la-fora']]],
   ['Planetário: o céu de outros lugares', [['@plhere'], ['@pl:Earth#10', 'céu mais escuro da Terra'], ['@pl:Earth#18', 'o céu gira em volta de você'], ['@pl:Moon#0', 'a Terra parada no céu'],
     ['@pl:Mars#0', 'pôr do sol azul'], ['@const3d', 'as estrelas não estão juntas']]],
   ['Sistema Solar', [['Terra'], ['Lua'], ['Sol'], ['Marte'], ['Júpiter'], ['Saturno'], ['Urano'], ['Netuno'], ['Plutão']]],
@@ -37,6 +39,10 @@ export function resolvePlace(q) {
   if (q.startsWith('@pl:')) {
     const [body, i] = q.slice(4).split('#'), p = PRESETS[body][+i];
     return { name: `🌅 ${p[0]}`, action: () => openPlanetarium(body, p[1], p[2], p[0]) };
+  }
+  if (q.startsWith('@tour:')) {
+    const t = TOURS.find(x => x.id === q.slice(6));
+    return t ? { name: `🎬 ${t.title}`, action: () => startTour(t) } : null;
   }
   if (q === '@plhere') return { name: '🌅 O céu daqui, agora', action: () => openPlanetarium('Earth', PL.lat, PL.lon, PL.name) };
   if (q === '@const3d') {

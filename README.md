@@ -18,6 +18,7 @@ a busca no SIMBAD e o telescópio.
 | Roda do mouse | aproximar / afastar |
 | Clique / duplo clique | selecionar / viajar até lá |
 | `Tab` | alternar entre orbitar e voar livre (`W A S D`, `R F`, `Q E`, `Shift` = turbo) |
+| `U` | Tours guiados |
 | `P` | Planetário: o céu de um lugar da Terra, da Lua ou de Marte |
 | `Y` | Tempo: data, eclipses e replays de missões |
 | `X` | Transmissões: imagens e sinais dos aparelhos do catálogo |
@@ -84,6 +85,33 @@ O painel da esquerda mostra:
 - a direção dele na Via Láctea;
 - a distância ao Sol no céu, para objetos do Sistema Solar;
 - a posição agora para quem está em São Paulo (ou na sua localização, pelo botão 📍): se está acima do horizonte, em que direção e a altura máxima que alcança.
+
+### Tours guiados (Fase 4)
+
+O botão **🎬 Tours** (tecla `U`), ou o início de **Lugares**, abre cinco viagens narradas. A câmera, o tempo e as camadas andam sozinhos; ⏮ ❚❚ ⏭ controlam, e ✕ encerra.
+
+- **Do seu quarto ao universo observável** (13 paradas): do céu de São Paulo à radiação cósmica de fundo.
+- **A vida de uma estrela** (12): berçário, aglomerado, o Sol, gigante vermelha, nebulosa planetária, anã branca, supergigante, supernova, pulsar e buraco negro.
+- **Somos feitos de poeira de estrelas** (8): de onde vêm os átomos do corpo humano.
+- **A corrida espacial e as missões de hoje** (12): de Luna 2 (1959) a Artemis II (2026), com a data ajustada em cada parada.
+- **Existe vida lá fora?** (9): Terra, Marte, Europa, Saturno, Proxima b, TRAPPIST-1, K2-18 b, Kepler-452 b e o Disco de Ouro da Voyager.
+
+Algumas paradas têm um botão extra, como "ver em raios X" no telescópio ou a transmissão ao vivo da ISS.
+
+**Criar um tour sem programar:** os roteiros ficam em `data/tours/*.json`, listados em `data/tours/index.json`. Cada passo tem `text` (narração) e, opcionalmente:
+
+| Campo | O que faz |
+|---|---|
+| `go` | nome para procurar (`"Saturno"`, `"M 42"`) ou vista especial (`@milkyway`, `@web`, `@qso`, `@cmb`, `@sistema:9`, `@terra-lua`, `@grupolocal`) |
+| `dist` + `unit` | distância de chegada (`km`, `ua`, `al` = anos-luz, `pc`, `raios`) |
+| `date`, `rate`, `pause` | data (ISO ou `"now"`), velocidade do tempo (segundos por segundo) e pausa |
+| `planetarium` | `{ body, lat, lon, name, az, alt, fov }`: pousar e olhar para uma direção |
+| `constSpace` | `"Ori"` (só uma constelação em 3D), `true` ou `false` |
+| `select`, `telescope` | selecionar um objeto ou abrir o telescópio nele |
+| `button` | `{ label, feed }` ou `{ label, telescope }`: botão opcional na legenda |
+| `hold` | segundos a mais antes de avançar |
+
+O teste de fumaça confere se todos os alvos dos tours existem na busca.
 
 ### Planetário (Fase 2)
 

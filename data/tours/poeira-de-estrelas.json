@@ -1,0 +1,24 @@
+{
+  "id": "poeira-de-estrelas",
+  "title": "Somos feitos de poeira de estrelas",
+  "sub": "De onde vêm os átomos do seu corpo",
+  "end": "O ferro do seu sangue, o cálcio dos seus ossos e o oxigênio que você respira foram feitos dentro de estrelas que morreram antes de o Sol nascer.",
+  "steps": [
+    { "text": "No começo havia quase só hidrogênio e hélio. Esta é a luz mais antiga que existe, de quando o universo tinha 380 mil anos: ainda não havia nenhuma estrela.",
+      "go": "@cmb", "rate": 1 },
+    { "text": "MoM-z14, uma das galáxias mais distantes já vistas, de quando o universo tinha menos de 300 milhões de anos. As primeiras estrelas já estavam fabricando os primeiros elementos pesados.",
+      "go": "MoM-z14" },
+    { "text": "Ômega Centauri reúne 10 milhões de estrelas muito velhas, quase sem elementos pesados. Elas nasceram cedo, antes de muitas gerações de estrelas enriquecerem a galáxia.",
+      "go": "NGC 5139" },
+    { "text": "Dentro das estrelas, o hidrogênio vira hélio, que vira carbono, oxigênio, até o ferro. O resto, como o ouro, nasce em explosões e colisões de estrelas.",
+      "go": "Betelgeuse" },
+    { "text": "Quando uma estrela gigante explode, ela espalha tudo o que fabricou. A Nebulosa do Caranguejo, de 1054, ainda está jogando esse material para o espaço.",
+      "go": "M 1" },
+    { "text": "Esse material enriquecido se mistura a novas nuvens, como a de Órion. Das nuvens nascem novas estrelas, e com elas, planetas rochosos.",
+      "go": "M 42" },
+    { "text": "Há 4,6 bilhões de anos uma dessas nuvens formou o Sol e os planetas. A Terra é feita da poeira de estrelas que morreram antes.",
+      "go": "@sistema:3", "rate": 86400 },
+    { "text": "E aqui estamos nós: um pedaço do universo que aprendeu a olhar para si mesmo.",
+      "go": "Terra", "rate": 600, "button": { "label": "📡 Ver a Terra agora, do espaço", "feed": "epic" }, "hold": 3 }
+  ]
+}

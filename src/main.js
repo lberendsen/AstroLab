@@ -33,6 +33,7 @@ import { wireTime, tick as replayTick } from './ui/timepanel.js';
 import * as eclipse from './layers/eclipse.js';
 import * as planetarium from './planetarium.js';
 import { wirePlanetarium } from './ui/planpanel.js';
+import * as tours from './ui/tours.js';
 import { $ } from './ui/dom.js';
 
 // ---------------------------------------------------------------- inicialização
@@ -44,7 +45,7 @@ async function init() {
   step('asteroides e cometas');
   await smallbodies.load();
   step('quasares e constelações');
-  await Promise.all([deep.load(), planetarium.load()]);
+  await Promise.all([deep.load(), planetarium.load(), tours.load()]);
   deep.addCurated(DB.curated);
   step('montando a cena');
   solar.build(); solar.computePositions();
@@ -52,7 +53,7 @@ async function init() {
   sats.build(); craft.addNotableSats(); craft.build(); deep.build(); smallbodies.build(); eclipse.build(); planetarium.build();
   search.buildIndex();
   buildPlaces(); buildLayersMenu(); buildSkyMenu();
-  wireSearch(); wireFeeds(); wireControls(hud); wireTime(); wirePlanetarium();
+  wireSearch(); wireFeeds(); wireControls(hud); wireTime(); wirePlanetarium(); tours.wireTours();
 
   // começa olhando a Terra, com o Sol de lado
   const earth = bodyTarget('Earth');
@@ -109,7 +110,7 @@ function loop(now) {
   last = now;
   F.dt = dt;
   time.advance(dt);
-  replayTick();
+  replayTick(); tours.tick();
   T('efemérides', () => solar.computePositions());
   T('navegação', () => navUpdate(dt));
   // leve abertura do campo de visão durante a dobra
@@ -169,4 +170,4 @@ init().catch(err => {
 });
 
 // para depuração no console e para o teste de fumaça
-window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies, time, timepanel, planetarium };
+window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies, time, timepanel, planetarium, tours };

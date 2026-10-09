@@ -1,0 +1,32 @@
+{
+  "id": "vida-de-uma-estrela",
+  "title": "A vida de uma estrela",
+  "sub": "Do berçário de gás à anã branca, ao buraco negro e à supernova",
+  "end": "Estrelas como o Sol terminam como anãs brancas; as gigantes, como estrelas de nêutrons ou buracos negros. Em todos os casos, devolvem ao espaço o material para as próximas gerações.",
+  "steps": [
+    { "text": "Tudo começa numa nuvem fria de gás e poeira. Na Nebulosa de Órion, a gravidade está juntando o gás em centenas de estrelas novas, agora mesmo.",
+      "go": "M 42", "rate": 1, "button": { "label": "🔭 Ver no infravermelho", "telescope": "M 42" } },
+    { "text": "Os Pilares da Criação, na Nebulosa da Águia: colunas de gás de 4 anos-luz de altura, com estrelas se formando nas pontas. A luz das estrelas vizinhas está corroendo os pilares aos poucos.",
+      "go": "M 16" },
+    { "text": "As Plêiades: um aglomerado de estrelas que nasceram juntas há uns 100 milhões de anos. Com o tempo, elas vão se espalhar pela galáxia.",
+      "go": "M 45" },
+    { "text": "O Sol, na meia-idade: 4,6 bilhões de anos queimando hidrogênio no núcleo. Ainda tem combustível para mais uns 5 bilhões de anos.",
+      "go": "Sol" },
+    { "text": "Quando o hidrogênio do núcleo acaba, a estrela incha e vira uma gigante vermelha. Arcturo já está nessa fase: é 25 vezes maior que o Sol.",
+      "go": "Arcturus" },
+    { "text": "Nebulosa do Anel: o fim de uma estrela como o Sol. As camadas de fora foram sopradas para o espaço, e o núcleo que sobrou brilha no centro.",
+      "go": "M 57" },
+    { "text": "A Nebulosa da Hélice é a mais próxima desse tipo, a 650 anos-luz. No centro está uma anã branca: o núcleo morto da estrela, do tamanho da Terra, esfriando por trilhões de anos.",
+      "go": "NGC 7293" },
+    { "text": "Agora o outro caminho: estrelas com mais de 8 vezes a massa do Sol. Betelgeuse é uma supergigante vermelha; se estivesse no lugar do Sol, passaria da órbita de Marte. Ela vai explodir, talvez em 100 mil anos.",
+      "go": "Betelgeuse" },
+    { "text": "A Nebulosa de Carina abriga Eta Carinae, uma estrela de mais de 100 sóis que já teve uma erupção gigante em 1843. É uma candidata a explodir.",
+      "go": "NGC 3372" },
+    { "text": "A Nebulosa do Caranguejo é o resto de uma supernova vista na Terra em 1054, registrada por astrônomos chineses. No centro gira um pulsar: uma estrela de nêutrons de 20 km que dá 30 voltas por segundo.",
+      "go": "M 1", "button": { "label": "🔭 Ver em raios X", "telescope": "M 1" } },
+    { "text": "Cassiopeia A: uma explosão de uns 350 anos atrás. Os gases ainda se espalham a 5 mil km por segundo, levando ferro, oxigênio e silício para o espaço.",
+      "go": "Cassiopeia A" },
+    { "text": "E o caminho mais extremo: um buraco negro. No centro da nossa galáxia, Sagittarius A* tem 4 milhões de vezes a massa do Sol.",
+      "go": "Sgr A*", "hold": 2 }
+  ]
+}

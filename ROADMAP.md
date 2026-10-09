@@ -53,16 +53,14 @@ Ficou de fora:
 - Replays de missões sem efeméride pública: Philae, Huygens e as missões soviéticas.
 - O caminho da Apollo 11 depois do dia 17 é aproximado (órbita circular calculada).
 
-## Fase 4: Tours guiados ⭐ ⬜
+## Fase 4: Tours guiados ⭐ ✅ (2026-10-09)
 
-- [ ] **Motor de roteiro:** uma sequência de passos (voar até X, esperar, mostrar texto, abrir uma transmissão, mudar a hora), com pausa, avanço e barra de progresso.
-- [ ] **Tours iniciais:**
-  - [ ] "Do seu quarto ao universo observável"
-  - [ ] "A vida de uma estrela" (berçário → Sol → gigante vermelha → nebulosa planetária → anã branca; e a outra via: supergigante → supernova → pulsar/buraco negro)
-  - [ ] "Somos feitos de poeira de estrelas"
-  - [ ] "A corrida espacial e as missões de hoje"
-  - [ ] "Existe vida lá fora?" (zona habitável, Europa, Encélado, TRAPPIST-1)
-- [ ] **Formato aberto:** os roteiros ficam em JSON, então dá para criar novos sem programar.
+- [x] **Motor de roteiro (`src/ui/tours.js`):** voo, data, velocidade do tempo, planetário, constelações 3D, telescópio e transmissões. Avança sozinho depois do voo e do tempo de leitura, com pausa, volta, avanço e barra de progresso.
+- [x] **Tours iniciais:** os cinco previstos, com 54 paradas no total e fatos revisados.
+- [x] **Formato aberto:** `data/tours/*.json`, documentado no README; o teste de fumaça valida os alvos.
+
+Ficou de fora:
+- Encélado e Titã ainda não são modelados; o tour "Existe vida lá fora?" vai a Saturno (as luas entram na Fase 5).
 
 ## Fase 5: Mais universo ⬜
 
