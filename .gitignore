@@ -9,3 +9,7 @@ data/spacecraft.bin
 # dependências de desenvolvimento e saídas de teste
 node_modules/
 tools/smoke-out/
+
+# texturas grandes (refeitas por tools/build-data.mjs textures8k e tools/resize-textures.mjs)
+textures/8k/
+textures/4k/

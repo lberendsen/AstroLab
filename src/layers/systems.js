@@ -75,6 +75,22 @@ function planetColor(pl) {
   return [0.7, 0.65, 0.6];
 }
 
+// Zona habitável conservadora (Kopparapu et al. 2014, planeta de 1 massa terrestre): entre o "efeito estufa
+// descontrolado" (borda interna) e o "efeito estufa máximo" (borda externa). Fórmula válida para 2.600–7.200 K.
+// Pouco fora da faixa (anãs vermelhas muito frias como TRAPPIST-1), usa a borda; muito fora, devolve null.
+export function habitableZone(star) {
+  const T0 = DB.stars.teff[star];
+  if (!(T0 >= 2300 && T0 <= 7500)) return null;
+  const T = Math.min(Math.max(T0, 2600), 7200);
+  const inf = DB.stars.info.get(star);
+  const L = inf?.lum > 0 ? inf.lum : Math.pow(10, (4.83 - DB.stars.absmag[star]) / 2.5);
+  const t = T - 5780;
+  const seff = (s, a, b, c, d) => s + a * t + b * t * t + c * t ** 3 + d * t ** 4;
+  const sIn = seff(1.107, 1.332e-4, 1.58e-8, -8.308e-12, -1.931e-15);
+  const sOut = seff(0.356, 6.171e-5, 1.698e-9, -3.198e-12, -5.575e-16);
+  return { inner: Math.sqrt(L / sIn), outer: Math.sqrt(L / sOut) };
+}
+
 function buildSystem(host) {
   for (const c of [...sysGroup.children]) { sysGroup.remove(c); c.geometry?.dispose(); c.material?.dispose(); }
   planets = [];
@@ -87,6 +103,16 @@ function buildSystem(host) {
   const tilt = hashf(host.name) * Math.PI;
   const n = v3.add(v3.scale(u, Math.cos(tilt)), v3.scale(w, Math.sin(tilt))); // normal ⟂ linha de visada
   const e1 = los, e2 = v3.cross(n, los);
+  // zona habitável: anel verde translúcido no plano das órbitas
+  const hz = habitableZone(host.star);
+  if (hz) {
+    const ring = new THREE.Mesh(new THREE.RingGeometry(hz.inner * AU, hz.outer * AU, 192, 1),
+      new THREE.MeshBasicMaterial({ color: 0x3ddc84, transparent: true, opacity: 0.08, side: THREE.DoubleSide, depthWrite: false }));
+    ring.matrixAutoUpdate = false;
+    ring.matrix.makeBasis(new THREE.Vector3(...e1), new THREE.Vector3(...e2), new THREE.Vector3(...n));
+    ring.frustumCulled = false;
+    sysGroup.add(ring);
+  }
   for (const pl of host.planets) {
     if (!pl.a) continue;
     const rE = pl.r || (pl.m ? Math.min(Math.pow(pl.m, 0.55), 13) : 1.5);

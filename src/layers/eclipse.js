@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { F } from '../engine.js';
 import { BODY } from './solar.js';
 import { R_SUN } from '../astro.js';
+import { addPatch } from '../shaderpatch.js';
 
 const MAX_OCC = 4;
 export const patched = []; // { key, occluders, uniforms }
@@ -54,12 +55,11 @@ const fragInject = /* glsl */`
     reflectedLight.directDiffuse = lit * shade + lit * vec3(0.55, 0.16, 0.06) * 0.22 * uEclRed * smoothstep(0.88, 1.0, f);  }`;
 
 function patch(material, uniforms) {
-  material.onBeforeCompile = sh => {
+  addPatch(material, 'eclipse', sh => {
     Object.assign(sh.uniforms, uniforms);
     sh.vertexShader = 'varying vec3 vEclW;\n' + sh.vertexShader.replace('#include <project_vertex>', vertexInject);
     sh.fragmentShader = fragHead + '\n' + sh.fragmentShader.replace('#include <lights_fragment_end>', fragInject);
-  };
-  material.needsUpdate = true;
+  });
 }
 
 export function build() {

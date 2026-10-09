@@ -2,6 +2,9 @@
 // e reprova se houver erro de JavaScript na página ou se algo essencial não aparecer.
 // Uso: npm run smoke            (todas as paradas)
 //      npm run smoke -- rapido  (só as paradas locais, sem depender de fontes externas)
+//      npm run smoke -- ate=massaroca   (para depois da parada indicada)
+//      SMOKE_QUERY=?fx=- acrescenta parâmetros à URL do app (ex.: desligar os efeitos da Fase 6)
+//      SMOKE_VERBOSE=1 mostra todos os avisos e erros do console, com a parada em que aconteceram
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -12,6 +15,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = path.join(ROOT, 'tools', 'smoke-out');
 const PORT = 8090;
 const QUICK = process.argv.includes('rapido');
+const UNTIL = process.argv.find(a => a.startsWith('ate='))?.slice(4);
+const VERBOSE = !!process.env.SMOKE_VERBOSE;
+let current = 'carregando';
 fs.mkdirSync(OUT, { recursive: true });
 for (const f of fs.readdirSync(OUT)) fs.unlinkSync(path.join(OUT, f));
 
@@ -34,7 +40,7 @@ const STOPS = [
   { name: 'lua-apollo11', run: go('Apollo 11'), wait: 11000, check: `!!document.querySelector('#info h2')?.textContent.includes('Apollo') || 'ficha da Apollo 11 não abriu'` },
   { name: 'iss', run: go('Estação Espacial Internacional'), wait: 9000 },
   { name: 'voyager1', run: go('Voyager 1'), wait: 10000 },
-  { name: 'trappist', run: go('TRAPPIST-1 e'), wait: 11000, check: `astro.systems.planets.length === 7 || 'TRAPPIST-1 não mostrou os 7 planetas'` },
+  { name: 'trappist', run: go('TRAPPIST-1 e'), wait: 11000, check: `astro.systems.planets.length === 7 && /Zona habitável/.test(document.getElementById('infoBody').textContent) || 'TRAPPIST-1 sem os 7 planetas ou sem zona habitável'` },
   { name: 'orion', run: go('M 42'), wait: 10000 },
   { name: 'via-lactea', run: `[...document.querySelectorAll('#placeList button')].find(b => b.textContent.startsWith('Via Láctea')).click()`, wait: 11000 },
   { name: 'andromeda', run: go('M 31'), wait: 12000 },
@@ -77,7 +83,13 @@ const STOPS = [
   { name: 'buraco-negro', run: `document.getElementById('phClose').click(); ${go('Gaia BH1')}`, wait: 13000,
     check: `/Gaia BH1/.test(document.querySelector('#info h2')?.textContent || '') || 'Gaia BH1 não encontrado'` },
   { name: 'laniakea', run: go('Laniakea'), wait: 13000 },
-  { name: 'busca-simbad', run0: `document.getElementById('tcStop').click(); document.getElementById('tNow').click(); document.getElementById('neoPanel').hidden = true`, external: true, run: `(async () => { const i = document.getElementById('search'); i.value = 'cartwheel galaxy'; i.dispatchEvent(new Event('input')); document.querySelector('#suggest li:last-child').dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); })()`, wait: 16000,
+  // Fase 6: realismo de perto
+  { name: 'terra-noite', run: `(() => { const E = astro.solar.BODY.Earth, n = Math.hypot(...E.pos), d = E.pos.map(x => x / n); astro.select(null); astro.flyTo({ id: 'v', name: 'Terra à noite', kind: 'view', pos: () => E.pos, radius: E.radius, viewDist: E.radius * 3.2, arriveDir: [d[0] * 0.8 + d[1] * 0.6, d[1] * 0.8 - d[0] * 0.6, d[2] * 0.8] }); })()`, wait: 14000,
+    check: `astro.planetfx.hiresState('Earth') === 'on' || 'textura em alta resolução da Terra não entrou'` },
+  { name: 'marte-relevo', run: `astro.planetfx.setExaggeration(6); ${go('Marte')}`, wait: 13000,
+    check: `astro.solar.BODY.Mars.reliefOn && astro.planetfx.heightAt('Mars', 18.65, -133.8) / astro.planetfx.FX.exaggeration > 15 || 'relevo de Marte não entrou ou está sem o Monte Olimpo'` },
+  { name: 'lua-relevo', run: go('Lua'), wait: 11000 },
+  { name: 'leonidas', run: `astro.planetfx.setExaggeration(1); ${go('Leônidas')}`, wait: 11000 },  { name: 'busca-simbad', run0: `document.getElementById('tcStop').click(); document.getElementById('tNow').click(); document.getElementById('neoPanel').hidden = true`, external: true, run: `(async () => { const i = document.getElementById('search'); i.value = 'cartwheel galaxy'; i.dispatchEvent(new Event('input')); document.querySelector('#suggest li:last-child').dispatchEvent(new MouseEvent('mousedown', { bubbles: true })); })()`, wait: 16000,
     check: `/MCG|Cartwheel|Roda/i.test(document.querySelector('#info h2')?.textContent || '') || 'busca no SIMBAD não encontrou a galáxia da Roda de Carro'` },
   { name: 'telescopio-lua', external: true, run: `astro.select(astro.search.searchLocal('Lua',1)[0].make()); dispatchEvent(new KeyboardEvent('keydown', { key: 't' }))`, wait: 10000,
     check: `!document.getElementById('scope').hidden || 'telescópio não abriu'` },
@@ -96,6 +108,7 @@ await page.setViewport({ width: 1400, height: 850 });
 const errors = [], warnings = [];
 page.on('pageerror', e => errors.push(`[página] ${e.message}`));
 page.on('console', m => {
+  if (VERBOSE && /error|warn/.test(m.type())) console.log(`   [${current}] ${m.type()}: ${m.text().slice(0, 300)}`);
   if (m.type() === 'error' && !/Failed to load resource|CORS policy|net::ERR/.test(m.text())) errors.push(`[console] ${m.text()}`);
   if (m.type() === 'warning' && /three|WebGL|GLSL|shader/i.test(m.text())) warnings.push(m.text());
 });
@@ -103,11 +116,12 @@ page.on('console', m => {
 const results = [];
 let fail = false;
 try {
-  await page.goto(`http://localhost:${PORT}/`, { waitUntil: 'load' });
+  await page.goto(`http://localhost:${PORT}/${process.env.SMOKE_QUERY || ''}`, { waitUntil: 'load' });
   await page.waitForFunction(() => document.getElementById('loading')?.classList.contains('done') || /Erro/.test(document.getElementById('loadStep')?.textContent), { timeout: 90000 });
   await sleep(2000);
   for (const s of STOPS) {
     if (QUICK && s.external) continue;
+    current = s.name;
     const before = errors.length;
     const t0 = Date.now();
     let msg = 'ok';
@@ -118,12 +132,15 @@ try {
       if (s.check) { const r = await page.evaluate(s.check); if (r !== true) msg = String(r); }
     } catch (e) { msg = 'exceção: ' + e.message.split('\n')[0]; }
     if (errors.length > before) msg = (msg === 'ok' ? '' : msg + '; ') + errors.slice(before).join(' | ');
+    // a placa de vídeo pode ter derrubado o 3D sem erro de JavaScript: a tela fica branca
+    if (await page.evaluate(() => document.getElementById('view').getContext('webgl2')?.isContextLost())) msg = (msg === 'ok' ? '' : msg + '; ') + 'contexto WebGL perdido (tela em branco)';
     const fps = await page.evaluate(() => new Promise(r => { let n = 0; const t = performance.now(); (function f() { n++; performance.now() - t < 1000 ? requestAnimationFrame(f) : r(n); })(); }));
     await page.screenshot({ path: path.join(OUT, `${String(results.length).padStart(2, '0')}-${s.name}.png`) });
     const ok = msg === 'ok', soft = !ok && s.external;
     if (!ok && !soft) fail = true;
     results.push({ name: s.name, ok, soft, msg, fps, s: ((Date.now() - t0) / 1000).toFixed(0) });
     console.log(`${ok ? '✔' : soft ? '⚠' : '✘'} ${s.name.padEnd(18)} ${String(fps).padStart(3)} fps  ${ok ? '' : msg}`);
+    if (s.name === UNTIL) break;
   }
 } catch (e) {
   fail = true;

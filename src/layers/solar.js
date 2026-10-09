@@ -189,9 +189,12 @@ export function computePositions() {
   for (const b of BODIES) orient(b, t);
 }
 
-// Ponto na superfície: latitude/longitude planetocêntricas (graus, longitude leste) e altitude em km
+// Relevo (preenchido por planetfx.js quando os modelos de altitude carregam): altura em km
+export const terrain = { height: null };
+// Ponto na superfície: latitude/longitude planetocêntricas (graus, longitude leste) e altitude em km acima do terreno
 export function surfacePoint(key, lat, lon, altKm = 0) {
   const b = BODY[key];
+  if (terrain.height) altKm += terrain.height(key, lat, lon);
   const { pm, pole, zl } = b.basis || { pm: [1, 0, 0], pole: [0, 0, 1], zl: [0, -1, 0] };
   const la = lat * Math.PI / 180, lo = lon * Math.PI / 180;
   const lx = Math.cos(la) * Math.cos(lo), ly = Math.sin(la), lz = -Math.cos(la) * Math.sin(lo);

@@ -10,6 +10,7 @@ import { comovingDistance } from '../src/astro.js';
 import { buildSmallBodies } from './smallbodies-build.mjs';
 import { buildHistory } from './history.mjs';
 import { buildGaia, buildPulsars, buildMoons, buildMoonMaps } from './phase5-build.mjs';
+import { buildTextures8k, buildDems } from './phase6-build.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DATA = path.join(ROOT, 'data');
@@ -247,7 +248,10 @@ async function gaia() { await buildGaia(DATA, RAW); }
 async function pulsars() { await buildPulsars(DATA, RAW); }
 async function moons() { await buildMoons(DATA, RAW); await buildMoonMaps(TEX); }
 
-const steps = { stars, constellations, gaia, pulsars, moons, galaxies, exoplanets, curated, textures, quasars, cmb, smallbodies, history, satellites, spacecraft };
+async function textures8k() { await buildTextures8k(TEX); }
+async function dems() { await buildDems(DATA, RAW); }
+
+const steps = { textures8k, dems, stars, constellations, gaia, pulsars, moons, galaxies, exoplanets, curated, textures, quasars, cmb, smallbodies, history, satellites, spacecraft };
 const only = process.argv.slice(2).filter(a => !a.startsWith('--'));
 for (const [k, f] of Object.entries(steps)) if (!only.length || only.includes(k)) await f();
 console.log('pronto.');

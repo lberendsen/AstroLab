@@ -8,6 +8,7 @@ import * as craft from '../layers/craft.js';
 import * as smallbodies from '../layers/smallbodies.js';
 import { PL } from '../planetarium.js';
 import { P5 } from '../layers/phase5.js';
+import { FX, setExaggeration } from '../layers/planetfx.js';
 import { BANDS } from '../surveys.js';
 import { fmtNum } from '../astro.js';
 import { $, toast } from './dom.js';
@@ -28,10 +29,16 @@ export function buildLayersMenu() {
     <h3>Mais universo</h3>
     <label><input type="checkbox" data-p5="gaia" checked> Estrelas do Gaia <small class="muted" id="gaiaStatus">carrega quando a nave estiver perto do Sol</small></label>
     <label><input type="checkbox" data-p5="pulsars" checked> Pulsares (${fmtNum(P5.pulsars.length, 0)})</label>
-    <label><input type="checkbox" data-p5="structures" checked> Estruturas (superaglomerados e vazios)</label>`);
+    <label><input type="checkbox" data-p5="structures" checked> Estruturas (superaglomerados e vazios)</label>
+    <h3>Planetas de perto</h3>
+    <label><input type="checkbox" id="fxHires" ${FX.hires ? 'checked' : ''}> Texturas em alta resolução <small class="muted">só no corpo mais próximo</small></label>
+    <label class="inline">Relevo (Lua, Marte, Mercúrio) <select id="fxExag"><option value="1">real</option><option value="3">3× exagerado</option><option value="6">6× exagerado</option><option value="12">12× exagerado</option></select></label>`);
   for (const cb of m.querySelectorAll('[data-p5]')) cb.onchange = () => { P5.show[cb.dataset.p5] = cb.checked; };
   $('constSpace').onchange = e => { PL.show.space = e.target.checked; PL.show.only = null; };
-  setInterval(() => { if ($('constSpace')) $('constSpace').checked = PL.show.space; }, 1000);
+  $('fxHires').onchange = e => { FX.hires = e.target.checked; };
+  $('fxExag').onchange = e => { setExaggeration(+e.target.value); };
+  // a alta resolução também se desliga sozinha se a memória de vídeo acabar
+  setInterval(() => { if ($('constSpace')) $('constSpace').checked = PL.show.space; if ($('fxHires')) $('fxHires').checked = FX.hires; }, 1000);
   buildHumanMenu(m);
   $('starGain').oninput = e => { stars.starUniforms.uLimit.value = +e.target.value; };
   $('galGain').oninput = e => { galaxies.galSettings.limit = +e.target.value; };

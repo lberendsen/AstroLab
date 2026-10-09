@@ -77,15 +77,23 @@ Ficou de fora:
 - Alertas do Vera Rubin (ainda sem acesso público estável).
 - Luas pequenas: muitas não têm raio publicado e aparecem com tamanho mínimo.
 
-## Fase 6: Mais fiel de perto ⬜
+## Fase 6: Mais fiel de perto ✅ (2026-10-09)
 
-- [ ] **Relevo real:** altitude na Lua (LOLA) e em Marte (MOLA), carregada em blocos conforme a aproximação. Montanhas e crateras com sombra.
-- [ ] **Atmosferas:** dispersão de luz na Terra (céu azul, pôr do sol laranja), em Marte (pôr do sol azul), em Vênus e em Titã.
-- [ ] **Terra à noite:** luzes das cidades no lado escuro, com a textura "Black Marble" (NASA).
-- [ ] **Sombras:** dos anéis de Saturno, de Saturno sobre os anéis e das luas de Júpiter sobre o planeta.
-- [ ] **Mapas melhores nos planetas do 3D:** a resolução da textura vem dos mapas HiPS do telescópio, carregada em blocos conforme o zoom.
-- [ ] **Exoplanetas:** zona habitável desenhada em cada sistema e comparação de tamanho com a Terra.
+- [x] **Relevo real:** Lua (LRO LOLA), Marte (MGS MOLA) e Mercúrio (MESSENGER), com malha deslocada e mapa de normais. Entra quando a nave chega a 30 raios do corpo. Exagero ajustável em Camadas (real, 3×, 6×, 12×). Os pousos ficam na altitude do terreno.
+- [x] **Atmosferas:** Terra (azul, e laranja no terminador), Marte (pôr do sol azulado), Vênus (amarelada) e Titã (névoa laranja que esconde a superfície, como na luz visível).
+- [x] **Terra à noite:** luzes das cidades no lado escuro, acendendo ao longo do crepúsculo, e reflexo do Sol nos oceanos.
+- [x] **Sombras de Saturno:** do planeta sobre os anéis e dos anéis sobre o planeta.
+- [x] **Texturas em alta resolução:** 4096×2048 (reduzidas das 8K do Solar System Scope) na Terra, na Lua, em Marte, em Mercúrio, em Júpiter e em Saturno. Só o corpo mais próximo recebe, para caber na memória de vídeo.
+- [x] **Exoplanetas:** zona habitável (Kopparapu et al. 2014) como anel verde em cada sistema, na ficha da estrela e do planeta ("dentro" ou "fora"), e desenho do tamanho comparado com a Terra (e Júpiter).
+- [x] **Chuvas de meteoros:** a corrente de poeira fica densa logo atrás do corpo de origem e tênue no resto da órbita.
+- [x] **Céu de fundo:** ao sair da vizinhança do Sol, a foto perde as estrelas brilhantes, que o catálogo 3D já desenha (antes viravam estrelas duplas).
 
+Observações de memória de vídeo (Intel Iris Xe): uma textura 8K com mipmaps ocupa ~170 MB, e três delas derrubaram o contexto WebGL. Por isso as texturas são 4K, só o corpo mais próximo recebe alta resolução e o relevo só existe perto do corpo. Se o contexto cair, a alta resolução se desliga, o 3D é restaurado e um aviso aparece. O teste de fumaça agora reprova se a tela ficar em branco.
+
+Ficou de fora:
+- Sombras das luas de Júpiter sobre o planeta.
+- Relevo do horizonte no planetário (de Marte, da Lua).
+- Texturas em blocos vindas do HiPS conforme o zoom (as 4K resolveram a maior parte da diferença).
 ## Fase 7: Entender e compartilhar ⬜
 
 - [ ] **Escala comparativa:** corpos lado a lado (Terra × Júpiter, Sol × Betelgeuse × UY Scuti, Via Láctea × Andrômeda).

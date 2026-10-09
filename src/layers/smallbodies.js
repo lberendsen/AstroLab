@@ -416,21 +416,31 @@ let stream = null;
 export function showStream(parent) {
   if (stream) { local.remove(stream); stream.geometry.dispose(); stream = null; }
   if (!parent) return;
-  const n = 20000, pts = new Float32Array(n * 3);
+  // A poeira mais nova ainda acompanha o corpo de origem (um "trilho" denso logo à frente e atrás dele);
+  // a mais velha já se espalhou pela órbita inteira, num anel tênue.
+  const n = 20000, pts = new Float32Array(n * 3), col = new Float32Array(n * 4);
   const ell = parent.e < 0.98, a = parent.a || (ell ? parent.q / (1 - parent.e) : null);
   const per = ell && a ? 365.25 * Math.pow(a, 1.5) : 4000;
   let s = 12345;
   const rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
   const g = () => Math.sqrt(-2 * Math.log(rnd() + 1e-9)) * Math.cos(2 * Math.PI * rnd());
+  const now = jdNow(), base = [1, 0.83, 0.54];
   for (let k = 0; k < n; k++) {
-    const p = bodyPosAU(parent, (parent.tp ?? jdNow()) + (rnd() - 0.5) * per);
-    const r = v3.len(p);
-    for (let m = 0; m < 3; m++) pts[k * 3 + m] = (p[m] + g() * 0.012 * r) * AU;
+    const young = rnd() < 0.6;
+    // jovem: atraso/avanço de poucos por cento do período (mais para trás: a poeira fica para trás do cometa)
+    const dt = young ? (g() * 0.03 - 0.015) * per : (rnd() - 0.5) * per;
+    const p = bodyPosAU(parent, now + dt);
+    const r = v3.len(p), spread = young ? 0.004 + Math.abs(dt / per) * 0.1 : 0.012;
+    for (let m = 0; m < 3; m++) pts[k * 3 + m] = (p[m] + g() * spread * r) * AU;
+    // cor fixa; a opacidade é que cai com a idade (somar brilho saturava tudo em branco)
+    const alpha = young ? 0.6 * Math.exp(-Math.abs(dt / per) / 0.03) + 0.18 : 0.12;
+    col.set([...base, alpha], k * 4);
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pts, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 4));
   geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), Infinity);
-  stream = new THREE.Points(geo, new THREE.PointsMaterial({ color: 0xffd38a, size: 2, sizeAttenuation: false, transparent: true, opacity: 0.75, depthWrite: false, blending: THREE.AdditiveBlending }));
+  stream = new THREE.Points(geo, new THREE.PointsMaterial({ vertexColors: true, size: 1.6, sizeAttenuation: false, transparent: true, depthWrite: false }));
   stream.frustumCulled = false;
   local.add(stream);
 }

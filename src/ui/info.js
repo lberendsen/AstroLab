@@ -10,16 +10,32 @@ import * as feeds from '../feeds.js';
 import { setOrbit } from '../nav.js';
 import { exoTarget, sbTarget, craftTarget, nextPeak } from '../targets.js';
 import * as smallbodies from '../layers/smallbodies.js';
+import { habitableZone } from '../layers/systems.js';
 import * as PLN from '../planetarium.js';
 import { MOON_DESC, PLANET_PT, SCOPE_KEY, moonPeriodDays } from '../layers/moons.js';
 import { BH_INFO } from './phenomena.js';
-import { KM } from '../astro.js';
+import { KM, R_EARTH } from '../astro.js';
 import { openPlanetarium } from './planpanel.js';
 import { v3, DEG, fmtDist, fmtLightTime, fmtNum, lightSentence, fmtYears, lookbackYears, AGE_OF_UNIVERSE, CMB_DISTANCE } from '../astro.js';
 import { ui, go, openScope, startLink, openFeeds, showerParent } from './actions.js';
 import { $ } from './dom.js';
 
 const row = (k, v) => v == null || v === '' ? '' : `<dt>${k}</dt><dd>${v}</dd>`;
+
+// Desenho em escala: a Terra ao lado do planeta (e Júpiter, se o planeta for grande)
+function sizeCompare(rE, estimated) {
+  const ref = rE > 4 ? [['Terra', 1, '#4f8fd8'], ['Júpiter', 11.2, '#d8b48a']] : [['Terra', 1, '#4f8fd8']];
+  const all = [...ref, ['Este planeta', rE, '#7fe0b0']];
+  const H = 90, k = (H / 2 - 4) / Math.max(...all.map(x => x[1]));
+  let x = 6, svg = '';
+  for (const [name, r, c] of all) {
+    const rp = Math.max(r * k, 1.2);
+    svg += `<circle cx="${x + rp}" cy="${H / 2}" r="${rp}" fill="${c}"/><text x="${x + rp}" y="${H + 12}" text-anchor="middle">${name}</text>`;
+    x += 2 * rp + 26;
+  }
+  return `<h3>Tamanho comparado</h3><svg class="sizecmp" viewBox="0 0 ${x} ${H + 18}" width="100%" style="max-height:120px">${svg}</svg>` +
+    (estimated ? `<div class="note">Raio estimado pela massa: este planeta nunca foi visto passando na frente da estrela.</div>` : '');
+}
 
 export function renderInfo(t) {
   const dSun = v3.len(t.pos());
@@ -48,6 +64,8 @@ export function renderInfo(t) {
     if (inf.mag != null) dl += row('Magnitude vista da Terra', fmtNum(inf.mag, 2));
     dl += row('Distância do Sol', fmtDist(dSun));
     notes += `<div class="lighttime">A luz que vemos desta estrela saiu dela há ${fmtLightTime(dSun)}.</div>`;
+    const hz = t.host ? habitableZone(i) : null;
+    if (hz) dl += row('Zona habitável', `${fmtNum(hz.inner, hz.inner < 1 ? 3 : 2)} a ${fmtNum(hz.outer, hz.outer < 1 ? 3 : 2)} UA`);
     if (t.host) {
       extra += `<h3>Exoplanetas conhecidos</h3><ul class="planets">` + t.host.planets.map(p =>
         `<li data-planet="${p.n}"><span>${p.n}</span><small>${p.r ? fmtNum(p.r, 1) + ' R⊕' : p.m ? fmtNum(p.m, 0) + ' M⊕' : ''}${p.a ? ' · ' + fmtNum(p.a, 3) + ' UA' : ''}</small></li>`).join('') + '</ul>';
@@ -61,6 +79,9 @@ export function renderInfo(t) {
     dl += row('Distância da estrela', p.a ? `${fmtNum(p.a, 4)} UA` : null);
     dl += row('Ano', p.p ? (p.p < 2 ? `${fmtNum(p.p * 24, 1)} horas` : p.p < 1000 ? `${fmtNum(p.p, 2)} dias` : `${fmtNum(p.p / 365.25, 1)} anos`) : null);
     dl += row('Excentricidade', p.e ? fmtNum(p.e, 3) : null);
+    const hz = habitableZone(t.host.star);
+    if (hz && p.a) dl += row('Zona habitável', p.a < hz.inner ? 'não: perto demais da estrela (quente)' : p.a > hz.outer ? 'não: longe demais da estrela (fria)' : '<b class="hz">sim</b>: água líquida seria possível na superfície');
+    extra += sizeCompare(t.radius / R_EARTH, !p.r);
     dl += row('Descoberto', `${p.y || '?'} · ${p.how || ''}`);
     dl += row('Distância do Sol', fmtDist(dSun));
     notes += `<div class="note">Tamanho e órbita vêm de medidas reais. A cor e a inclinação da órbita são ilustrativas: ninguém viu este planeta de perto.</div>`;
@@ -185,7 +206,7 @@ export function renderInfo(t) {
     dl += row('Velocidade', `${s.v} km/s`);
     dl += row('Origem', p ? `${p.name} (${p.isComet ? 'cometa' : 'asteroide'})` : s.parent);
     if (s.note) notes += `<div class="note">${s.note}</div>`;
-    notes += `<div class="note">Os pontos dourados mostram a poeira ao longo da órbita do corpo de origem (espalhamento ilustrativo).</div>`;
+    notes += `<div class="note">Os pontos dourados mostram a poeira ao longo da órbita do corpo de origem: mais densa logo atrás dele (a poeira recente) e tênue no resto da órbita (a antiga). O espalhamento é ilustrativo.</div>`;
     extra += `<div class="actions"><button id="aRadiant">🔭 Ver o radiante no céu</button>${p ? '<button id="aParent">☄️ Ir até a origem</button>' : ''}</div>`;
   } else if (t.kind === 'view') {
     if (t.id === 'v:qso') notes += `<div class="note">Cada ponto é um quasar real do SDSS (750 mil), colorido pelo redshift: azul mais perto, vermelho mais longe. O formato de cunha é a área do céu que o telescópio do SDSS cobriu, vista de fora. Os mais distantes estão a ~30 bilhões de anos-luz (distância comóvel): a luz deles saiu quando o universo tinha menos de 1 bilhão de anos.</div>`;

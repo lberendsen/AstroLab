@@ -37,7 +37,8 @@ import { wirePlanetarium } from './ui/planpanel.js';
 import * as tours from './ui/tours.js';
 import * as moons from './layers/moons.js';
 import * as phase5 from './layers/phase5.js';
-import { $ } from './ui/dom.js';
+import * as planetfx from './layers/planetfx.js';
+import { $, toast } from './ui/dom.js';
 
 // ---------------------------------------------------------------- inicialização
 async function init() {
@@ -48,14 +49,15 @@ async function init() {
   step('asteroides e cometas');
   await smallbodies.load();
   step('quasares e constelações');
-  await Promise.all([deep.load(), planetarium.load(), tours.load(), moons.load(), phase5.load()]);
+  await Promise.all([deep.load(), planetarium.load(), tours.load(), moons.load(), phase5.load(), planetfx.load()]);
   deep.addCurated(DB.curated);
   step('montando a cena');
   solar.build(); solar.computePositions();
   stars.build(); galaxies.build(); milkyway.build(); systems.build();
-  sats.build(); craft.addNotableSats(); craft.build(); deep.build(); smallbodies.build(); eclipse.build(); planetarium.build(); moons.build(); phase5.build();
+  sats.build(); craft.addNotableSats(); craft.build(); deep.build(); smallbodies.build(); eclipse.build(); planetarium.build(); moons.build(); phase5.build(); planetfx.build();
   search.buildIndex();
   buildPlaces(); buildLayersMenu(); buildSkyMenu();
+  planetfx.FX.onLost = () => toast('A placa de vídeo ficou sem memória e o 3D foi reiniciado. As texturas de alta resolução foram desligadas; se a tela ficar preta, recarregue a página.', 15000);
   wireSearch(); wireFeeds(); wireControls(hud); wireTime(); wirePlanetarium(); tours.wireTours(); wirePhenomena();
 
   // começa olhando a Terra, com o Sol de lado
@@ -123,7 +125,7 @@ function loop(now) {
   F.near = T('escala', computeNear);
   beginFrame();
   T('céu e estrelas', () => { sky.update(); stars.update(); galaxies.update(); milkyway.update(); });
-  T('Sistema Solar', () => { solar.update(); eclipse.update(); });
+  T('Sistema Solar', () => { solar.update(); eclipse.update(); planetfx.update(); });
   T('planetário', () => planetarium.update());
   T('luas', () => moons.update());
   T('Gaia/pulsares', () => phase5.update(dt));
@@ -181,4 +183,4 @@ init().catch(err => {
 });
 
 // para depuração no console e para o teste de fumaça
-window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies, time, timepanel, planetarium, tours };
+window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies, time, timepanel, planetarium, tours, planetfx };

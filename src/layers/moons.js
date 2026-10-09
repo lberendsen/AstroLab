@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { F, local, place, loadTex } from '../engine.js';
 import { BODY } from './solar.js';
+import { addHaze } from './planetfx.js';
 import { KM, v3 } from '../astro.js';
 
 export const MOONS = [];
@@ -85,6 +86,7 @@ function meshFor(m) {
   mesh = new THREE.Mesh(new THREE.SphereGeometry(1, key ? 96 : 32, key ? 48 : 16), mat);
   // luas sem forma conhecida e pequenas: um pouco irregulares
   if (!key && (m.r || 0) < 150) mesh.scale.set(1.25, 0.85, 1);
+  if (m.id === 606) addHaze(mesh, 'Titan');   // Titã: atmosfera mais densa que a da Terra
   mesh.userData.base = mesh.scale.clone();
   local.add(mesh);
   meshes.set(m.id, mesh);

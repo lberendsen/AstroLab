@@ -56,6 +56,8 @@ h3 { margin: 14px 0 6px; font-size: 13px; color: var(--muted); font-weight: 600;
 #info .lighttime { color: var(--warm); font-size: 13px; margin: 8px 0; }
 #info img.thumb { width: 100%; border-radius: 8px; margin-top: 8px; background: #000; }
 #info ul.planets { list-style: none; margin: 6px 0; padding: 0; font-size: 13px; }
+#info svg.sizecmp text { fill: var(--muted); font-size: 11px; }
+#info b.hz { color: #3ddc84; }
 #info ul.planets li { padding: 4px 6px; border-radius: 6px; cursor: pointer; display: flex; justify-content: space-between; }
 #info ul.planets li:hover { background: rgba(127,180,255,0.14); }
 
@@ -168,6 +170,7 @@ h3 { margin: 14px 0 6px; font-size: 13px; color: var(--muted); font-weight: 600;
 .menu input[type=range] { width: 100%; }
 #layers { max-height: calc(100vh - 100px); overflow: auto; width: 320px; }
 #layers small { margin-left: auto; }
+#layers label select { margin-left: auto; padding: 2px 4px; }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
 .chip { font-size: 11px; padding: 3px 8px; border-radius: 12px; opacity: .45; border-color: var(--c); }

@@ -3,12 +3,17 @@
 import { renderer } from '../engine.js';
 
 const stats = new Map();   // etapa -> média móvel em ms
+let lastFrameEnd = 0;
 let enabled = false, el = null, lastShow = 0, frames = 0, fpsT0 = performance.now(), fps = 0, frameMs = 0, worst = 0;
 const EMA = 0.08;
 
+// ?debug na URL: registra no console os quadros lentos (> 300 ms) e as etapas que pesaram
+const DEBUG = new URLSearchParams(location.search).has('debug');
+let slowParts = [];
 export const perf = {
   get enabled() { return enabled; },
   time(name, fn) {
+    if (DEBUG) { const t = performance.now(); const r = fn(); const dt = performance.now() - t; if (dt > 50) slowParts.push(`${name} ${dt | 0} ms`); if (!enabled) return r; stats.set(name, (stats.get(name) ?? dt) * (1 - EMA) + dt * EMA); return r; }
     if (!enabled) return fn();
     const t = performance.now();
     const r = fn();
@@ -19,6 +24,11 @@ export const perf = {
   // chamado no fim de cada quadro com o tempo total de CPU do quadro
   frame(ms) {
     frames++;
+    if (DEBUG) {
+      const now = performance.now();
+      if (lastFrameEnd && now - lastFrameEnd > 300) console.warn(`[lento] intervalo entre quadros ${(now - lastFrameEnd) | 0} ms; neste quadro: ${slowParts.join(', ') || 'nada > 50 ms'}`);
+      lastFrameEnd = now; slowParts = [];
+    }
     if (!enabled) return;
     frameMs = frameMs * (1 - EMA) + ms * EMA;
     worst = Math.max(worst, ms);

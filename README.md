@@ -87,6 +87,20 @@ O painel da esquerda mostra:
 - a distância ao Sol no céu, para objetos do Sistema Solar;
 - a posição agora para quem está em São Paulo (ou na sua localização, pelo botão 📍): se está acima do horizonte, em que direção e a altura máxima que alcança.
 
+### Mais fiel de perto (Fase 6)
+
+| O quê | Fonte | Arquivo |
+|---|---|---|
+| Relevo da Lua (1440×720, altitude em metros) | LRO LOLA (NASA SVS, `ldem_4.tif`) | `data/dem-moon.bin` |
+| Relevo de Marte (2048×1024) | MGS MOLA, via hips2fits | `data/dem-mars.bin` |
+| Relevo de Mercúrio (2048×1024) | MESSENGER, via hips2fits | `data/dem-mercury.bin` |
+| Texturas 8K (Terra de dia e de noite, nuvens, Lua, Marte, Mercúrio, Júpiter, Saturno) | Solar System Scope (CC BY 4.0) | `textures/8k/` (originais, fora do git) |
+| As mesmas, em 4096×2048 para o navegador | geradas por `node tools/resize-textures.mjs` | `textures/4k/` (fora do git) |
+
+Os passos `textures8k` e `dems` de `tools/build-data.mjs` baixam as texturas e os relevos. Depois, com o servidor rodando (`node serve.mjs 8080`), `node tools/resize-textures.mjs` gera as versões 4K. Sem elas, o app funciona com as texturas 2K.
+
+Em Camadas → **Planetas de perto**: liga e desliga as texturas em alta resolução e escolhe o exagero do relevo (real, 3×, 6×, 12×). Na escala real, o Monte Olimpo é só um calombo na borda de Marte. Para diagnóstico, `?fx=rhesa` na URL liga só os efeitos listados: r relevo, h alta resolução, e Terra noturna, s Saturno, a atmosferas (`?fx=-` desliga todos).
+
 ### Mais universo (Fase 5)
 
 | O quê | Fonte | Arquivo |
@@ -244,7 +258,7 @@ O que é **ilustrativo**, e o app avisa onde aparece:
 ## Desenvolvimento
 
 - `npm install` instala a dependência de teste (`puppeteer-core`, que usa o Edge ou o Chrome já instalado).
-- `npm run smoke` roda o teste de fumaça: visita os lugares principais e reprova com erro de JavaScript. As capturas ficam em `tools/smoke-out/`. Com `npm run smoke -- rapido`, pula as paradas que dependem de fontes externas.
+- `npm run smoke` roda o teste de fumaça: visita os lugares principais e reprova com erro de JavaScript. As capturas ficam em `tools/smoke-out/`. Com `npm run smoke -- rapido`, pula as paradas que dependem de fontes externas. Com `-- ate=massaroca`, para depois dessa parada; com a variável `SMOKE_VERBOSE=1`, mostra todos os avisos do console junto com a parada em que aconteceram. Também reprova se o contexto WebGL cair (tela em branco).
 - **F3** dentro do app abre o painel de desempenho: quadros por segundo, tempo de CPU de cada etapa do quadro e o que a GPU desenhou. Se a CPU gasta pouco e os fps caem, o gargalo é a placa de vídeo.
 - O plano de evolução está em [ROADMAP.md](ROADMAP.md).
 
