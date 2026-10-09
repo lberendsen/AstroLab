@@ -177,11 +177,11 @@
 
 <div id="toast" hidden></div>
 </main>
-<!-- Controles globais da vista (à direita): tempo, camadas e telescópio, em seções que abrem e fecham -->
+<!-- Controles globais da vista (à direita): camadas, tempo e telescópio, em seções que abrem e fecham -->
 <aside id="ctl">
   <div id="ctlRail">
-    <button data-rail="time" title="Tempo (Y)">🕰️</button>
     <button data-rail="layers" title="Camadas">☰</button>
+    <button data-rail="time" title="Tempo (Y)">🕰️</button>
     <button data-rail="scope" title="Telescópio (T)">🔭</button>
   </div>
   <div id="ctlMain">
@@ -200,6 +200,10 @@
       </div>
     </div>
     <div id="ctlScroll">
+      <section class="sec" data-sec="layers">
+        <h2 class="secHead"><span class="tw">▸</span>☰ Camadas</h2>
+        <div class="secBody" id="layers"></div>
+      </section>
       <section class="sec" data-sec="time">
         <h2 class="secHead"><span class="tw">▸</span>🕰️ Tempo</h2>
         <div class="secBody" id="timePanel">
@@ -227,10 +231,6 @@
     <section data-pane="ecl" hidden><div id="tpEclList"></div></section>
     <section data-pane="rep" hidden><div id="tpRepList"></div></section>
         </div>
-      </section>
-      <section class="sec" data-sec="layers">
-        <h2 class="secHead"><span class="tw">▸</span>☰ Camadas</h2>
-        <div class="secBody" id="layers"></div>
       </section>
       <section class="sec" data-sec="scope">
         <h2 class="secHead"><span class="tw">▸</span>🔭 Telescópio</h2>

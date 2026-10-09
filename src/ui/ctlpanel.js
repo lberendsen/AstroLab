@@ -1,13 +1,14 @@
-// Painel da direita: os controles globais da vista (tempo, camadas, telescópio) em seções que
+// Painel da direita: os controles globais da vista (camadas, tempo, telescópio) em seções que
 // abrem e fecham clicando no título, como os painéis do Expression Design. Várias podem ficar abertas ao mesmo tempo.
 // O painel inteiro também recolhe numa faixa estreita com os ícones das seções.
 import { $ } from './dom.js';
 
-const CTL = { open: { time: true }, collapsed: false };
+// seções abertas valem só durante o uso: o app sempre abre com todas fechadas, para se ver o painel inteiro
+const CTL = { open: {}, collapsed: false };
 const RAIL = 44, WIDTH = 340;
 const onOpen = {};   // seção → função chamada ao abrir (ex.: Tempo atualiza a data)
 
-function save() { try { localStorage.setItem('astrolab.ctl', JSON.stringify(CTL)); } catch { /* sem armazenamento */ } }
+function save() { try { localStorage.setItem('astrolab.ctl', JSON.stringify({ collapsed: CTL.collapsed })); } catch { /* sem armazenamento */ } }
 function apply() {
   document.documentElement.style.setProperty('--ctl-w', `${CTL.collapsed ? RAIL : WIDTH}px`);
   document.body.classList.toggle('ctl-collapsed', CTL.collapsed);
@@ -28,7 +29,7 @@ export const isSectionOpen = key => !CTL.collapsed && !!CTL.open[key];
 export function onSectionOpen(key, fn) { onOpen[key] = fn; }
 
 export function wireCtl() {
-  try { Object.assign(CTL, JSON.parse(localStorage.getItem('astrolab.ctl')) || {}); } catch { /* sem armazenamento */ }
+  try { CTL.collapsed = !!JSON.parse(localStorage.getItem('astrolab.ctl'))?.collapsed; } catch { /* sem armazenamento */ }
   apply();
   for (const h of document.querySelectorAll('#ctl .secHead')) h.onclick = () => {
     const key = h.parentElement.dataset.sec;

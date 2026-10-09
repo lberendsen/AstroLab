@@ -38,14 +38,14 @@ Tudo o que muda a vista do universo inteiro fica num painel à direita, em seç�
 título (várias podem ficar abertas ao mesmo tempo):
 
 - **No topo, sempre à vista:** a data simulada com ◀◀ ❚❚ ▶▶ agora, "Orbitar / Voar livre" e a ajuda (?).
-- **🕰️ Tempo:** ir para uma data, do século 20 aos milênios; eclipses; replays de missões.
 - **☰ Camadas:** o que aparece no 3D, brilho, Gaia, pulsares, satélites por categoria e país, asteroides, efeitos de perto.
+- **🕰️ Tempo:** ir para uma data, do século 20 aos milênios; eclipses; replays de missões.
 - **🔭 Telescópio:** todas as fotos do céu, de raios gama a rádio. Cada botão é um levantamento: um atlas que um telescópio
   fez ao longo de anos (a dica diz qual). Com a foto na tela, "Foto do céu feita por…" leva à ficha do telescópio. Com o telescópio fechado, escolher um filtro abre o telescópio
   na direção do selecionado. Aqui também fica o céu de fundo do 3D em outros comprimentos de onda.
 
-O » recolhe o painel numa faixa com os três ícones; clicar num ícone abre o painel já naquela seção. As seções abertas
-ficam guardadas no navegador. A barra flutuante de baixo deixou de existir.
+O » recolhe o painel numa faixa com os três ícones; clicar num ícone abre o painel já naquela seção. O app sempre abre com
+todas as seções fechadas, para se ver de relance o que o painel oferece. A barra flutuante de baixo deixou de existir.
 
 ## Teclas e mouse
 
