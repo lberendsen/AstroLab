@@ -90,6 +90,10 @@ h3 { margin: 14px 0 6px; font-size: 13px; color: var(--muted); font-weight: 600;
 .eclRow, .repRow { padding: 6px; border-radius: 6px; cursor: pointer; font-size: 13px; }
 .eclRow small, .repRow small { display: block; color: var(--muted); font-size: 11.5px; }
 .eclRow:hover, .repRow:hover { background: rgba(127,180,255,0.14); }
+#phenPanel { position: fixed; left: 12px; top: 64px; bottom: 70px; width: 400px; overflow: auto; padding: 14px; z-index: 6; }
+.tabs.wrap { flex-wrap: wrap; }
+.tabs.wrap button { font-size: 12px; padding: 4px 8px; }
+#info img.eht { width: 100%; border-radius: 8px; margin-top: 8px; }
 #tourPanel { position: fixed; left: 12px; top: 64px; width: 380px; max-height: calc(100% - 140px); overflow: auto; padding: 14px; z-index: 6; }
 #tourCap { position: fixed; left: 50%; transform: translateX(-50%); bottom: 76px; width: min(760px, calc(100% - 24px)); padding: 10px 14px; z-index: 6; }
 #tourCap[hidden] { display: none; }
@@ -180,6 +184,8 @@ h3 { margin: 14px 0 6px; font-size: 13px; color: var(--muted); font-weight: 600;
 .lbl.exo { color: #9ff0c4; }
 .lbl.deep { color: #f5b3ff; }
 .lbl.gal { color: #b8c8ff; font-size: 11px; }
+.lbl.psr { color: #d6a8ff; font-size: 11px; }
+.lbl.lss { color: #ffd38a; font-size: 13px; font-weight: 600; }
 .lbl.sb { color: #ffd59a; font-size: 11px; }
 .lbl.craft { color: #8fdcff; font-size: 11px; }
 .lbl.sel { color: #fff; font-weight: 600; }

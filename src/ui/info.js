@@ -11,6 +11,9 @@ import { setOrbit } from '../nav.js';
 import { exoTarget, sbTarget, craftTarget, nextPeak } from '../targets.js';
 import * as smallbodies from '../layers/smallbodies.js';
 import * as PLN from '../planetarium.js';
+import { MOON_DESC, PLANET_PT, SCOPE_KEY, moonPeriodDays } from '../layers/moons.js';
+import { BH_INFO } from './phenomena.js';
+import { KM } from '../astro.js';
 import { openPlanetarium } from './planpanel.js';
 import { v3, DEG, fmtDist, fmtLightTime, fmtNum, lightSentence, fmtYears, lookbackYears, AGE_OF_UNIVERSE, CMB_DISTANCE } from '../astro.js';
 import { ui, go, openScope, startLink, openFeeds, showerParent } from './actions.js';
@@ -110,6 +113,38 @@ export function renderInfo(t) {
     dl += row('Coordenadas', `RA ${fmtNum(t.ra, 4)}°, Dec ${fmtNum(t.dec, 4)}°`);
     notes += `<div class="note">Catálogo SDSS DR16Q (Lyke et al. 2020), 750 mil quasares. Quem está perto de um quasar o veria como uma estrela ofuscante.</div>`;
     extra += `<div id="photoBox"></div>`;
+  } else if (t.moon) {
+    const m = t.moon, P = solar.BODY[m.planet];
+    if (MOON_DESC[m.id]) h += `<p>${MOON_DESC[m.id]}</p>`;
+    dl += row('Diâmetro', m.r ? `${fmtNum(m.r * 2, m.r < 50 ? 1 : 0)} km` : 'desconhecido (alguns km)');
+    dl += row(`Distância de ${PLANET_PT[m.planet]}`, `${fmtNum(m.a, 0)} km (${fmtNum(m.a / P.r, 1)} raios do planeta)`);
+    const per = moonPeriodDays(m);
+    dl += row('Uma volta', per < 2 ? `${fmtNum(per * 24, 1)} horas` : per < 500 ? `${fmtNum(per, 1)} dias` : `${fmtNum(per / 365.25, 1)} anos`);
+    // sentido em relação à rotação do planeta (a inclinação do Horizons é medida no equador da Terra)
+    const nrm = [Math.sin(m.om) * Math.sin(m.i), -Math.cos(m.om) * Math.sin(m.i), Math.cos(m.i)];
+    if (P.pole && v3.dot(nrm, P.pole) < 0) dl += row('Sentido', 'retrógrado (gira ao contrário do planeta): provavelmente capturada');
+    dl += row('Distância da Terra', `<span data-live="earth">${fmtDist(v3.dist(t.pos(), solar.BODY.Earth.pos))}</span>`);
+    notes += `<div class="note">Órbita: elementos do JPL Horizons numa época de 2026, propagados por Kepler (posição muito boa perto de hoje; a fase se desvia com os anos). ${SCOPE_KEY[m.id] ? 'Mapa real da superfície; rotação sincronizada.' : 'Forma e cor ilustrativas.'}</div>`;
+  } else if (t.kind === 'psr') {
+    const p = t.psr;
+    if (p.desc) h += `<p>${p.desc}</p>`;
+    else h += `<p>Uma estrela de nêutrons: o núcleo de uma estrela que explodiu, com mais massa que o Sol espremida numa bola de ~20 km. Feixes de rádio saem dos polos magnéticos e varrem a Terra a cada volta, como um farol.</p>`;
+    dl += row('Rotação', p.p ? (p.p < 1 ? `${fmtNum(1 / p.p, 1)} voltas por segundo (período de ${fmtNum(p.p * 1000, 2)} ms)` : `uma volta a cada ${fmtNum(p.p, 3)} s`) : null);
+    dl += row('Distância (estimada)', fmtDist(p.d));
+    dl += row('Idade característica', p.age ? (p.age > 1e9 ? `${fmtNum(p.age / 1e9, 1)} bilhões de anos` : p.age > 1e6 ? `${fmtNum(p.age / 1e6, 1)} milhões de anos` : `${fmtNum(p.age / 1e3, 1)} mil anos`) : null);
+    dl += row('Associado a', p.assoc || null);
+    dl += row('Sistema binário', p.bin || null);
+    notes += `<div class="note">Catálogo ATNF (via VizieR). A distância da maioria dos pulsares é estimada pela dispersão do sinal de rádio no gás da galáxia, com erros de 20–50%.</div>`;
+  } else if (t.kind === 'view' && (t.struct || t.gw)) {
+    if (t.struct) { h += `<p>${t.struct.desc}</p>`; dl += row('Distância', fmtDist(t.struct.d * 1e6)); dl += row('Tamanho (aprox.)', fmtDist(t.struct.r * 2e6)); notes += `<div class="note">Contorno aproximado (esfera de arame). As galáxias em volta são reais (2MRS).</div>`; }
+    if (t.gw) {
+      const e = t.gw;
+      h += `<p>Em ${e.date.toLocaleDateString('pt-BR')}, os detectores sentiram o espaço esticar e encolher por uma fração do tamanho de um próton: o sinal de dois objetos colidindo.</p>`;
+      dl += row('Massas', `${fmtNum(e.m1, 1)} e ${fmtNum(e.m2, 1)} vezes a massa do Sol`);
+      if (e.mf) dl += row('Resultado', `${fmtNum(e.mf, 1)} massas solares; ${fmtNum(e.m1 + e.m2 - e.mf, 1)} viraram energia em ondas gravitacionais`);
+      dl += row('Distância', fmtDist(e.d * 1e6));
+      notes += `<div class="note">A casca lilás mostra a distância. A direção quase nunca é conhecida com precisão: a fonte pode estar em qualquer ponto de uma grande região do céu. Fonte: GWOSC (${e.cat}).</div>`;
+    }
   } else if (t.kind === 'sb') {
     const o = t.sb;
     if (o.desc) h += `<p>${o.desc}</p>`;
@@ -165,9 +200,17 @@ export function renderInfo(t) {
     if (t.simbad) { dl += row('SIMBAD', t.simbad.mainId); dl += row('Tipo', t.simbad.otypeLabel); }
     if (t.kind !== 'sky') {
       dl += row('Distância do Sol', fmtDist(dSun));
-      if (size > 0 && !t.curated?.z) dl += row('Tamanho', fmtDist(size));
+      if (size > 0 && !t.curated?.z && t.curated?.type !== 'bh') dl += row('Tamanho', fmtDist(size));
       if (t.curated?.z) dl += row('Redshift', `z = ${t.curated.z}`);
       notes += `<div class="lighttime">${lightSentence(dSun, t.curated?.z || t.simbad?.z)}</div>`;
+    }
+    const bh = t.curated && BH_INFO[t.curated.id];
+    if (bh) {
+      h += `<p>${bh.desc}</p>`;
+      dl += row('Massa', `${fmtNum(bh.mass, bh.mass < 100 ? 1 : 0)} vezes a do Sol`);
+      dl += row('Horizonte de eventos', `${fmtDist(2 * 2.95 * bh.mass * KM)} de diâmetro`);
+      if (bh.eht) extra += `<img class="eht" src="${bh.eht}" alt=""><p class="muted small">Imagem do Event Horizon Telescope (ESO/EHT): a sombra do buraco negro dentro do anel de gás quente.</p>`;
+      if (bh.mass < 1e5) notes += `<div class="note">Chegando perto: a esfera preta tem o tamanho real do horizonte de eventos (${fmtNum(2 * 2.95 * bh.mass, 0)} km). ${bh.disk ? 'O disco brilhante é ilustrativo: o gás roubado da estrela companheira.' : 'Este buraco negro não tem disco: só se sabe dele pela gravidade.'}</div>`;
     }
     if (t.gal != null) notes += `<div class="note">Distância estimada pelo redshift (lei de Hubble, H₀ = 70 km/s/Mpc). O tamanho é o raio medido no infravermelho pelo 2MASS.</div>`;
     if (t.simbad?.dSource) notes += `<div class="note">Distância: ${t.simbad.dSource}.</div>`;

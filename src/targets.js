@@ -7,12 +7,13 @@ import { F } from './engine.js';
 import { QSO, qsoPos, sdssName } from './layers/deep.js';
 import { SB, bodyPos, astElements, diameterKm } from './layers/smallbodies.js';
 import { craftCenterAt } from './layers/craft.js';
+import { moonRadius, PLANET_PT } from './layers/moons.js';
 import * as systems from './layers/systems.js';
 import { AU, R_SUN, R_EARTH, KM, LY, DEG, v3, xyz2radec, fmtNum } from './astro.js';
 
 const TYPE_PT = {
   neb: 'Nebulosa', pn: 'Nebulosa planetária', snr: 'Remanescente de supernova', open: 'Aglomerado aberto', glob: 'Aglomerado globular',
-  gal: 'Galáxia', cluster: 'Aglomerado de galáxias', qso: 'Quasar', bh: 'Buraco negro supermassivo',
+  gal: 'Galáxia', cluster: 'Aglomerado de galáxias', qso: 'Quasar', bh: 'Buraco negro',
 };
 const DEFAULT_SIZE_PC = { neb: 30, pn: 0.6, snr: 8, open: 6, glob: 40, gal: 20000, cluster: 1.5e6, qso: 30000, bh: 0.001 };
 
@@ -91,6 +92,15 @@ function guessSize(ot = '') {
   if (/PN/.test(ot)) return 0.5;
   if (/HII|ISM|Cld|MoC|RNe|DNe|SNR|SFR/.test(ot)) return 20;
   return R_SUN * 4 / 1; // estrela ou desconhecido
+}
+
+// Lua de outro planeta (Horizons)
+export function moonTarget(m) {
+  const r = moonRadius(m);
+  return {
+    id: 'moon:' + m.id, name: m.name, aka: m.en !== m.name ? [m.en] : [], kind: 'moon', moon: m,
+    pos: () => m.pos, radius: r, viewDist: Math.max(r * 4, 30 * KM), kindLabel: `Lua de ${PLANET_PT[m.planet]}`,
+  };
 }
 
 // Quasar do SDSS DR16Q

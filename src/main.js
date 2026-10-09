@@ -24,7 +24,8 @@ import { v3, AU, fmtDist, fmtSpeed, GALACTIC_CENTER } from './astro.js';
 import { ui, select, go, wireFeeds } from './ui/actions.js';
 import { refreshInfoDistances } from './ui/info.js';
 import { buildPlaces } from './ui/places.js';
-import { buildLayersMenu, buildSkyMenu, updateSbStatus } from './ui/menus.js';
+import { buildLayersMenu, buildSkyMenu, updateSbStatus, updateGaiaStatus } from './ui/menus.js';
+import { wirePhenomena } from './ui/phenomena.js';
 import { wireSearch } from './ui/searchbox.js';
 import { wireControls } from './ui/keys.js';
 import { perf } from './ui/perf.js';
@@ -34,6 +35,8 @@ import * as eclipse from './layers/eclipse.js';
 import * as planetarium from './planetarium.js';
 import { wirePlanetarium } from './ui/planpanel.js';
 import * as tours from './ui/tours.js';
+import * as moons from './layers/moons.js';
+import * as phase5 from './layers/phase5.js';
 import { $ } from './ui/dom.js';
 
 // ---------------------------------------------------------------- inicialização
@@ -45,15 +48,15 @@ async function init() {
   step('asteroides e cometas');
   await smallbodies.load();
   step('quasares e constelações');
-  await Promise.all([deep.load(), planetarium.load(), tours.load()]);
+  await Promise.all([deep.load(), planetarium.load(), tours.load(), moons.load(), phase5.load()]);
   deep.addCurated(DB.curated);
   step('montando a cena');
   solar.build(); solar.computePositions();
   stars.build(); galaxies.build(); milkyway.build(); systems.build();
-  sats.build(); craft.addNotableSats(); craft.build(); deep.build(); smallbodies.build(); eclipse.build(); planetarium.build();
+  sats.build(); craft.addNotableSats(); craft.build(); deep.build(); smallbodies.build(); eclipse.build(); planetarium.build(); moons.build(); phase5.build();
   search.buildIndex();
   buildPlaces(); buildLayersMenu(); buildSkyMenu();
-  wireSearch(); wireFeeds(); wireControls(hud); wireTime(); wirePlanetarium(); tours.wireTours();
+  wireSearch(); wireFeeds(); wireControls(hud); wireTime(); wirePlanetarium(); tours.wireTours(); wirePhenomena();
 
   // começa olhando a Terra, com o Sol de lado
   const earth = bodyTarget('Earth');
@@ -74,8 +77,8 @@ async function init() {
 let nearGal = Infinity;
 function computeNear() {
   let n = Infinity;
-  if (F.layers.solar !== false && v3.len(F.cam) < 0.5) n = Math.min(n, solar.nearestSurface().d);
-  n = Math.min(n, systems.near.surface);
+  if (F.layers.solar !== false && v3.len(F.cam) < 0.5) n = Math.min(n, solar.nearestSurface().d, moons.nearestSurface());
+  n = Math.min(n, systems.near.surface, phase5.nearestBhSurface());
   for (const P of systems.planets) n = Math.min(n, v3.dist(F.cam, P.pos) - P.radius);
   if (nav.target) {
     const d = v3.dist(F.cam, nav.target.pos());
@@ -122,6 +125,8 @@ function loop(now) {
   T('céu e estrelas', () => { sky.update(); stars.update(); galaxies.update(); milkyway.update(); });
   T('Sistema Solar', () => { solar.update(); eclipse.update(); });
   T('planetário', () => planetarium.update());
+  T('luas', () => moons.update());
+  T('Gaia/pulsares', () => phase5.update(dt));
   T('exoplanetas', () => systems.update(dt));
   T('fotos', () => images.update());
   T('satélites', () => { sats.update(); sats.updateOrbitLine(local, place); });
@@ -151,7 +156,13 @@ function hud() {
   $('btnMode').textContent = nav.mode === 'orbit' ? '⟲ Orbitar' : '✈ Voar livre';
   if (++hudCount % 3 === 0) refreshInfoDistances();
   maybeLoadMoreAsteroids();
+  // Gaia (17 MB): quando a nave está a menos de ~2.500 anos-luz do Sol
+  if (!gaiaAsked && performance.now() > 10000 && v3.len(F.cam) < 800 && phase5.P5.show.gaia && F.layers.stars !== false) {
+    gaiaAsked = true;
+    phase5.loadGaia(n => updateGaiaStatus(n));
+  }
 }
+let gaiaAsked = false;
 
 // O resto dos asteroides (1,5 milhão; ~34 MB) só é baixado quando o usuário está no Sistema Solar, após o início
 let sbAsked = false;

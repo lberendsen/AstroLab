@@ -7,6 +7,7 @@ import * as sats from '../layers/sats.js';
 import * as craft from '../layers/craft.js';
 import * as smallbodies from '../layers/smallbodies.js';
 import { PL } from '../planetarium.js';
+import { P5 } from '../layers/phase5.js';
 import { BANDS } from '../surveys.js';
 import { fmtNum } from '../astro.js';
 import { $, toast } from './dom.js';
@@ -23,7 +24,12 @@ export function buildLayersMenu() {
     `<h3>Brilho das estrelas</h3><input type="range" id="starGain" min="4" max="12" step="0.1" value="${stars.starUniforms.uLimit.value}">` +
     `<h3>Brilho das galáxias</h3><input type="range" id="galGain" min="9" max="18" step="0.1" value="${galaxies.galSettings.limit}">`;
   for (const cb of m.querySelectorAll('[data-layer]')) cb.onchange = () => { F.layers[cb.dataset.layer] = cb.checked; };
-  m.insertAdjacentHTML('beforeend', `<label><input type="checkbox" id="constSpace"> Constelações no espaço (linhas 3D)</label>`);
+  m.insertAdjacentHTML('beforeend', `<label><input type="checkbox" id="constSpace"> Constelações no espaço (linhas 3D)</label>
+    <h3>Mais universo</h3>
+    <label><input type="checkbox" data-p5="gaia" checked> Estrelas do Gaia <small class="muted" id="gaiaStatus">carrega quando a nave estiver perto do Sol</small></label>
+    <label><input type="checkbox" data-p5="pulsars" checked> Pulsares (${fmtNum(P5.pulsars.length, 0)})</label>
+    <label><input type="checkbox" data-p5="structures" checked> Estruturas (superaglomerados e vazios)</label>`);
+  for (const cb of m.querySelectorAll('[data-p5]')) cb.onchange = () => { P5.show[cb.dataset.p5] = cb.checked; };
   $('constSpace').onchange = e => { PL.show.space = e.target.checked; PL.show.only = null; };
   setInterval(() => { if ($('constSpace')) $('constSpace').checked = PL.show.space; }, 1000);
   buildHumanMenu(m);
@@ -70,6 +76,11 @@ function buildHumanMenu(m) {
   for (const b of m.querySelectorAll('[data-country]')) b.onclick = () => { const i = +b.dataset.country; sats.show.countries[i] = !sats.show.countries[i]; syncSatMenu(); };
   $('satAll') && ($('satAll').onclick = () => { sats.show.cats.fill(true); sats.show.countries.fill(true); syncSatMenu(); });
   $('satNone') && ($('satNone').onclick = () => { sats.show.cats.fill(false); sats.show.cats[0] = true; sats.show.countries.fill(true); syncSatMenu(); });
+}
+
+export function updateGaiaStatus(n) {
+  const el = $('gaiaStatus');
+  if (el) el.textContent = n ? `${fmtNum(n, 0)} estrelas a menos de 650 anos-luz` : 'carrega quando a nave estiver perto do Sol';
 }
 
 export function updateSbStatus() {

@@ -19,6 +19,7 @@ a busca no SIMBAD e o telescópio.
 | Clique / duplo clique | selecionar / viajar até lá |
 | `Tab` | alternar entre orbitar e voar livre (`W A S D`, `R F`, `Q E`, `Shift` = turbo) |
 | `U` | Tours guiados |
+| `K` | Fenômenos: ondas gravitacionais, explosões, buracos negros, pulsares, estruturas |
 | `P` | Planetário: o céu de um lugar da Terra, da Lua ou de Marte |
 | `Y` | Tempo: data, eclipses e replays de missões |
 | `X` | Transmissões: imagens e sinais dos aparelhos do catálogo |
@@ -85,6 +86,33 @@ O painel da esquerda mostra:
 - a direção dele na Via Láctea;
 - a distância ao Sol no céu, para objetos do Sistema Solar;
 - a posição agora para quem está em São Paulo (ou na sua localização, pelo botão 📍): se está acima do horizonte, em que direção e a altura máxima que alcança.
+
+### Mais universo (Fase 5)
+
+| O quê | Fonte | Arquivo |
+|---|---|---|
+| 2,2 milhões de estrelas a menos de 650 anos-luz (paralaxe com erro < 10%) | Gaia DR3 (ESA), via TAP | `data/gaia.bin` (17 MB, 8 bytes por estrela) |
+| 2.481 pulsares com distância | Catálogo ATNF (VizieR B/psr) | `data/pulsars.json` |
+| 184 luas (além da Lua e das galileanas), com elementos orbitais | JPL Horizons | `data/moons.json` |
+| Mapas de 19 luas e de Plutão | HiPS do CDS (Voyager, Galileo, Cassini, New Horizons) | `textures/moons/` |
+| 9 buracos negros com massa medida, imagens do EHT | literatura + ESO/EHT | `tools/curated.mjs`, `src/ui/phenomena.js` |
+| 282 detecções de ondas gravitacionais | GWOSC, ao vivo | — |
+| Supernovas e explosões dos últimos 30 dias | Transient Name Server, ao vivo | — |
+| 10 superaglomerados e vazios | literatura (posição e tamanho aproximados) | `src/layers/phase5.js` |
+
+O botão **💥** (tecla `K`) abre o painel de fenômenos, com cinco abas:
+
+- **Ondas gravitacionais:** ao escolher uma, aparece a casca a essa distância, porque a direção é incerta. GW170817 leva à galáxia NGC 4993.
+- **Explosões recentes:** as que têm redshift permitem viajar até lá; as outras abrem no telescópio.
+- **Buracos negros:** o horizonte de eventos aparece em escala real, com disco de acreção ilustrativo nos que se alimentam de uma companheira.
+- **Pulsares:** no 3D, piscam no ritmo real até ~5 Hz; os mais rápidos ficam acesos.
+- **Estruturas:** Laniakea, o Grande Atrator, a Grande Muralha Sloan e o Vazio de Boötes, desenhados em arame sobre as galáxias reais.
+
+Notas:
+
+- **Luas:** giram em rotação sincronizada; o telescópio abre o mapa da superfície (o radar da Cassini mostra os lagos de Titã).
+- **Gaia:** carrega quando a nave está a menos de ~2.600 anos-luz do Sol e só desenha as estrelas que podem aparecer daquela posição.
+- **Desempenho:** a Via Láctea em modelo agora desenha menos pontos quando está fraca (a 700 pc, foi de 20 para 71 fps).
 
 ### Tours guiados (Fase 4)
 

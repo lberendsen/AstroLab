@@ -4,6 +4,7 @@ import { v3, gal2eq, GALACTIC_CENTER } from '../astro.js';
 import { go } from './actions.js';
 import { openNeo } from './neo.js';
 import { TOURS, startTour } from './tours.js';
+import { openPhenomena } from './phenomena.js';
 import { openPlanetarium } from './planpanel.js';
 import { PL, PRESETS } from '../planetarium.js';
 import { radec2xyz } from '../astro.js';
@@ -22,6 +23,9 @@ const PLACES = [
     ['Dídimo', 'desviado pela DART'], ['Psique', 'metálico'], ['Arrokoth', 'o mais distante visitado'], ['Éris'], ['Sedna'],
     ['Cometa Halley'], ['Cometa 67P/Churyumov–Gerasimenko'], ['Cometa Hale–Bopp'], ["1I/ʻOumuamua", 'veio de outra estrela'], ['3I/ATLAS', 'visitante interestelar de 2025']]],
   ['Chuvas de meteoros', [['Perseidas'], ['Geminídeas', 'a mais forte'], ['Leônidas'], ['Orionídeas', 'poeira do Halley'], ['Eta Aquarídeas'], ['Quadrântidas'], ['Líridas']]],
+  ['Fenômenos extremos', [['@phen:gw', 'colisões que sacodem o espaço'], ['@phen:sn', 'supernovas deste mês'], ['Gaia BH1', 'o buraco negro mais próximo'], ['Cyg X-1'], ['Sgr A*'],
+    ['Pulsar do Caranguejo'], ['PSR B1919+21 (o primeiro pulsar)'], ['Laniakea', 'o nosso superaglomerado'], ['Vazio de Boötes', 'o "Grande Nada"']]],
+  ['Luas', [['Titã'], ['Encélado'], ['Europa'], ['Io'], ['Tritão'], ['Caronte'], ['Fobos'], ['Jápeto'], ['Mimas']]],
   ['Estrelas', [['Próxima Centauri', 'a mais próxima'], ['Alfa Centauri'], ['Sírius', 'a mais brilhante'], ['Betelgeuse', 'supergigante vermelha'], ['Rigel'], ['Estrela Polar'], ['Vega'], ['Antares']]],
   ['Mundos alienígenas', [['TRAPPIST-1 e', 'zona habitável'], ['Proxima Cen b'], ['Kepler-452 b', '"primo" da Terra'], ['TOI-700 d'], ['51 Peg b', 'primeiro em estrela tipo Sol'], ['HD 189733 b', 'chove vidro'], ['55 Cnc e', 'oceano de lava'], ['WASP-12 b', 'sendo devorado']]],
   ['Nebulosas', [['M 42'], ['M 16'], ['NGC 3372'], ['IC 434'], ['M 57'], ['NGC 7293'], ['NGC 3132'], ['M 1'], ['NGC 2070']]],
@@ -43,6 +47,10 @@ export function resolvePlace(q) {
   if (q.startsWith('@tour:')) {
     const t = TOURS.find(x => x.id === q.slice(6));
     return t ? { name: `🎬 ${t.title}`, action: () => startTour(t) } : null;
+  }
+  if (q.startsWith('@phen:')) {
+    const k = q.slice(6);
+    return { name: k === 'gw' ? '💥 Ondas gravitacionais' : '💥 Explosões recentes', action: () => openPhenomena(k) };
   }
   if (q === '@plhere') return { name: '🌅 O céu daqui, agora', action: () => openPlanetarium('Earth', PL.lat, PL.lon, PL.name) };
   if (q === '@const3d') {

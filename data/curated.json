@@ -756,6 +756,132 @@
   ]
  },
  {
+  "id": "Gaia BH1",
+  "mainId": "Gaia BH1",
+  "name": "Gaia BH1 (o buraco negro conhecido mais próximo)",
+  "type": "bh",
+  "ra": 262.1712,
+  "dec": -0.5808,
+  "d": 480,
+  "maj": null,
+  "min": null,
+  "pa": null,
+  "otype": "G",
+  "xyz": [
+   -65.37914933645905,
+   -475.50172725142727,
+   -4.865615372206116
+  ]
+ },
+ {
+  "id": "Gaia BH2",
+  "mainId": "Gaia BH2",
+  "name": "Gaia BH2",
+  "type": "bh",
+  "ra": 207.5701,
+  "dec": -59.239,
+  "d": 1160,
+  "maj": null,
+  "min": null,
+  "pa": null,
+  "otype": "G",
+  "xyz": [
+   -525.9202987009147,
+   -274.59511984854163,
+   -996.7975519480901
+  ]
+ },
+ {
+  "id": "Gaia BH3",
+  "mainId": "Gaia BH3",
+  "name": "Gaia BH3 (o maior buraco negro estelar da Via Láctea)",
+  "type": "bh",
+  "ra": 294.8276,
+  "dec": 14.9314,
+  "d": 590,
+  "maj": null,
+  "min": null,
+  "pa": null,
+  "otype": "G",
+  "xyz": [
+   239.36994089585815,
+   -517.3893214183954,
+   152.0207929124355
+  ]
+ },
+ {
+  "id": "Cyg X-1",
+  "mainId": "HD 226868",
+  "name": "Cygnus X-1 (o primeiro buraco negro identificado)",
+  "type": "bh",
+  "ra": 299.59031556498,
+  "dec": 35.20160680908,
+  "d": 2220,
+  "maj": null,
+  "min": null,
+  "pa": null,
+  "otype": "HXB",
+  "xyz": [
+   895.7566687849485,
+   -1577.4376510685709,
+   1279.730615136858
+  ]
+ },
+ {
+  "id": "V404 Cyg",
+  "mainId": "V* V404 Cyg",
+  "name": "V404 Cygni",
+  "type": "bh",
+  "ra": 306.0159362655975,
+  "dec": 33.86721143190583,
+  "d": 2390,
+  "maj": null,
+  "min": null,
+  "pa": null,
+  "otype": "HXB",
+  "xyz": [
+   1166.901564040501,
+   -1605.1631530779005,
+   1331.875366481731
+  ]
+ },
+ {
+  "id": "V616 Mon",
+  "mainId": "1A 0620-00",
+  "name": "A0620-00 (V616 Monocerotis)",
+  "type": "bh",
+  "ra": 95.68559327388,
+  "dec": -0.34563623903999996,
+  "d": 1060,
+  "maj": null,
+  "min": null,
+  "pa": null,
+  "otype": "HXB",
+  "xyz": [
+   -105.01180698756114,
+   1054.7661503995728,
+   -6.39440102537672
+  ]
+ },
+ {
+  "id": "NGC 4993",
+  "mainId": "NGC  4993",
+  "name": "NGC 4993 (colisão de estrelas de nêutrons GW170817)",
+  "type": "gal",
+  "ra": 197.448711984,
+  "dec": -23.38397612351,
+  "d": 40000000,
+  "maj": 0.887,
+  "min": 0.798,
+  "pa": 170,
+  "otype": "Sy2",
+  "xyz": [
+   -35025230.17201637,
+   -11008952.848042293,
+   -15875648.288711105
+  ]
+ },
+ {
   "id": "LMC",
   "mainId": "NAME LMC",
   "name": "Grande Nuvem de Magalhães",

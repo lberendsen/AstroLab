@@ -9,6 +9,7 @@ import { buildSpacecraft } from './spacecraft-build.mjs';
 import { comovingDistance } from '../src/astro.js';
 import { buildSmallBodies } from './smallbodies-build.mjs';
 import { buildHistory } from './history.mjs';
+import { buildGaia, buildPulsars, buildMoons, buildMoonMaps } from './phase5-build.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DATA = path.join(ROOT, 'data');
@@ -139,7 +140,7 @@ async function curated() {
   const out = [];
   for (const [id, name, type, distSpec] of CURATED) {
     const zInfo = typeof distSpec === 'object' ? distSpec : null;
-    const dist = zInfo ? comovingDistance(zInfo.z) : distSpec;
+    const dist = zInfo ? (zInfo.z ? comovingDistance(zInfo.z) : zInfo.d) : distSpec;
     const adql = `SELECT TOP 1 b.main_id, b.ra, b.dec, b.galdim_majaxis, b.galdim_minaxis, b.galdim_angle, b.otype FROM basic b JOIN ident i ON b.oid=i.oidref WHERE i.id='${id.replace(/'/g, "''")}'`;
     let row = null;
     try {
@@ -242,7 +243,11 @@ async function constellations() {
 async function smallbodies() { await buildSmallBodies(DATA, RAW); }
 async function history() { await buildHistory(DATA, RAW); }
 
-const steps = { stars, constellations, galaxies, exoplanets, curated, textures, quasars, cmb, smallbodies, history, satellites, spacecraft };
+async function gaia() { await buildGaia(DATA, RAW); }
+async function pulsars() { await buildPulsars(DATA, RAW); }
+async function moons() { await buildMoons(DATA, RAW); await buildMoonMaps(TEX); }
+
+const steps = { stars, constellations, gaia, pulsars, moons, galaxies, exoplanets, curated, textures, quasars, cmb, smallbodies, history, satellites, spacecraft };
 const only = process.argv.slice(2).filter(a => !a.startsWith('--'));
 for (const [k, f] of Object.entries(steps)) if (!only.length || only.includes(k)) await f();
 console.log('pronto.');

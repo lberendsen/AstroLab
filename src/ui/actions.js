@@ -13,6 +13,9 @@ import * as feeds from '../feeds.js';
 import { nav, flyTo, setOrbit, setMode, cancelFlight, lookAtDir } from '../nav.js';
 import { bodyTarget, craftTarget, satTarget, nextPeak } from '../targets.js';
 import * as smallbodies from '../layers/smallbodies.js';
+import * as P5L from '../layers/phase5.js';
+import { bhForTarget } from './phenomena.js';
+import { SCOPE_KEY } from '../layers/moons.js';
 import { v3, KM, AU, DEG, xyz2radec } from '../astro.js';
 import { renderInfo } from './info.js';
 import { $, toast } from './dom.js';
@@ -29,6 +32,8 @@ export function select(t) {
   const parent = t?.shower ? showerParent(t.shower) : null;
   smallbodies.setSelected(t?.sb || parent);
   smallbodies.showStream(parent);
+  P5L.showBlackHole(bhForTarget(t));
+  if (!t?.gw) P5L.showGwShell(0);
   if (!t) { $('info').hidden = true; return; }
   renderInfo(t);
   $('info').hidden = false;
@@ -51,6 +56,9 @@ export function go(t) {
     return;
   }
   if (t.kind === 'sky') { pointAt(t); toast('Sem distância medida para este objeto: abrindo no telescópio.'); openScope(t); return; }
+  // buraco negro: chega perto o bastante para ver o horizonte de eventos (40 raios de Schwarzschild)
+  const bh = t.curated?.type === 'bh' && bhForTarget(t);
+  if (bh) { const rs = 2.95 * KM * bh.massSun; t.radius = rs; t.viewDist = 40 * rs; }
   select(t);
   setMode('orbit');
   flyTo(t);
@@ -100,6 +108,8 @@ export function openScope(t) {
     scope.open({ body: bodyKey, lon, lat, fovDeg: fov, name: t.name, markers: surfaceMarkers(bodyKey), sky });
     return;
   }
+  // luas com mapa: o telescópio abre no mapa da superfície (longitude 0 = face voltada para o planeta)
+  if (t?.moon && SCOPE_KEY[t.moon.id] && scope.hasBodyMaps(SCOPE_KEY[t.moon.id])) { scope.open({ body: SCOPE_KEY[t.moon.id], lon: 0, lat: 0, fovDeg: 180, name: t.name }); return; }
   if (t?.shower) { scope.open({ ra: t.shower.ra, dec: t.shower.dec, fovDeg: 40, name: `Radiante das ${t.shower.name}` }); return; }
   let ra, dec, fov = 1, name;
   if (t?.body) {

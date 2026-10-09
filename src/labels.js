@@ -13,6 +13,10 @@ import * as smallbodies from './layers/smallbodies.js';
 import { SB, showSB, bodyPos } from './layers/smallbodies.js';
 import { labelCandidates as linkLabels } from './link.js';
 import * as PLN from './planetarium.js';
+import { MOONS, moonRadius } from './layers/moons.js';
+import { P5 } from './layers/phase5.js';
+import { pulsarTarget, structTarget } from './ui/phenomena.js';
+import { moonTarget } from './targets.js';
 import { labelCandidates as plLabels } from './planetarium.js';
 import { AU, DEG, v3 } from './astro.js';
 
@@ -62,7 +66,8 @@ function buildSlow() {
   // estrelas com nome próprio ou designação de Bayer, pelo brilho aparente daqui
   const stars = [];
   for (const [i, inf] of S.info) {
-    if (i === S.sunIndex) continue;
+    // só estrelas do HYG: as hospedeiras acrescentadas (ex.: microlentes a milhares de anos-luz) não têm brilho confiável
+    if (i >= S.nHyg) continue;
     const n0 = inf.names[0];
     if (!n0 || /^(HIP|HD|Gl|GJ|Wo|NN) /.test(n0)) continue;
     const yr = STARTIME.years, x = S.pos[i * 3] + S.vel[i * 3] * yr - cx, y = S.pos[i * 3 + 1] + S.vel[i * 3 + 1] * yr - cy, z = S.pos[i * 3 + 2] + S.vel[i * 3 + 2] * yr - cz;
@@ -88,6 +93,9 @@ function buildSlow() {
     const px = 2 * G.radius[i] / Math.sqrt(x * x + y * y + z * z) * F.pxPerRad;
     if (px > 14) out.push({ id: 'g:' + i, pos: [G.pos[i * 3], G.pos[i * 3 + 1], G.pos[i * 3 + 2]], name, cls: 'gal', prio: 20 + Math.min(px, 400) / 20, make: () => galTarget(i) });
   }
+  // pulsares famosos (perto o bastante) e estruturas do universo (de longe)
+  if (P5.show.pulsars) for (const p of P5.pulsars) if (p.name && v3.dist(F.cam, p.xyz) < 4000 && v3.len(F.cam) > 0.05) out.push({ id: 'psr:' + p.j, pos: p.xyz, name: p.name, cls: 'psr', prio: 35, make: () => pulsarTarget(p) });
+  if (P5.show.structures && v3.len(F.cam) > 4e6) for (const s of P5.structures) out.push({ id: 'lss:' + s.name, pos: s.xyz, name: s.name, cls: 'lss', prio: 60, make: () => structTarget(s) });
   // as 8 estrelas com exoplanetas mais próximas da nave (fora do Sistema Solar)
   const host = systems.currentHost();
   if (v3.len(F.cam) > 0.05) {
@@ -130,6 +138,9 @@ function fastCandidates() {
       }
       out.push({ id: 'b:' + b.key, pos: b.pos, name: b.name, cls: b.kind === 'moon' ? 'moon' : 'planet', prio: b.kind === 'moon' ? 70 : 90, radius: b.radius, make: () => bodyTarget(b.key) });
     }
+    // luas dos outros planetas, quando se está perto do planeta (as grandes primeiro)
+    // luas sem nome (designações provisórias como S2004_S26) só aparecem bem de perto do planeta
+    for (const m of MOONS) if (m.nearPlanet && (/[a-zà-ú]/.test(m.name) || v3.dist(F.cam, BODIES.find(b => b.key === m.planet).pos) < 60 * BODIES.find(b => b.key === m.planet).radius)) out.push({ id: 'moon:' + m.id, pos: m.pos, name: m.name, cls: 'moon', prio: 40 + Math.min(30, Math.log10((m.r || 1) + 1) * 9), radius: moonRadius(m), make: () => moonTarget(m) });
   }
   if (nearSun) out.push(...sbCands);
   for (const c of CRAFT) {

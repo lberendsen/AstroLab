@@ -14,14 +14,14 @@ export const BODIES = [
   { key: 'Moon', name: 'Lua', kind: 'moon', parent: 'Earth', r: 1737.4, tex: '2k_moon.jpg', period: 27.32, orbit: 0x9c9c9c, desc: 'Nosso único satélite natural, a 384 mil km da Terra.' },
   { key: 'Mars', name: 'Marte', kind: 'planet', r: 3389.5, tex: '2k_mars.jpg', period: 686.98, orbit: 0xe2734a, atmo: 0xe8a080, desc: 'O planeta vermelho. Tem o Monte Olimpo, o maior vulcão conhecido.' },
   { key: 'Jupiter', name: 'Júpiter', kind: 'planet', r: 69911, flat: 0.06487, tex: '2k_jupiter.jpg', period: 4332.6, orbit: 0xd8b48a, desc: 'O gigante gasoso. A Grande Mancha Vermelha é uma tempestade maior que a Terra.' },
-  { key: 'Io', name: 'Io', kind: 'moon', parent: 'Jupiter', r: 1821.6, color: 0xe8d36a, period: 1.769, orbit: 0xb0a060, desc: 'O corpo com mais vulcões ativos do Sistema Solar.' },
-  { key: 'Europa', name: 'Europa', kind: 'moon', parent: 'Jupiter', r: 1560.8, color: 0xd9cbb0, period: 3.551, orbit: 0xb0a080, desc: 'Esconde um oceano de água salgada sob o gelo.' },
-  { key: 'Ganymede', name: 'Ganimedes', kind: 'moon', parent: 'Jupiter', r: 2634.1, color: 0xa89f92, period: 7.155, orbit: 0x9a9080, desc: 'A maior lua do Sistema Solar, maior que Mercúrio.' },
-  { key: 'Callisto', name: 'Calisto', kind: 'moon', parent: 'Jupiter', r: 2410.3, color: 0x6e655a, period: 16.69, orbit: 0x857a6a, desc: 'Uma das superfícies mais cheias de crateras que se conhecem.' },
+  { key: 'Io', name: 'Io', kind: 'moon', parent: 'Jupiter', r: 1821.6, tex: 'moons/io.jpg', period: 1.769, orbit: 0xb0a060, desc: 'O corpo com mais vulcões ativos do Sistema Solar.' },
+  { key: 'Europa', name: 'Europa', kind: 'moon', parent: 'Jupiter', r: 1560.8, tex: 'moons/europa.jpg', period: 3.551, orbit: 0xb0a080, desc: 'Esconde um oceano de água salgada sob o gelo.' },
+  { key: 'Ganymede', name: 'Ganimedes', kind: 'moon', parent: 'Jupiter', r: 2634.1, tex: 'moons/ganymede.jpg', period: 7.155, orbit: 0x9a9080, desc: 'A maior lua do Sistema Solar, maior que Mercúrio.' },
+  { key: 'Callisto', name: 'Calisto', kind: 'moon', parent: 'Jupiter', r: 2410.3, tex: 'moons/callisto.jpg', period: 16.69, orbit: 0x857a6a, desc: 'Uma das superfícies mais cheias de crateras que se conhecem.' },
   { key: 'Saturn', name: 'Saturno', kind: 'planet', r: 58232, flat: 0.09796, tex: '2k_saturn.jpg', ring: [74500, 140220], period: 10759, orbit: 0xe3cf98, desc: 'Os anéis têm 280 mil km de diâmetro e, em média, só uns 10 metros de espessura.' },
   { key: 'Uranus', name: 'Urano', kind: 'planet', r: 25362, flat: 0.0229, tex: '2k_uranus.jpg', period: 30687, orbit: 0x9fe3e8, desc: 'Gira deitado: o eixo de rotação está inclinado 98°.' },
   { key: 'Neptune', name: 'Netuno', kind: 'planet', r: 24622, flat: 0.0171, tex: '2k_neptune.jpg', period: 60190, orbit: 0x5f84ff, desc: 'Ventos de 2.000 km/h, os mais rápidos do Sistema Solar.' },
-  { key: 'Pluto', name: 'Plutão', kind: 'planet', dwarf: true, r: 1188.3, color: 0xd8c2a8, period: 90560, orbit: 0xa89880, desc: 'Planeta anão no Cinturão de Kuiper; tem um coração de gelo de nitrogênio.' },
+  { key: 'Pluto', name: 'Plutão', kind: 'planet', dwarf: true, r: 1188.3, tex: 'moons/pluto.jpg', period: 90560, orbit: 0xa89880, desc: 'Planeta anão no Cinturão de Kuiper; tem um coração de gelo de nitrogênio.' },
 ];
 export const BODY = Object.fromEntries(BODIES.map(b => [b.key, b]));
 for (const b of BODIES) { b.pos = [0, 0, 0]; b.radius = b.r * KM; }
@@ -144,7 +144,18 @@ function relToParent(b, t) {
 const _m = new THREE.Matrix4();
 function orient(b, t) {
   let axis;
-  try { axis = A.RotationAxis(A.Body[b.key], t); } catch { return; }
+  try { axis = A.RotationAxis(A.Body[b.key], t); } catch { axis = null; }
+  if (!axis) {
+    // luas sem modelo de rotação (galileanas): rotação sincronizada, longitude 0 voltada para o planeta
+    if (!b.parent) return;
+    const r = relToParent(b, t), r2 = relToParent(b, t.AddDays(1e-3));
+    const pole = v3.norm(v3.cross(r, v3.sub(r2, r))), toP = v3.norm(v3.scale(r, -1));
+    const pm = v3.norm(v3.sub(toP, v3.scale(pole, v3.dot(toP, pole)))), zl = v3.cross(pm, pole);
+    b.pole = pole; b.basis = { pm, pole, zl };
+    _m.makeBasis(new THREE.Vector3(...pm), new THREE.Vector3(...pole), new THREE.Vector3(...zl));
+    b.group.quaternion.setFromRotationMatrix(_m);
+    return;
+  }
   const pole = [axis.north.x, axis.north.y, axis.north.z];
   b.pole = pole;
   let node = v3.cross([0, 0, 1], pole);

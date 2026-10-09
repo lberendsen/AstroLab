@@ -37,10 +37,17 @@ export const BODY_MAPS = {
   Ganymede: [['CDS/P/Ganymede/VoyagerGalileo-SSI-1km', 'Voyager e Galileo (NASA)']],
   Callisto: [['CDS/P/Callisto/Voyager-Galileo-simp-1km', 'Voyager e Galileo (NASA)']],
   Neptune: [['CDS/P/Neptune/Voyager2', 'Voyager 2 (NASA)']],
+  Titan: [['CDS/P/Titan/ISS-P19658-4km', 'Cassini: luz infravermelha através da névoa'], ['CDS/P/Titan/SAR-HiSAR-128ppd', 'Cassini: radar (lagos de metano)']],
+  Enceladus: [['CDS/P/Enceladus/Cassini-110m', 'Cassini (NASA/ESA)']], Mimas: [['CDS/P/Mimas/Cassini-PIA17214', 'Cassini']], Tethys: [['CDS/P/Tethys/Cassini-PIA18439', 'Cassini']],
+  Dione: [['CDS/P/Dione/Cassini-PIA12577', 'Cassini']], Rhea: [['CDS/P/Rhea/Cassini-PIA12803', 'Cassini']], Iapetus: [['CDS/P/Iapetus/Cassini-PIA18436', 'Cassini']],
+  Miranda: [['CDS/P/Miranda/Voyager', 'Voyager 2']], Ariel: [['CDS/P/Ariel/Voyager', 'Voyager 2']], Umbriel: [['CDS/P/Umbriel/Voyager', 'Voyager 2']],
+  Titania: [['CDS/P/Titania/Voyager', 'Voyager 2']], Oberon: [['CDS/P/Oberon/Voyager', 'Voyager 2']], Triton: [['CDS/P/Triton/Voyager2-600m', 'Voyager 2']],
+  Charon: [['CDS/P/Charon/NewHorizon-PIA19866', 'New Horizons']],
   Pluto: [['CDS/P/Pluto/NewHorizons-Jul2017-300m', 'New Horizons (NASA)']],
   Sun: [['CDS/P/Sun/euvi-aia304-2012', 'STEREO e SDO, ultravioleta 304 Å (2012)']],
 };
-const BODY_PT = { Moon: 'Lua', Mars: 'Marte', Mercury: 'Mercúrio', Venus: 'Vênus', Earth: 'Terra', Jupiter: 'Júpiter', Io: 'Io', Europa: 'Europa', Ganymede: 'Ganimedes', Callisto: 'Calisto', Neptune: 'Netuno', Pluto: 'Plutão', Sun: 'Sol' };
+const BODY_PT = { Moon: 'Lua', Mars: 'Marte', Mercury: 'Mercúrio', Venus: 'Vênus', Earth: 'Terra', Jupiter: 'Júpiter', Io: 'Io', Europa: 'Europa', Ganymede: 'Ganimedes', Callisto: 'Calisto', Neptune: 'Netuno', Pluto: 'Plutão', Sun: 'Sol',
+  Titan: 'Titã', Enceladus: 'Encélado', Mimas: 'Mimas', Tethys: 'Tétis', Dione: 'Dione', Rhea: 'Reia', Iapetus: 'Jápeto', Miranda: 'Miranda', Ariel: 'Ariel', Umbriel: 'Umbriel', Titania: 'Titânia', Oberon: 'Oberon', Triton: 'Tritão', Charon: 'Caronte' };
 export const hasBodyMaps = key => !!BODY_MAPS[key];
 
 // a distribuição do Aladin Lite 3 é um módulo ES com export default; A.init é uma promessa

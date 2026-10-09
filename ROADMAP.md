@@ -62,15 +62,20 @@ Ficou de fora:
 Ficou de fora:
 - Encélado e Titã ainda não são modelados; o tour "Existe vida lá fora?" vai a Saturno (as luas entram na Fase 5).
 
-## Fase 5: Mais universo ⬜
+## Fase 5: Mais universo ✅ (2026-10-09)
 
-- [ ] **Gaia DR3:** de 2 a 5 milhões de estrelas próximas, com distância, cor e velocidade, misturadas ao HYG. O HYG fica para os nomes.
-- [ ] **Pulsares** (catálogo ATNF), com o período de rotação piscando em tempo real (opcional).
-- [ ] **Buracos negros:** os conhecidos (Gaia BH1–3, Cyg X-1, Sgr A*, M87*), com a foto do EHT.
-- [ ] **Ondas gravitacionais (LIGO/Virgo):** as fusões detectadas, com a região de incerteza no céu.
-- [ ] **Eventos desta semana:** supernovas e transientes (TNS, ou alertas do Vera Rubin, se houver acesso público).
-- [ ] **Estruturas com nome:** Laniakea, Grande Atrator, Grande Muralha, Vazio de Boötes e o Vazio Local, rotulados na teia cósmica.
-- [ ] **Mais luas** (~400 conhecidas), com mapas reais onde existem: Titã, Encélado, Tritão, Caronte, Mimas e outras.
+- [x] **Gaia DR3:** 2,2 milhões de estrelas a menos de 200 pc, com cor BP−RP. Carregamento sob demanda e corte por brilho.
+- [x] **Pulsares:** 2.481 do ATNF, piscando no ritmo real, com 10 famosos comentados.
+- [x] **Buracos negros:** 9, de Gaia BH1 a TON 618, com o horizonte em escala real e as imagens do EHT (Sgr A* e M87*).
+- [x] **Ondas gravitacionais:** 282 eventos do GWOSC. A casca de distância mostra a incerteza; GW170817 leva a NGC 4993.
+- [x] **Eventos recentes:** supernovas e transientes classificados nos últimos 30 dias (TNS).
+- [x] **Estruturas com nome:** Laniakea, Grande Atrator, Virgem, Shapley, Perseu-Peixes, Hércules, Horologium, Grande Muralha Sloan, Vazio de Boötes e Vazio Local.
+- [x] **Mais luas:** 184 do Horizons (189 no total), com mapas reais de 19 delas (Titã, Encélado, Tritão, Caronte…) e rotação sincronizada. O tour "Existe vida lá fora?" agora visita Encélado e Titã.
+
+Ficou de fora:
+- Movimento próprio das estrelas do Gaia (velocidades não baixadas, para manter 8 bytes por estrela).
+- Alertas do Vera Rubin (ainda sem acesso público estável).
+- Luas pequenas: muitas não têm raio publicado e aparecem com tamanho mínimo.
 
 ## Fase 6: Mais fiel de perto ⬜
 

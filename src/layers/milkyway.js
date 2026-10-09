@@ -77,9 +77,13 @@ export function build() {
         vec3 rel = relPos();
         float d = max(length(rel), 1.0);
         float px = 2.0 * size / d * uPx;
-        float a = 0.05 * min(1.0, px * px / 4.0) * clamp(40.0 / px, 0.08, 1.0);
-        vColor = color * a;
-        gl_PointSize = clamp(px, 2.0, 300.0);
+        // pontos enormes custam muito à GPU e somam pouco: limita o tamanho e compensa a intensidade
+        float ps = clamp(px, 2.0, 90.0);
+        float a = 0.05 * min(1.0, px * px / 4.0) * clamp(40.0 / px, 0.08, 1.0) * (px / ps) * (px / ps);
+        vColor = color * min(a, 0.4);
+        gl_PointSize = ps;
+        // de dentro da galáxia, os pontos a menos de ~150 pc da câmera viram névoa no rosto: descartados
+        if (d < 150.0) gl_Position = vec4(2.0, 2.0, 2.0, 1.0); else
         gl_Position = project(rel);
       }`,
     fragment: /* glsl */`
@@ -102,4 +106,7 @@ export function update() {
   const t = Math.min(Math.max((r - 600) / 5000, 0), 1);
   uniforms.uFade.value = t * t * (3 - 2 * t);
   points.visible = F.layers.milkyway !== false && uniforms.uFade.value > 0.001;
+  // ainda fraca (saindo da vizinhança do Sol): só uma fração dos pontos
+  const n = points.geometry.attributes.position.count;
+  points.geometry.setDrawRange(0, Math.ceil(n * Math.min(1, 0.15 + uniforms.uFade.value * 1.2)));
 }

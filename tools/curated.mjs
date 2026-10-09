@@ -47,6 +47,14 @@ export const CURATED = [
   ['M 80', 'M80', 'glob', 10000],
   // Centro da Via Láctea
   ['Sgr A*', 'Sagittarius A* (buraco negro central)', 'bh', 8178],
+  // Buracos negros de massa estelar (distâncias medidas pelo Gaia ou por paralaxe de rádio)
+  ['Gaia BH1', 'Gaia BH1 (o buraco negro conhecido mais próximo)', 'bh', { d: 480, ra: 262.1712, dec: -0.5808 }],
+  ['Gaia BH2', 'Gaia BH2', 'bh', { d: 1160, ra: 207.5701, dec: -59.2390 }],
+  ['Gaia BH3', 'Gaia BH3 (o maior buraco negro estelar da Via Láctea)', 'bh', { d: 590, ra: 294.8276, dec: 14.9314 }],
+  ['Cyg X-1', 'Cygnus X-1 (o primeiro buraco negro identificado)', 'bh', 2220],
+  ['V404 Cyg', 'V404 Cygni', 'bh', 2390],
+  ['V616 Mon', 'A0620-00 (V616 Monocerotis)', 'bh', 1060],
+  ['NGC 4993', 'NGC 4993 (colisão de estrelas de nêutrons GW170817)', 'gal', 40000000],
   // Galáxias do Grupo Local e vizinhas
   ['LMC', 'Grande Nuvem de Magalhães', 'gal', 49970],
   ['SMC', 'Pequena Nuvem de Magalhães', 'gal', 62440],

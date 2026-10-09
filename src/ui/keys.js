@@ -65,6 +65,7 @@ export function wireControls(onTimeChange) {
       case 'x': case 'X': $('btnFeeds').click(); break;
       case 'p': case 'P': $('btnPlan').click(); break;
       case 'u': case 'U': $('btnTours').click(); break;
+      case 'k': case 'K': $('btnPhen').click(); break;
       case 'y': case 'Y': $('timePanel').hidden ? openTime() : ($('timePanel').hidden = true); break;
       case 'v': case 'V': linkMode.link.target ? linkMode.stop() : startLink(ui.selected); break;
       case 'm': case 'M': toggleMassaroca(); break;

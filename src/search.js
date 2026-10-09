@@ -6,6 +6,10 @@ import { bodyTarget, starTarget, exoTarget, curatedTarget, galTarget, simbadTarg
 import { CRAFT } from './layers/craft.js';
 import { SAT } from './layers/sats.js';
 import { SB } from './layers/smallbodies.js';
+import { MOONS, PLANET_PT } from './layers/moons.js';
+import { moonTarget } from './targets.js';
+import { P5 } from './layers/phase5.js';
+import { pulsarTarget, structTarget } from './ui/phenomena.js';
 import { SHOWERS } from '../tools/smallbodies.mjs';
 import { sbTarget, astTarget, cometTarget, showerTarget } from './targets.js';
 import { normName, radec2xyz, comovingDistance, R_SUN } from './astro.js';
@@ -47,6 +51,11 @@ export function buildIndex() {
     const sub = c.kind === 'surface' ? `Na superfície · ${BODY_PT[c.body]} · ${c.country}` : c.kind === 'sat' ? 'Satélite da Terra' : `Nave · ${c.country} · ${c.launch}`;
     add(c.name, sub, () => craftTarget(c), 95, [c.id, c.sat?.name]);
   }
+  // pulsares e estruturas
+  for (const p of P5.pulsars) add(p.name || `PSR ${p.j}`, `Pulsar · ${p.p < 1 ? Math.round(1 / p.p) + ' voltas/s' : 'período ' + p.p.toFixed(2) + ' s'}`, () => pulsarTarget(p), p.name ? 80 : 12, [`PSR ${p.j}`, p.j, p.b && `PSR ${p.b}`, p.b]);
+  for (const s of P5.structures) add(s.name, `Estrutura do universo · ${s.kind}`, () => structTarget(s), 85);
+  // luas dos outros planetas
+  for (const m of MOONS) add(m.name, `Lua de ${PLANET_PT[m.planet]}${m.r ? ` · ${Math.round(m.r * 2).toLocaleString('pt-BR')} km` : ''}`, () => moonTarget(m), m.r > 100 ? 94 : m.r > 20 ? 60 : 30, [m.en]);
   // asteroides e cometas: os famosos (com ficha completa), todos os cometas e os asteroides com nome ou designação
   for (const f of SB.famous) add(f.name, `${f.isComet ? 'Cometa' : 'Asteroide'} · ${f.full.trim()}`, () => sbTarget(f), 92, [f.full, f.sstr]);
   for (const c of SB.comets) add(c.full.replace(/\s*\(.*\)$/, ''), 'Cometa', () => cometTarget(c), c.name ? 55 : 25, [c.name, c.pdes]);
