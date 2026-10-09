@@ -32,7 +32,6 @@ export function bhForTarget(t) {
 // ---------------------------------------------------------------- abrir
 export function openPhenomena(which = tab) {
   tab = which;
-  $('places').hidden = true; $('btnPlaces').classList.remove('on');
   $('phenPanel').hidden = false;
   for (const b of document.querySelectorAll('#phenPanel [data-phtab]')) b.classList.toggle('on', b.dataset.phtab === tab);
   ({ gw: renderGw, sn: renderSn, bh: renderBh, psr: renderPsr, lss: renderLss })[tab]();

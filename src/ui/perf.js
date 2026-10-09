@@ -38,7 +38,7 @@ export const perf = {
   },
   toggle() {
     enabled = !enabled;
-    if (!el) { el = document.createElement('div'); el.id = 'perf'; document.body.appendChild(el); }
+    if (!el) { el = document.createElement('div'); el.id = 'perf'; document.getElementById('stage').appendChild(el); }
     el.hidden = !enabled;
     stats.clear(); frameMs = 0; worst = 0; frames = 0; fpsT0 = performance.now();
     if (enabled) el.textContent = 'medindo…';

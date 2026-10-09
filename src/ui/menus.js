@@ -45,6 +45,7 @@ export function buildLayersMenu() {
   $('btnLayers').onclick = ev => {
     const r = ev.currentTarget.getBoundingClientRect();
     m.style.left = `${Math.max(8, Math.min(r.left, innerWidth - 336))}px`;
+    m.style.bottom = `${innerHeight - r.top + 8}px`;   // a barra pode ter duas linhas
     m.hidden = !m.hidden;
   };
 }

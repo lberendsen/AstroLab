@@ -13,7 +13,6 @@ const fmtWhen = d => d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 
 const estSize = H => { const d = 1329 / Math.sqrt(0.14) * Math.pow(10, -H / 5) * 1000; return d < 1000 ? `~${fmtNum(d, 0)} m` : `~${fmtNum(d / 1000, 1)} km`; };
 
 export async function openNeo() {
-  $('places').hidden = true; $('btnPlaces').classList.remove('on');
   $('neoPanel').hidden = false;
   const body = $('neoBody');
   body.textContent = 'consultando o JPL…';

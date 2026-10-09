@@ -16,7 +16,6 @@ const ECL_POLE = [0, -0.39777716, 0.91748206];
 
 // ---------------------------------------------------------------- abas
 export function openTime(tab = 'date') {
-  $('places').hidden = true; $('btnPlaces').classList.remove('on');
   $('timePanel').hidden = false;
   showTab(tab);
 }

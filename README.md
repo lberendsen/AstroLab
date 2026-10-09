@@ -10,6 +10,20 @@ Dê dois cliques em **`AstroLab.bat`**: ele sobe o servidor local e abre `http:/
 Também dá para rodar direto com `node serve.mjs`. Precisa de internet para as bibliotecas (CDN), as fotos,
 a busca no SIMBAD e o telescópio.
 
+## Lugares (painel da esquerda)
+
+O universo é para passear, então os destinos ficam sempre à mão: o painel da esquerda é permanente e o 3D ocupa
+o resto da tela. Todos os lugares estão numa árvore que começa recolhida, para se ver de relance todas as categorias:
+tours, planetário, Sistema Solar (cada planeta com as luas e os robôs), feito pelo homem, estrelas com nome próprio,
+os cerca de 4,8 mil sistemas de exoplanetas por distância, as 88 constelações em 3D, nebulosas, fenômenos extremos, galáxias
+e o universo distante (mais de 12 mil destinos). Um clique no nome viaja; a seta abre e fecha.
+
+- **Busca no topo:** filtra a árvore inteira enquanto se digita. Abaixo, "No catálogo inteiro" procura também o que
+  não está na árvore: o índice local (milhões de estrelas, galáxias, asteroides, satélites) e, por último, o SIMBAD,
+  com bilhões de objetos. `Enter` vai para o primeiro resultado; `Esc` limpa.
+- **Largura:** arraste a borda direita do painel. Duplo clique na borda, o botão « ou a tecla `L` recolhem o painel
+  numa faixa estreita (✦ abre de novo, 🔍 abre já na busca). A largura e o estado ficam guardados no navegador.
+
 ## Controles
 
 | | |
@@ -25,7 +39,7 @@ a busca no SIMBAD e o telescópio.
 | `X` | Transmissões: imagens e sinais dos aparelhos do catálogo |
 | `V` | "Onde fica, visto da Terra": linha Terra ↔ objeto selecionado |
 | `M` | mostrar / esconder a massaroca de satélites em volta da Terra |
-| `/` | procurar · `G` ir até o selecionado · `T` telescópio · `L` lugares · `H` ajuda |
+| `/` | procurar · `G` ir até o selecionado · `T` telescópio · `L` recolher/abrir os lugares · `H` ajuda |
 | `espaço` `,` `.` | pausar / desacelerar / acelerar o tempo |
 
 ## Dados
@@ -130,7 +144,7 @@ Notas:
 
 ### Tours guiados (Fase 4)
 
-O botão **🎬 Tours** (tecla `U`), ou o início de **Lugares**, abre cinco viagens narradas. A câmera, o tempo e as camadas andam sozinhos; ⏮ ❚❚ ⏭ controlam, e ✕ encerra.
+O botão **🎬 Tours** (tecla `U`), ou o primeiro ramo dos **Lugares**, abre cinco viagens narradas. A câmera, o tempo e as camadas andam sozinhos; ⏮ ❚❚ ⏭ controlam, e ✕ encerra.
 
 - **Do seu quarto ao universo observável** (13 paradas): do céu de São Paulo à radiação cósmica de fundo.
 - **A vida de uma estrela** (12): berçário, aglomerado, o Sol, gigante vermelha, nebulosa planetária, anã branca, supergigante, supernova, pulsar e buraco negro.
@@ -271,6 +285,8 @@ O que é **ilustrativo**, e o app avisa onde aparece:
 - `src/ui/`: interface.
   - `actions.js`: selecionar, ir até, telescópio, "visto da Terra".
   - `info.js`: ficha de informações.
-  - `places.js`, `menus.js`, `searchbox.js`, `keys.js`: lugares, menus, busca, teclado.
+  - `places.js`: painel de lugares (árvore montada a partir dos dados, filtro, largura e recolhimento).
+  - `searchbox.js`: busca do painel (filtra a árvore e procura no catálogo inteiro e no SIMBAD).
+  - `menus.js`, `keys.js`: menus e teclado.
   - `perf.js`: painel F3.
 - `src/search.js`, `src/telescope.js`, `src/labels.js`, `src/link.js`, `src/feeds.js`: busca, telescópio, rótulos, "visto da Terra", transmissões.

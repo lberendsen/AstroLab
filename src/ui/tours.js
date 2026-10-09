@@ -59,7 +59,6 @@ export function startTour(tour) {
   stopReplay(true);
   if (PLN.PL.active) PLN.exit(true);
   T.tour = tour; T.playing = true;
-  $('places').hidden = true; $('btnPlaces').classList.remove('on');
   $('tourPanel').hidden = true;
   $('tourCap').hidden = false;
   $('tcTitle').textContent = tour.title;

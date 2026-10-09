@@ -15,23 +15,39 @@
 </script>
 </head>
 <body>
+<!-- Lugares: painel permanente à esquerda. O 3D ocupa só o resto da tela (#stage). -->
+<aside id="side">
+  <div id="sideRail" title="Abrir o painel de lugares (L)">
+    <button data-rail="open" title="Abrir os lugares (L)">✦</button>
+    <button data-rail="search" title="Procurar (/)">🔍</button>
+  </div>
+  <div id="sideMain">
+    <div id="sideHead">
+      <div id="brand">Astro<b>Lab</b></div>
+      <button id="sideToggle" title="Recolher o painel (L)">«</button>
+    </div>
+    <div id="searchbox">
+      <input id="search" type="search" placeholder="Filtrar lugares ou procurar qualquer astro…" autocomplete="off" spellcheck="false">
+    </div>
+    <div id="sideScroll">
+      <div id="tree"></div>
+      <div id="catalog" hidden>
+        <h3>No catálogo inteiro</h3>
+        <ul id="suggest"></ul>
+      </div>
+    </div>
+  </div>
+  <div id="sideGrip" title="Arraste para mudar a largura · duplo clique recolhe"></div>
+</aside>
+
+<main id="stage">
 <canvas id="view"></canvas>
 <div id="labels"></div>
 <div id="warp"></div>
 
 <header id="top">
-  <div id="brand">Astro<b>Lab</b></div>
-  <div id="searchbox">
-    <input id="search" type="search" placeholder="Procurar: Saturno, Betelgeuse, Andrômeda, TRAPPIST-1, M87, Cartwheel…" autocomplete="off" spellcheck="false">
-    <ul id="suggest" hidden></ul>
-  </div>
   <div id="where"></div>
 </header>
-
-<aside id="places" class="panel" hidden>
-  <h2>Lugares legais</h2>
-  <div id="placeList"></div>
-</aside>
 
 <aside id="feeds" class="panel" hidden>
   <button class="close" data-close="feeds">×</button>
@@ -166,7 +182,6 @@
 </aside>
 
 <nav id="bar">
-  <button id="btnPlaces" title="Lugares legais (L)">✦ Lugares</button>
   <button id="btnPhen" title="Fenômenos: ondas gravitacionais, explosões, buracos negros, pulsares e estruturas (K)">💥</button>
   <button id="btnTours" title="Tours guiados: viagens narradas (U)">🎬 Tours</button>
   <button id="btnPlan" title="Planetário: ver o céu de um lugar na Terra, na Lua ou em Marte (P)">🌅 Planetário</button>
@@ -217,8 +232,9 @@
     <tr><td>Tab</td><td>alternar Orbitar ↔ Voar livre</td></tr>
     <tr><td>W A S D · R F · Q E</td><td>voar (frente, lados, sobe/desce, rolar)</td></tr>
     <tr><td>Shift</td><td>turbo ×20</td></tr>
-    <tr><td>G</td><td>ir até o selecionado · <b>T</b> telescópio · <b>L</b> lugares</td></tr>
-    <tr><td>/</td><td>procurar</td></tr>
+    <tr><td>G</td><td>ir até o selecionado · <b>T</b> telescópio</td></tr>
+    <tr><td>L</td><td>recolher / abrir o painel de lugares (arraste a borda dele para mudar a largura)</td></tr>
+    <tr><td>/</td><td>procurar: filtra os lugares e procura no catálogo inteiro</td></tr>
     <tr><td>K</td><td>fenômenos: ondas gravitacionais, explosões recentes, buracos negros, pulsares, estruturas</td></tr>
     <tr><td>U</td><td>tours guiados: viagens narradas pelo universo</td></tr>
     <tr><td>P</td><td>planetário: ficar em pé na Terra, na Lua ou em Marte e ver o céu daí</td></tr>
@@ -246,6 +262,7 @@
 </section>
 
 <div id="toast" hidden></div>
+</main>
 <div id="loading"><div>Carregando o universo…</div><small id="loadStep"></small></div>
 
 <script type="module" src="src/main.js"></script>

@@ -32,16 +32,23 @@ scene.add(camera);
 export const local = new THREE.Group();
 scene.add(local);
 
+// A área do 3D é o #stage (a tela menos o painel de lugares), não a janela inteira
+const stage = document.getElementById('stage');
 export function resize() {
-  const w = innerWidth, h = innerHeight;
+  const w = Math.max(1, stage.clientWidth), h = Math.max(1, stage.clientHeight);
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
   F.width = w; F.height = h;
   F.pxPerRad = h / (2 * Math.tan(camera.fov * Math.PI / 360));
 }
-addEventListener('resize', resize);
+new ResizeObserver(resize).observe(stage);
 resize();
+// coordenadas de um evento do mouse dentro da área do 3D
+export function stageXY(e) {
+  const r = stage.getBoundingClientRect();
+  return [e.clientX - r.left, e.clientY - r.top];
+}
 
 // Coloca uma malha na posição absoluta p (pc), relativa à câmera
 export function place(obj, p) {

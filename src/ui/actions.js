@@ -134,13 +134,11 @@ export function openScope(t) {
 // ---------------------------------------------------------------- "onde fica, visto da Terra"
 export function startLink(t) {
   if (!t || t.kind === 'sky' || t.kind === 'view' || t.id === 'b:Earth') { toast('Selecione um objeto (que não seja a Terra) para ver onde ele fica em relação à Terra.'); return; }
-  $('places').hidden = true; $('btnPlaces').classList.remove('on');
   linkMode.start(t);
 }
 
 // ---------------------------------------------------------------- transmissões
 export function openFeeds(filterFor = null) {
-  $('places').hidden = true; $('btnPlaces').classList.remove('on');
   linkMode.link.target && linkMode.stop();
   feeds.buildPanel(filterFor);
   $('feeds').hidden = false;

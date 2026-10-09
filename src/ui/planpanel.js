@@ -15,7 +15,6 @@ const fmtT = d => d ? d.toLocaleString('pt-BR', { weekday: 'short', day: '2-digi
 const fmtH = d => d ? d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '—';
 
 export function openPlanetarium(body, lat, lon, name) {
-  $('places').hidden = true; $('btnPlaces').classList.remove('on');
   $('planPanel').hidden = false;
   if (body) PLN.enter(body, lat, lon, name);
   else if (!PL.active && !PL.pending) PLN.enter();

@@ -23,7 +23,7 @@ import { bodyTarget } from './targets.js';
 import { v3, AU, fmtDist, fmtSpeed, GALACTIC_CENTER } from './astro.js';
 import { ui, select, go, wireFeeds } from './ui/actions.js';
 import { refreshInfoDistances } from './ui/info.js';
-import { buildPlaces } from './ui/places.js';
+import * as places from './ui/places.js';
 import { buildLayersMenu, buildSkyMenu, updateSbStatus, updateGaiaStatus } from './ui/menus.js';
 import { wirePhenomena } from './ui/phenomena.js';
 import { wireSearch } from './ui/searchbox.js';
@@ -56,7 +56,7 @@ async function init() {
   stars.build(); galaxies.build(); milkyway.build(); systems.build();
   sats.build(); craft.addNotableSats(); craft.build(); deep.build(); smallbodies.build(); eclipse.build(); planetarium.build(); moons.build(); phase5.build(); planetfx.build();
   search.buildIndex();
-  buildPlaces(); buildLayersMenu(); buildSkyMenu();
+  places.buildPlaces(); buildLayersMenu(); buildSkyMenu();
   planetfx.FX.onLost = () => toast('A placa de vídeo ficou sem memória e o 3D foi reiniciado. As texturas de alta resolução foram desligadas; se a tela ficar preta, recarregue a página.', 15000);
   wireSearch(); wireFeeds(); wireControls(hud); wireTime(); wirePlanetarium(); tours.wireTours(); wirePhenomena();
 
@@ -183,4 +183,4 @@ init().catch(err => {
 });
 
 // para depuração no console e para o teste de fumaça
-window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies, time, timepanel, planetarium, tours, planetfx };
+window.astro = { F, nav, DB, go, select, search, flyTo, solar, systems, sats, craft, perf, ui, smallbodies, time, timepanel, planetarium, tours, planetfx, places };

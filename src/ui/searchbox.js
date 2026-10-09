@@ -1,7 +1,9 @@
-// Caixa de busca: sugestões do índice local e, como último item, a busca no SIMBAD.
+// Caixa de busca do painel de lugares: filtra a árvore enquanto se digita e, abaixo dela, procura no catálogo
+// inteiro (índice local com milhões de objetos e, como último item, o SIMBAD, com o resto do céu catalogado).
 import * as search from '../search.js';
 import { fmtDist } from '../astro.js';
 import { go, select, pointAt } from './actions.js';
+import { filterTree, toggleSide, sideOpen } from './places.js';
 import { $, toast } from './dom.js';
 
 export const input = $('search');
@@ -10,12 +12,11 @@ let sugItems = [], sugSel = 0, simbadSeq = 0;
 
 function renderSuggest() {
   sug.innerHTML = sugItems.map((r, i) => `<li class="${i === sugSel ? 'sel' : ''}" data-i="${i}"><span>${r.label}</span><small>${r.sub}</small></li>`).join('');
-  sug.hidden = !sugItems.length;
+  $('catalog').hidden = !sugItems.length;
 }
 
 async function choose(r) {
   if (!r) return;
-  sug.hidden = true; input.blur();
   if (r.simbad) {
     const seq = ++simbadSeq;
     toast(`Consultando o SIMBAD: “${r.simbad}”…`, 20000);
@@ -28,27 +29,36 @@ async function choose(r) {
     } catch (err) { toast('Falha ao consultar o SIMBAD (sem internet?).'); console.error(err); }
     return;
   }
-  input.value = r.label;
   go(r.make());
 }
 
+function update() {
+  const q = input.value.trim();
+  const hits = filterTree(q);
+  // no catálogo: o que a árvore não mostrou (até 12), e o SIMBAD por último
+  const inTree = new Set(hits.map(n => n.label));
+  sugItems = q ? search.searchLocal(q, 20).filter(r => !inTree.has(r.label)).slice(0, 12) : [];
+  if (q.length >= 2) sugItems.push({ label: `Procurar “${q}” no SIMBAD`, sub: 'bilhões de objetos catalogados', simbad: q });
+  sugSel = 0;
+  renderSuggest();
+}
+
 export function wireSearch() {
-  input.addEventListener('input', () => {
-    const q = input.value.trim();
-    sugItems = q ? search.searchLocal(q, 10) : [];
-    if (q.length >= 2) sugItems.push({ label: `Procurar “${q}” no SIMBAD`, sub: 'todo o céu catalogado', simbad: q });
-    sugSel = 0;
-    renderSuggest();
-  });
+  input.addEventListener('input', update);
   input.addEventListener('keydown', e => {
     if (e.key === 'ArrowDown') { sugSel = Math.min(sugSel + 1, sugItems.length - 1); renderSuggest(); e.preventDefault(); }
     else if (e.key === 'ArrowUp') { sugSel = Math.max(sugSel - 1, 0); renderSuggest(); e.preventDefault(); }
     else if (e.key === 'Enter') { choose(sugItems[sugSel]); }
-    else if (e.key === 'Escape') { sug.hidden = true; input.blur(); }
+    else if (e.key === 'Escape') { input.value = ''; update(); input.blur(); }
   });
   sug.addEventListener('mousedown', e => {
     const li = e.target.closest('li');
     if (li) { e.preventDefault(); choose(sugItems[+li.dataset.i]); }
   });
-  input.addEventListener('blur', () => setTimeout(() => { sug.hidden = true; }, 150));
+}
+
+// atalho "/": abre o painel, se estiver recolhido, e põe o foco na busca
+export function focusSearch() {
+  if (!sideOpen()) toggleSide(true);
+  input.focus(); input.select();
 }
