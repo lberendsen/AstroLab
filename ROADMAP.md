@@ -1,6 +1,6 @@
 # AstroLab: plano de evolução
 
-Uma fase de cada vez. Cada fase termina com o app funcionando, testado no navegador e com o README atualizado.
+Uma fase de cada vez. Cada fase termina com o app funcionando, testado no navegador e com a documentação ([docs/DOCUMENTACAO.md](docs/DOCUMENTACAO.md)) atualizada.
 A ordem segue as dependências: o que vem antes serve de base para o que vem depois.
 
 Legenda: ⬜ a fazer · 🟨 em andamento · ✅ pronto
@@ -57,7 +57,7 @@ Ficou de fora:
 
 - [x] **Motor de roteiro (`src/ui/tours.js`):** voo, data, velocidade do tempo, planetário, constelações 3D, telescópio e transmissões. Avança sozinho depois do voo e do tempo de leitura, com pausa, volta, avanço e barra de progresso.
 - [x] **Tours iniciais:** os cinco previstos, com 54 paradas no total e fatos revisados.
-- [x] **Formato aberto:** `data/tours/*.json`, documentado no README; o teste de fumaça valida os alvos.
+- [x] **Formato aberto:** `data/tours/*.json`, documentado em docs/DOCUMENTACAO.md; o teste de fumaça valida os alvos.
 
 Ficou de fora:
 - Encélado e Titã ainda não são modelados; o tour "Existe vida lá fora?" vai a Saturno (as luas entram na Fase 5).
