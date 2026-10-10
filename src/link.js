@@ -149,7 +149,7 @@ function galacticPhrase(p, d) {
 }
 
 // A seção pode ser mostrada para qualquer objeto (exceto a Terra, vistas e pontos do céu sem distância)
-export const canShow = t => t && t.kind !== 'sky' && t.kind !== 'view' && t.kind !== 'telescope' && t.id !== 'b:Earth';
+export const canShow = t => t && t.kind !== 'sky' && t.kind !== 'view' && t.kind !== 'telescope' && t.kind !== 'skyplace' && t.id !== 'b:Earth';
 export const tooClose = t => v3.dist(t.pos(), earth()) < 25 * R_E();   // a Terra taparia a vista "olhar da Terra"
 
 // HTML da seção "Visto da Terra" da ficha; os botões são ligados pela ficha (info.js)

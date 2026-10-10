@@ -67,27 +67,6 @@
   <div id="neoBody"></div>
 </aside>
 
-<aside id="planPanel" class="panel" hidden>
-  <button class="close" id="plClose" title="Esconder o painel (continua no planetário)">×</button>
-  <h2>🌅 Planetário</h2>
-  <div class="row"><select id="plBody"><option value="Earth">Terra</option><option value="Moon">Lua</option><option value="Mars">Marte</option></select>
-    <select id="plLoc" style="flex:1"></select></div>
-  <div class="row"><input id="plLat" placeholder="latitude" size="7"><input id="plLon" placeholder="longitude" size="7"><button id="plGo">Ir</button><button id="plMe" title="Usar a localização do navegador">📍</button></div>
-  <p id="plStatus" class="small"></p>
-  <div class="chips plShow">
-    <label><input type="checkbox" data-plshow="lines"> Constelações</label>
-    <label><input type="checkbox" data-plshow="names"> Nomes</label>
-    <label><input type="checkbox" data-plshow="altaz"> Grade</label>
-    <label><input type="checkbox" data-plshow="eqecl"> Equador e eclíptica</label>
-    <label><input type="checkbox" data-plshow="atmo"> Atmosfera</label>
-    <label><input type="checkbox" data-plshow="ground"> Chão</label>
-  </div>
-  <div class="tabs"><button data-pltab="up">No céu agora</button><button data-pltab="iss">Estações espaciais</button><button data-pltab="conj">Conjunções</button></div>
-  <div id="plList"></div>
-  <p class="muted small">Arraste para olhar em volta; a roda do mouse faz zoom (como um binóculo). Acelere o tempo para ver o céu girar.</p>
-  <button id="plExit">Sair do planetário</button>
-</aside>
-
 <aside id="tourPanel" class="panel" hidden>
   <button class="close" id="tpClose2">×</button>
   <h2>🎬 Tours guiados</h2>

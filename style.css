@@ -66,6 +66,7 @@ body.side-collapsed #sideRail { display: flex; }
 #tree .tn[style="--d:0"] { margin-top: 2px; font-weight: 600; }
 #tree .tn.go .tl::after { content: ''; }
 #tree .tn.go:hover .tl { color: var(--accent); }
+#tree .tn.cur { background: rgba(127,180,255,0.22); box-shadow: inset 2px 0 0 var(--accent); }
 #tree .tn.wait { color: var(--muted); font-style: italic; cursor: default; }
 #tree mark { background: rgba(255,207,122,0.28); color: inherit; border-radius: 2px; }
 #tree .empty { padding: 6px 10px; }
@@ -106,14 +107,15 @@ body.side-collapsed #sideRail { display: flex; }
 #feedList .skin button { font-size: 11px; padding: 2px 6px; margin-left: 4px; }
 #feedList a { color: var(--accent); }
 #dsnPanel { position: fixed; right: 12px; top: 64px; width: 360px; max-height: calc(100% - 140px); overflow: auto; padding: 14px; z-index: 5; }
-#planPanel { position: fixed; left: 12px; top: 64px; bottom: 70px; width: 360px; overflow: auto; padding: 14px; z-index: 5; }
-#planPanel input:not([type=checkbox]) { background: #111827; border: 1px solid var(--line); border-radius: 8px; padding: 5px 6px; min-width: 0; flex: 1; }
-#planPanel select { min-width: 0; }
-.plShow label { font-size: 12px; display: flex; gap: 4px; align-items: center; margin-right: 8px; }
+#info .row { display: flex; gap: 6px; flex-wrap: wrap; }
+#info input:not([type=checkbox]) { background: #111827; border: 1px solid var(--line); border-radius: 8px; padding: 5px 6px; min-width: 0; flex: 1; }
+#info details[data-plblock] { margin: 6px 0; }
+#info details[data-plblock] > summary { cursor: pointer; padding: 6px 4px; font-size: 13px; color: #cdd6ea; border-radius: 6px; }
+#info details[data-plblock] > summary:hover { background: rgba(127,180,255,0.10); }
+#info #plStatus { margin: 4px 0 10px; }
 .plRow { padding: 5px 6px; border-radius: 6px; cursor: pointer; font-size: 13px; }
 .plRow small { display: block; color: var(--muted); font-size: 11.5px; }
 .plRow:hover { background: rgba(127,180,255,0.14); }
-#plExit { margin-top: 6px; width: 100%; }
 .lbl.card { color: #ffcf7a; font-weight: 700; font-size: 14px; }
 .lbl.card::before, .lbl.const::before { display: none; }
 .lbl.const { color: rgba(130,170,230,0.85); font-style: italic; font-size: 11.5px; letter-spacing: .03em; }

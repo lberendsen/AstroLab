@@ -169,14 +169,15 @@ function constellations() {
 
 // Fenômenos extremos: as listas do GWOSC e do TNS chegam pela internet depois que o app abre (refreshLive)
 const itemNodes = list => list.map(x => node(x.label, { action: x.go, hint: x.tip }));
-const LIVE = { gw: ['Ondas gravitacionais', 'GWOSC', PH.GW, PH.gwItems], sn: ['Explosões recentes', 'Transient Name Server', PH.SN, PH.snItems] };
+// função (e não constante): os módulos se importam em ciclo e PH só está pronto quando a árvore é montada
+const LIVE = () => ({ gw: ['Ondas gravitacionais', 'GWOSC', PH.GW, PH.gwItems], sn: ['Explosões recentes', 'Transient Name Server', PH.SN, PH.snItems] });
 function liveKids(k) {
-  const [, src, st, items] = LIVE[k];
+  const [, src, st, items] = LIVE()[k];
   if (st.list) return st.list.length ? itemNodes(items()) : [node('nenhuma no momento', { wait: true })];
   return [node(st.failed ? `${src} fora do ar agora` : `consultando o ${src}…`, { wait: true })];
 }
 function phenomena() {
-  const live = k => cat(LIVE[k][0], liveKids(k), { hint: PH.INTRO[k], live: k });
+  const live = k => cat(LIVE()[k][0], liveKids(k), { hint: PH.INTRO[k], live: k });
   return cat('💥 Fenômenos extremos', [live('gw'), live('sn'),
     cat('Buracos negros', itemNodes(PH.bhItems()), { hint: PH.INTRO.bh }),
     cat('Pulsares', itemNodes(PH.psrItems()), { hint: PH.INTRO.psr }),
@@ -234,7 +235,7 @@ function planetarium() {
   const HINT = { 'Earth#10': 'céu mais escuro da Terra', 'Earth#18': 'o céu gira em volta de você', 'Moon#0': 'a Terra parada no céu', 'Mars#0': 'pôr do sol azul' };
   const NAME = { Earth: 'Na Terra', Moon: 'Na Lua', Mars: 'Em Marte' };
   return cat('🌅 Planetário: o céu de outros lugares', [fromQ('@plhere'),
-    ...Object.entries(PRESETS).map(([b, list]) => cat(NAME[b], list.map((p, i) => node(p[0], { action: () => openPlanetarium(b, p[1], p[2], p[0]), hint: HINT[`${b}#${i}`] || '' }))))]);
+    ...Object.entries(PRESETS).map(([b, list]) => cat(NAME[b], list.map((p, i) => node(p[0], { action: () => openPlanetarium(b, p[1], p[2], p[0]), hint: HINT[`${b}#${i}`] || '', pl: `${b}|${p[0]}` }))))]);
 }
 
 let ROOT = [], ALL = [];
@@ -279,7 +280,7 @@ function rowHTML(n, depth, mark) {
   const label = mark ? highlight(n.label, mark) : esc(n.label);
   // as informações de cada lugar ficam na dica (ao parar o mouse em cima), junto com o nome inteiro
   const tip = esc(n.label + (n.hint ? '\n' + n.hint : ''));
-  return `<div class="tn${target ? ' go' : ''}${hasKids ? ' br' : ''}${open ? ' open' : ''}${n.wait ? ' wait' : ''}" style="--d:${depth}" data-i="${n.idx}" title="${tip}">` +
+  return `<div class="tn${target ? ' go' : ''}${hasKids ? ' br' : ''}${open ? ' open' : ''}${n.wait ? ' wait' : ''}${n === curNode ? ' cur' : ''}" style="--d:${depth}" data-i="${n.idx}" title="${tip}">` +
     `<span class="tw">${hasKids ? '▸' : ''}</span><span class="tl">${label}</span>` +
     (n.count ? `<small class="tc">${n.count.toLocaleString('pt-BR')}</small>` : '') + `</div>`;
 }
@@ -385,6 +386,19 @@ export function buildPlaces() {
 }
 
 // Abre o painel com uma categoria de primeiro nível aberta e à vista (tecla K: fenômenos extremos)
+// Planetário: abre o ramo e destaca o nó do lugar onde se está (ou "O céu daqui, agora", se for um lugar avulso)
+let curNode = null;
+export function revealPlanetarium(body, name) {
+  const n = ALL.find(x => x.pl === `${body}|${name}`) || ALL.find(x => /O céu daqui/.test(x.label));
+  if (!n) return;
+  toggleSide(true);
+  if (filterQ) { $('search').value = ''; filterTree(''); }
+  for (let p = n.parent; p; p = p.parent) p.open = true;
+  curNode = n; render();
+  treeEl.querySelector(`[data-i="${n.idx}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+export function clearCurrent() { if (curNode) { curNode = null; render(); } }
+
 export function reveal(text) {
   toggleSide(true);
   const n = ROOT.find(x => x.key.includes(normName(text)));

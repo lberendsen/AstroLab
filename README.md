@@ -211,15 +211,19 @@ O teste de fumaça confere se todos os alvos dos tours existem na busca.
 
 ### Planetário (Fase 2)
 
-O ramo **🌅 Planetário** dos Lugares (ou a tecla `P`, que usa o último lugar escolhido) põe você em pé num lugar da Terra, da Lua ou de Marte, na data simulada. A ficha dos robôs e pousos tem o botão "Ver o céu daqui".
+O ramo **🌅 Planetário** dos Lugares (ou a tecla `P`, que usa o último lugar escolhido) põe você em pé num lugar da Terra, da Lua ou de Marte, na data simulada. As fichas da Terra, da Lua, de Marte, dos robôs e pousos e dos observatórios têm o botão "Ver o céu daqui".
+
+Não há painel próprio: o lugar onde você está em pé vira o selecionado, a árvore abre e destaca o nó dele, e a ficha mostra a
+situação do céu (dia, crepúsculo, noite, nascer e pôr do Sol) e as listas abaixo, em blocos que abrem e fecham. Sair do planetário
+fecha a ficha.
 
 - **Olhar em volta:** arrastar o mouse; a roda faz zoom de 110° a 1°, como um binóculo.
-- **Lugares:** capitais brasileiras, observatórios, os polos e lugares da Lua e de Marte, ou qualquer latitude e longitude. O 📍 usa a sua localização.
+- **Lugares:** capitais brasileiras, observatórios, os polos e lugares da Lua e de Marte (no ramo Planetário), ou qualquer latitude e longitude ("Outro lugar", na ficha). O 📍 usa a sua localização.
 - **Céu:** chão no lugar do planeta.
   - **Na Terra:** atmosfera que clareia com o Sol, crepúsculo e halo.
   - **Em Marte:** céu cor de caramelo e pôr do sol azul.
   - **Na Lua:** céu preto mesmo de dia.
-- **Camadas:** linhas e nomes das 88 constelações (Stellarium, padrão IAU), grade de altura e azimute, equador celeste, eclíptica e pontos cardeais.
+- **Camadas** (seção do painel da direita, "Planetário"): linhas e nomes das 88 constelações (Stellarium, padrão IAU), grade de altura e azimute, equador celeste, eclíptica e pontos cardeais.
 - **No céu agora:** o que está acima do horizonte, com altura, direção e magnitude. Na Terra também mostra o nascer e o pôr do Sol.
 - **Estações espaciais:** passagens visíveis da ISS, da Tiangong e do Hubble nas próximas 72 h (a estação iluminada e o céu escuro); clicar leva ao momento da passagem.
 - **Conjunções:** encontros de planetas e da Lua nos próximos 12 meses; clicar leva ao melhor horário para ver.

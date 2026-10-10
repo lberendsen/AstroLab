@@ -29,10 +29,18 @@ export function buildLayersMenu() {
     <label><input type="checkbox" data-p5="gaia" checked> Estrelas do Gaia <small class="muted" id="gaiaStatus">carrega quando a nave estiver perto do Sol</small></label>
     <label><input type="checkbox" data-p5="pulsars" checked> Pulsares (${fmtNum(P5.pulsars.length, 0)})</label>
     <label><input type="checkbox" data-p5="structures" checked> Estruturas (superaglomerados e vazios)</label>
+    <h3>Planetário (céu de quem está em pé)</h3>
+    <label><input type="checkbox" data-plshow="lines"> Constelações</label>
+    <label><input type="checkbox" data-plshow="names"> Nomes</label>
+    <label><input type="checkbox" data-plshow="altaz"> Grade (altura e direção)</label>
+    <label><input type="checkbox" data-plshow="eqecl"> Equador e eclíptica</label>
+    <label><input type="checkbox" data-plshow="atmo"> Atmosfera</label>
+    <label><input type="checkbox" data-plshow="ground"> Chão</label>
     <h3>Planetas de perto</h3>
     <label><input type="checkbox" id="fxHires" ${FX.hires ? 'checked' : ''}> Texturas em alta resolução <small class="muted">só no corpo mais próximo</small></label>
     <label class="inline">Relevo (Lua, Marte, Mercúrio) <select id="fxExag"><option value="1">real</option><option value="3">3× exagerado</option><option value="6">6× exagerado</option><option value="12">12× exagerado</option></select></label>`);
   for (const cb of m.querySelectorAll('[data-p5]')) cb.onchange = () => { P5.show[cb.dataset.p5] = cb.checked; };
+  for (const cb of m.querySelectorAll('[data-plshow]')) { cb.checked = PL.show[cb.dataset.plshow]; cb.onchange = () => { PL.show[cb.dataset.plshow] = cb.checked; }; }
   $('constSpace').onchange = e => { PL.show.space = e.target.checked; PL.show.only = null; };
   $('fxHires').onchange = e => { FX.hires = e.target.checked; };
   $('fxExag').onchange = e => { setExaggeration(+e.target.value); };

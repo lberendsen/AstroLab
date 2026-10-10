@@ -16,6 +16,7 @@ import { MOON_DESC, PLANET_PT, SCOPE_KEY, moonPeriodDays } from '../layers/moons
 import { BH_INFO } from './phenomena.js';
 import { KM, R_EARTH } from '../astro.js';
 import { openPlanetarium } from './planpanel.js';
+import * as plan from './planpanel.js';
 import { v3, DEG, fmtDist, fmtLightTime, fmtNum, lightSentence, fmtYears, lookbackYears, AGE_OF_UNIVERSE, CMB_DISTANCE } from '../astro.js';
 import { ui, go, openScope, startLink, showerParent } from './actions.js';
 import * as linkMode from '../link.js';
@@ -88,6 +89,9 @@ export function renderInfo(t) {
     dl += row('Descoberto', `${p.y || '?'} · ${p.how || ''}`);
     dl += row('Distância do Sol', fmtDist(dSun));
     notes += `<div class="note">Tamanho e órbita vêm de medidas reais. A cor e a inclinação da órbita são ilustrativas: ninguém viu este planeta de perto.</div>`;
+  } else if (t.kind === 'skyplace') {
+    // em pé num lugar (planetário): situação do céu, listas, outro lugar, sair
+    h += plan.sectionHTML();
   } else if (t.kind === 'telescope') {
     const T = t.tel;
     h += `<p>${T.desc}</p>`;
@@ -260,7 +264,7 @@ export function renderInfo(t) {
   if (skyHere && !PLN.PL.active) h += `<div class="actions"><button id="aSky" title="Ficar em pé aí e ver o céu (P)">🌅 Ver o céu daqui</button></div>`;
   // transmissões deste aparelho e contato ao vivo com a Rede de Espaço Profundo
   if (t.craft?.kind === 'probe' || t.craft?.kind === 'surface') h += `<div id="dsnLive" class="lighttime small"></div>`;
-  h += `<div class="actions">${t.kind !== 'sky' && !t.noGo ? '<button id="aGo" class="accent">🚀 Ir até lá</button>' : ''}${t.kind !== 'telescope' ? '<button id="aScope">🔭 Telescópio</button>' : ''}${t.kind !== 'sky' && !t.noGo ? '<button id="aOrbit">⟲ Orbitar daqui</button>' : ''}</div>`;
+  h += `<div class="actions">${t.kind !== 'sky' && !t.noGo ? '<button id="aGo" class="accent">🚀 Ir até lá</button>' : ''}${t.kind !== 'telescope' && t.kind !== 'skyplace' ? '<button id="aScope">🔭 Telescópio</button>' : ''}${t.kind !== 'sky' && !t.noGo ? '<button id="aOrbit">⟲ Orbitar daqui</button>' : ''}</div>`;
   // o céu visto por este telescópio: os levantamentos que ele fez, abertos num campo onde brilham
   const tel = telescopeOf(t);
   if (tel?.surveys.length) {
@@ -286,6 +290,7 @@ export function renderInfo(t) {
   };
   linkMode.render(t);
   feeds.wireSection();
+  if (t.kind === 'skyplace') plan.wireSection();
   for (const b of document.querySelectorAll('#info [data-survey]')) b.onclick = () => { const T = telescopeOf(t); scope.openWith(b.dataset.survey, { ra: T.show.ra, dec: T.show.dec, fovDeg: T.show.fov, name: `${T.show.name[0].toUpperCase()}${T.show.name.slice(1)}, por ${T.name}` }); };
   if ($('dsnLive')) {
     const id = t.craft.kind === 'surface' ? { 'perseverance': 'perseverance', 'curiosity': 'curiosity' }[t.craft.id] : t.craft.id;
