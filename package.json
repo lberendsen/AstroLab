@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Navegador 3D do universo com dados reais",
   "license": "PolyForm-Noncommercial-1.0.0",
-  "author": "Lorenzo Teodoro Berend",
+  "author": "Lorenzo Teodoro Berendsen",
   "repository": "github:lberendsen/AstroLab",
   "scripts": {
     "start": "node serve.mjs 8080",

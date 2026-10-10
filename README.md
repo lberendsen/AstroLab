@@ -99,4 +99,4 @@ O código e os textos do AstroLab estão sob a [PolyForm Noncommercial 1.0.0](LI
 pessoas, escolas, universidades, museus, planetários, ONGs e pesquisa. **Uso comercial depende de autorização** do
 autor. Os dados e imagens de terceiros em `data/` e `textures/` seguem as licenças das fontes de origem.
 
-Desenvolvido por Lorenzo Teodoro Berend, com a ajuda do Claude (Anthropic).
+Desenvolvido por Lorenzo Teodoro Berendsen, com a ajuda do Claude (Anthropic).
